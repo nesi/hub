@@ -63,7 +63,8 @@ public class ThingControlMinimal {
     }
 
     public Thing addChildThing(Thing parent, Thing child) {
-        parent.getOtherThings().add(child.getId());
+        ThingReader r = thingReaders.getUnique(child);
+        parent.getOtherThings().add(r.getReaderName()+"/"+child.getId());
         return saveThing(parent);
     }
 
@@ -72,11 +73,11 @@ public class ThingControlMinimal {
         return t;
     }
 
-    public Observable<Thing> getChildsMatchingTypeAndKey(Thing t, String typeMatch, String keyMatch, boolean populated) {
+    public Observable<Thing> observeChildsMatchingTypeAndKey(Thing t, String typeMatch, String keyMatch, boolean populated) {
         List<Observable<Thing>> observables = Lists.newArrayList();
         List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         for (ThingReader r : readers) {
-            Observable<Thing> result = r.getOtherThingsMatchingTypeAndKey(t, typeMatch, keyMatch);
+            Observable<Thing> result = r.getChildsMatchingTypeAndKey(t, typeMatch, keyMatch);
             observables.add(result);
         }
 
@@ -90,11 +91,18 @@ public class ThingControlMinimal {
         }
 
         if (populated) {
-            return getPopulatedThings(result);
+            return ensurePolulatedValueUntyped(result);
         } else {
             return result;
         }
 
+    }
+
+    public Observable<Thing> findThingForId(String readerName, String id) {
+
+        ThingReader r = thingReaders.getNamed(readerName);
+        Observable<Thing> child = r.findThingForId(id);
+        return child;
     }
 
     protected <V> Thing<V> convertToTyped(Class<V> type, Thing untyped) {
@@ -114,12 +122,12 @@ public class ThingControlMinimal {
      */
     public boolean thingWithTypeAndKeyExists(final String typeMatch, final String keyMatch) {
 
-        Observable<Thing> obs = findThingsMatchingTypeAndKey(typeMatch, keyMatch);
+        Observable<Thing> obs = observeThingsMatchingTypeAndKey(typeMatch, keyMatch, false);
         return !obs.isEmpty().toBlockingObservable().single();
     }
 
 
-    protected <V> Observable<Thing<V>> createThingObservable(String key, V value) {
+    protected <V> Observable<Thing<V>> observeCreateThing(String key, V value) {
 
         Preconditions.checkArgument(key != null, "Can't create thing, no key provided");
         Preconditions.checkArgument(!MatcherUtils.isGlob(key), "Key can't be glob when creating a thing");
@@ -148,7 +156,7 @@ public class ThingControlMinimal {
                 }
 
                 try {
-                    validate(value);
+                    validateValue(value);
 
                     ThingWriter tw = thingWriters.getUnique(TypeRegistry.getType(value), key);
 
@@ -185,18 +193,18 @@ public class ThingControlMinimal {
         return obs;
     }
 
-    protected Observable<Thing> getPopulatedThings(Observable<Thing> things) {
-        Observable<Thing> result = things.map(t -> populateThing(t));
+    protected Observable<Thing> ensurePolulatedValueUntyped(Observable<Thing> things) {
+        Observable<Thing> result = things.map(t -> ensurePopulatedValueUntyped(t));
         return result;
     }
 
-    protected <V> Observable<Thing<V>> getPopulatedThingsTyped(Observable<Thing<V>> things) {
-        Observable<Thing<V>> result = things.map(t -> populateThingTyped(t));
+    protected <V> Observable<Thing<V>> ensurePopluatedValue(Observable<Thing<V>> things) {
+        Observable<Thing<V>> result = things.map(t -> ensurePoplutedValue(t));
         return result;
     }
 
 
-    public <V> Observable<Thing<V>> findThingsWithKeyAndValue(String key, V value, boolean populated) {
+    public <V> Observable<Thing<V>> observeThingsWithKeyAndValue(String key, V value, boolean populated) {
 
         List<Observable<Thing<V>>> observables = Lists.newArrayList();
         for (ThingReader r : thingReaders.get(TypeRegistry.getType(value.getClass()), key)) {
@@ -213,28 +221,28 @@ public class ThingControlMinimal {
             result = Observable.merge(observables);
         }
         if (populated) {
-            return getPopulatedThingsTyped(result);
+            return ensurePopluatedValue(result);
         } else {
             return result;
         }
     }
 
-    protected <V> Observable<V> getValueObservable(final Thing<V> thing) {
-        Observable<V> obs = Observable.create((Observable.OnSubscribe<V>) subscriber -> {
-            ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
-            try {
-                subscriber.onNext(r.readValue(thing));
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-            subscriber.onCompleted();
-        });
+//    protected <V> Observable<V> getValueObservable(final Thing<V> thing) {
+//        Observable<V> obs = Observable.create((Observable.OnSubscribe<V>) subscriber -> {
+//            ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
+//            try {
+//                subscriber.onNext(r.readValue(thing));
+//            } catch (Exception e) {
+//                subscriber.onError(e);
+//            }
+//            subscriber.onCompleted();
+//        });
+//
+//        return obs;
+//    }
 
-        return obs;
-    }
 
-
-    protected Thing populateThing(Thing thing) {
+    protected Thing ensurePopulatedValueUntyped(Thing thing) {
         if (thing.getValueIsLink()) {
             Object value = getValue(thing);
             thing.setValue(value);
@@ -243,7 +251,7 @@ public class ThingControlMinimal {
         return thing;
     }
 
-    protected <V> Thing<V> populateThingTyped(Thing<V> thing) {
+    protected <V> Thing<V> ensurePoplutedValue(Thing<V> thing) {
         if (thing.getValueIsLink()) {
             V value = getValue(thing);
             thing.setValue(value);
@@ -253,11 +261,14 @@ public class ThingControlMinimal {
     }
 
     public <V> V getValue(Thing<V> thing) {
+        if ( ! thing.getValueIsLink() ) {
+            return (V) thing.getValue();
+        }
         ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
         return r.readValue(thing);
     }
 
-    public Observable<Thing> findThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch) {
+    public Observable<Thing> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {
         List<Observable<Thing>> all = Lists.newArrayList();
         List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         if ("*".equals(typeMatch)) {
@@ -304,6 +315,10 @@ public class ThingControlMinimal {
         }
 
         Observable<Thing> obs = Observable.merge(all);
+
+        if ( populate ) {
+            return ensurePolulatedValueUntyped(obs);
+        }
         return obs;
     }
 
@@ -314,7 +329,7 @@ public class ThingControlMinimal {
      *
      * @param value the value to validate
      */
-    public <V> void validate(V value) {
+    public <V> void validateValue(V value) {
 
         Set<ConstraintViolation<V>> constraintViolations = validator
                 .validate(value);

@@ -1,7 +1,26 @@
+buildscript {
+	    repositories {
+    		         maven { url "http://repo.spring.io/libs-snapshot" }
+			 }
+	dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+
+apply plugin: 'spring-boot'
+
+def springBootVersion = '1.0.2.RELEASE'
+
 dependencies {
 
     compile project(':things-core')
-    compile('org.springframework.data:spring-data-mongodb:1.4.2.RELEASE')
-    compile('javax.el:javax.el-api:2.2.4')
-    compile('org.glassfish.web:javax.el:2.2.4')
+    compile ("org.springframework.boot:spring-boot-starter-data-mongodb:"+springBootVersion)
+
 }

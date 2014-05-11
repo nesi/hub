@@ -38,6 +38,11 @@ dependencies {
 
 }
 
+ext {
+    springVersion = '4.0.3.RELEASE'
+    springDataCommonsVersion = '1.7.1.RELEASE'
+}
+
 subprojects {
 
     repositories {

@@ -2,6 +2,7 @@ package rooms.types;
 
 
 import org.hibernate.validator.constraints.Range;
+import things.model.types.Value;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * Date: 2/05/14
  * Time: 7:34 PM
  */
+@Value(typeName = "lightState")
 public class LightState implements Serializable {
 
     @Range(min = 0, max = 10)

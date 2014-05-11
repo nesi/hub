@@ -14,6 +14,9 @@ public class IdWrapper {
     private String id;
     private Object value;
 
+    public IdWrapper() {
+    }
+
     public IdWrapper(String id) {
         this.id = id;
     }

@@ -37,9 +37,16 @@ public class MongoConnector implements ThingReader, ThingWriter {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+    private String name;
 
-    public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
+    public MongoConnector(String name, MongoTemplate mongoTemplate) throws Exception {
+        this.name = name;
         this.mongoTemplate = mongoTemplate;
+    }
+
+    @Override
+    public String getReaderName() {
+        return name;
     }
 
     @Override
@@ -53,8 +60,15 @@ public class MongoConnector implements ThingReader, ThingWriter {
         Query q = new Query();
         q.addCriteria(Criteria.where("_id").is(new ObjectId((String)t.getValue())));
 //
-        Object v = mongoTemplate.findOne(q, TypeRegistry.getTypeClass(t.getThingType()));
-        return (V)v;
+        Class typeClass = TypeRegistry.getTypeClass(t.getThingType());
+        if (hasUsableId(typeClass)) {
+            Object v = mongoTemplate.findOne(q, typeClass);
+            return (V) v;
+        } else {
+            Object v = mongoTemplate.findOne(q, IdWrapper.class, t.getThingType());
+            return (V) ((IdWrapper)v).getValue();
+
+        }
     }
 
     @Override
@@ -71,9 +85,17 @@ public class MongoConnector implements ThingReader, ThingWriter {
         return t;
     }
 
-    private MongoPersistentProperty getIdField(Object value) {
+    private boolean hasUsableId(Class valueClass) {
+        if (getIdField(valueClass) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private MongoPersistentProperty getIdField(Class valueClass) {
         MongoPersistentEntity<?> mongoPersistentEntity = mongoTemplate.getConverter()
-                .getMappingContext().getPersistentEntity(value.getClass());
+                .getMappingContext().getPersistentEntity(valueClass);
         MongoPersistentProperty id = mongoPersistentEntity.getIdProperty();
         return id;
     }
@@ -99,7 +121,7 @@ public class MongoConnector implements ThingReader, ThingWriter {
         if ( TypeRegistry.isSimpleValue(value) ) {
             vId = value;
         } else {
-            MongoPersistentProperty idField = getIdField(value);
+            MongoPersistentProperty idField = getIdField(value.getClass());
             if ( idField == null ) {
                 IdWrapper wrapper = new IdWrapper(value);
                 mongoTemplate.save(wrapper, TypeRegistry.getType(value));

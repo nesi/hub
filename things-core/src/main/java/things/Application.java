@@ -33,8 +33,12 @@ public class Application {
 //        MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
 //        ThingControl tc = (ThingControl) context.getBean("thingControl");
 
-        FileUtils.removeRecursive(Paths.get("/home/markus/things"));
-        FileUtils.removeRecursive(Paths.get("/home/markus/values"));
+        try {
+            FileUtils.removeRecursive(Paths.get("/home/markus/things"));
+            FileUtils.removeRecursive(Paths.get("/home/markus/values"));
+        } catch (Exception e) {
+
+        }
 
         try {
             Injector injector = Guice.createInjector(new XstreamModule(), new ValidationModule());
@@ -82,12 +86,12 @@ public class Application {
             tc.addChildThing(pt, r3t);
 
 
-            Observable<Thing> childs = tc.getChildsMatchingTypeAndKey(pt, "role", "*2*", true);
+            Observable<Thing> childs = tc.observeChildsMatchingTypeAndKey(pt, "role", "*2*", true);
 
             childs.toBlockingObservable().forEach(t -> System.out.println(t));
 
 
-            Observable<Thing> childs2 = tc.getChildsMatchingTypeAndKey(pt, "address", "*", true);
+            Observable<Thing> childs2 = tc.observeChildsMatchingTypeAndKey(pt, "address", "*", true);
 
             childs2.toBlockingObservable().forEach(t -> System.out.println(t));
 

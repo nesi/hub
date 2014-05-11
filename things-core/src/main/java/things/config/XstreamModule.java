@@ -19,6 +19,7 @@ public class XstreamModule extends AbstractModule {
         bind(ThingControl.class);
         bind(File.class).annotatedWith(Names.named("thingsFolder")).toInstance(new File("/home/markus/things"));
         bind(File.class).annotatedWith(Names.named("valuesFolder")).toInstance(new File("/home/markus/values"));
+        bind(String.class).annotatedWith(Names.named("readerName")).toInstance("defaultReader");
         bind(XstreamConnector.class);
     }
 

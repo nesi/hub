@@ -13,31 +13,25 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
+
 apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 dependencies {
 
     compile project(':things-core')
-    compile project(':things-mongo')
-    compile project(':things-rest')
-    compile('com.google.guava:guava:17.0')
-
-    compile("org.springframework.boot:spring-boot-starter-parent:"+springBootVersion)
-
     compile("org.springframework.boot:spring-boot-starter-web:"+springBootVersion) {
         exclude module: "spring-boot-starter-tomcat"
     }
-
     compile ("org.springframework.boot:spring-boot-starter-jetty:"+springBootVersion)
     compile ("org.springframework.boot:spring-boot-starter-logging:"+springBootVersion)
 
-    compile ("org.springframework.boot:spring-boot-starter-data-mongodb:"+springBootVersion)
+    compile("org.springframework:spring-tx")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-guava:2.2.0")
+    compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.2.0")
+    compile("com.fasterxml.jackson.module:jackson-module-jsonSchema:2.3.3")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.3.1")
 
 }

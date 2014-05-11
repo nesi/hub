@@ -29,7 +29,7 @@ public class Application {
 
         Mongo m = new Mongo();
         MongoTemplate mt = new MongoTemplate(m, "helloKitty");
-        MongoConnector defaultConnector = new MongoConnector(mt);
+        MongoConnector defaultConnector = new MongoConnector("defaultReader", mt);
 
         mt.dropCollection(Person.class);
         mt.dropCollection(Thing.class);
@@ -87,12 +87,12 @@ public class Application {
             tc.addChildThing(pt, r3t);
 
 
-            Observable<Thing> childs = tc.getChildsMatchingTypeAndKey(pt, "role", "*2*", true);
+            Observable<Thing> childs = tc.observeChildsMatchingTypeAndKey(pt, "role", "*2*", true);
 
             childs.toBlockingObservable().forEach(t -> System.out.println(t));
 
 
-            Observable<Thing> childs2 = tc.getChildsMatchingTypeAndKey(pt, "address", "*", true);
+            Observable<Thing> childs2 = tc.observeChildsMatchingTypeAndKey(pt, "address", "*", true);
 
             childs2.toBlockingObservable().forEach(t -> System.out.println(t));
 

@@ -2,6 +2,7 @@ package rooms.types;
 
 
 import org.hibernate.validator.constraints.NotEmpty;
+import things.model.types.Value;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  * Date: 13/04/14
  * Time: 12:09 AM
  */
+@Value(typeName = "light")
 public class Light {
 
     @NotNull

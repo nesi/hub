@@ -1,19 +1,19 @@
 package things.thing;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import things.exceptions.TypeRuntimeException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author: Markus Binsteiner
  */
 public class ThingReaders {
-    
+
     private final Multimap<String, ThingReader> thingReaders = HashMultimap.create();
+    private final Map<String, ThingReader> readerNames = Maps.newHashMap();
 
     public ThingReaders() {
     }
@@ -21,7 +21,12 @@ public class ThingReaders {
     public void addReader(String matcher, ThingReader reader) {
 
         thingReaders.put(matcher, reader);
+        readerNames.put(reader.getReaderName(), reader);
 
+    }
+
+    public Set<ThingReader> getAll() {
+        return Sets.newHashSet(thingReaders.values());
     }
     
     public List<ThingReader> get(String queryType, String queryKey) {
@@ -62,5 +67,14 @@ public class ThingReaders {
     }
     public List<ThingReader> getThingReadersMatchingKey(String queryKey) {
         return get("*", queryKey);
+    }
+
+    public ThingReader getUnique(Thing child) {
+        ThingReader r = getUnique(child.getThingType(), child.getKey());
+        return r;
+    }
+
+    public ThingReader getNamed(String name) {
+        return readerNames.get(name);
     }
 }

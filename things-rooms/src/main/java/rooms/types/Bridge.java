@@ -1,5 +1,7 @@
 package rooms.types;
 
+import things.model.types.Value;
+
 /**
  * Project: things-to-build
  * <p>
@@ -7,6 +9,7 @@ package rooms.types;
  * Date: 13/04/14
  * Time: 12:06 AM
  */
+@Value(typeName = "bridge")
 public class Bridge  {
 
     public static final int DEFAULT_PORT = 8899;

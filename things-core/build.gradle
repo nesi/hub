@@ -6,6 +6,9 @@ dependencies {
 
     compile project(":things-common")
 
+    compile('javax.el:javax.el-api:2.2.4')
+    compile('org.glassfish.web:javax.el:2.2.4')
+
     compile ("com.thoughtworks.xstream:xstream:1.4.7")
 
     compile ("com.google.inject:guice:4.0-beta")
