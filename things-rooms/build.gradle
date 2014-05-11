@@ -1,0 +1,6 @@
+dependencies {
+
+    compile project(':things-core')
+    compile('com.google.guava:guava:17.0')
+
+}

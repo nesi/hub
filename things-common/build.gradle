@@ -1,0 +1,4 @@
+task copyDeps(type: Copy) {
+    from configurations.runtime
+    into "${buildDir}/deps"
+}
