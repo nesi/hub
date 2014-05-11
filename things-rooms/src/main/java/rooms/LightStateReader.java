@@ -51,12 +51,12 @@ public class LightStateReader  {
 //        try {
 //            light = tc.findUniqueThingByTypeAndKey(Light.class, t.getKey());
 //            if ( ! light.isPresent() ) {
-//                throw new NoSuchValueException("Can't find value for thing", t.getThingType(), t.getKey(), t.getValueId());
+//                throw new NoSuchValueException("Can't find value for thing", t.getThingType(), t.getKey(), t.getValue());
 //            }
 //            LightState state = getLightState(light.get());
 //            return state;
 //        } catch (ThingException e) {
-//            throw new NoSuchValueException(e.getLocalizedMessage(), t.getThingType(), t.getKey(), t.getValueId());
+//            throw new NoSuchValueException(e.getLocalizedMessage(), t.getThingType(), t.getKey(), t.getValue());
 //        }
 //
 //    }

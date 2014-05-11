@@ -1,6 +1,5 @@
 package things.mongo;
 
-import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ public class MongoConnector implements ThingReader, ThingWriter {
     @Override
     public <V> V readValue(Thing<V> t) {
         Query q = new Query();
-        q.addCriteria(Criteria.where("_id").is(new ObjectId((String)t.getValueId())));
+        q.addCriteria(Criteria.where("_id").is(new ObjectId((String)t.getValue())));
 //
         Object v = mongoTemplate.findOne(q, TypeRegistry.getTypeClass(t.getThingType()));
         return (V)v;

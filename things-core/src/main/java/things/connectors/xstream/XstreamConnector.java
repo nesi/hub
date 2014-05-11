@@ -133,7 +133,7 @@ public class XstreamConnector implements ThingReader, ThingWriter {
 
     public <V> V readValue(Thing<V> t) {
         String type = t.getThingType();
-        Object valueId = t.getValueId();
+        Object valueId = t.getValue();
         File typeFolder = getTypeFolder(type);
         File file = new File(typeFolder, valueId+".value");
         V v = (V) xstream.fromXML(file);

@@ -13,7 +13,7 @@ public class ThingReadConverter  {
 //        ObjectId id = (ObjectId) source.get("_id");
 //        t.setId(id.toString());
 //        t.setKey((String) source.get("key"));
-//        t.setValueId((String)source.get("valueId"));
+//        t.setValue((String)source.get("value"));
 //        String type = ((String)source.get("type"));
 //        t.setThingType(type);
 //        t.setOtherThings(new HashSet<String>((java.util.List<String>) source.get("otherThings")));

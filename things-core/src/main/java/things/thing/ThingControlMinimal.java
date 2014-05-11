@@ -157,11 +157,11 @@ public class ThingControlMinimal {
                     Object valueId = null;
                     if (TypeRegistry.isSimpleValue(value)) {
                         valueId = value;
-                        newThing.setValueId(valueId);
+                        newThing.setValue(valueId);
                         newThing.setValueIsLink(false);
                     } else {
                         valueId = tw.saveValue(Optional.empty(), value);
-                        newThing.setValueId(valueId);
+                        newThing.setValue(valueId);
                         newThing.setValueIsLink(true);
                     }
 
@@ -237,7 +237,7 @@ public class ThingControlMinimal {
     protected Thing populateThing(Thing thing) {
         if (thing.getValueIsLink()) {
             Object value = getValue(thing);
-            thing.setValueId(value);
+            thing.setValue(value);
             thing.setValueIsLink(false);
         }
         return thing;
@@ -246,7 +246,7 @@ public class ThingControlMinimal {
     protected <V> Thing<V> populateThingTyped(Thing<V> thing) {
         if (thing.getValueIsLink()) {
             V value = getValue(thing);
-            thing.setValueId(value);
+            thing.setValue(value);
             thing.setValueIsLink(false);
         }
         return thing;

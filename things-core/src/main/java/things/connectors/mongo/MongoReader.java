@@ -101,25 +101,25 @@ public class MongoReader {
 //
 //		myLogger.debug("Saving thing {}/{}", TypeRegistry.getType(value), key);
 //
-//        Object valueId = null;
+//        Object value = null;
 //        if ( TypeRegistry.isSimpleValue(value) ) {
-//            valueId = ((SimpleValue)value).getValue();
+//            value = ((SimpleValue)value).getValue();
 //        } else {
 //            MongoPersistentProperty idField = getIdField(value);
 //            if ( idField == null ) {
 //                IdWrapper wrapper = new IdWrapper(value);
 //                mongoTemplate.save(wrapper, TypeRegistry.getType(value));
-//                valueId = wrapper.getId();
+//                value = wrapper.getId();
 //            } else {
 //                mongoTemplate.save(value, TypeRegistry.getType(value));
-//                valueId = extractId(idField, value);
+//                value = extractId(idField, value);
 //            }
 //        }
 //        String type = TypeRegistry.getType(value);
 //        Thing t = new Thing();
 //        t.setKey(key);
 //        t.setThingType(type);
-//        t.setValueId(valueId);
+//        t.setValue(value);
 //		mongoTemplate.save(t);
 //
 //        return Observable.from(t);
@@ -147,26 +147,26 @@ public class MongoReader {
 
 //
 //    @Override
-//	public List<Thing> findThingsByTypeAndValueId(String type, String valueId, boolean allowGlob) {
+//	public List<Thing> findThingsByTypeAndValueId(String type, String value, boolean allowGlob) {
 //
-//		if (valueId == null) {
+//		if (value == null) {
 //			throw new IllegalArgumentException("Id can't be null");
 //		}
 //
 //        if (! allowGlob ) {
 //            Query q = new Query();
 //
-//            q.addCriteria(Criteria.where("valueId").is(valueId)
+//            q.addCriteria(Criteria.where("value").is(value)
 //                    .and("type").is(type));
 //
 //            List<Thing> result = mongoTemplate.find(q, Thing.class);
 //
 //            return result;
 //        } else {
-//            String regex = MatcherUtils.convertGlobToRegex(valueId);
+//            String regex = MatcherUtils.convertGlobToRegex(value);
 //            Query q = new Query();
 //
-//            q.addCriteria(Criteria.where("valueId").regex(regex)
+//            q.addCriteria(Criteria.where("value").regex(regex)
 //                    .and("type").is(type));
 //
 //            List<Thing> result = mongoTemplate.find(q, Thing.class);

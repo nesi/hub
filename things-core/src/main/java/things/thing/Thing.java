@@ -21,7 +21,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     private String key;
     private Set<String> otherThings = Sets.newHashSet();
     private String thingType;
-    protected Object valueId;
+    protected Object value;
     private Boolean valueIsLink = true;
 
     public Boolean getValueIsLink() {
@@ -43,52 +43,12 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     public Thing() {
     }
 
-//    /**
-//     * Constructor used for internal purposes, don't use in normal circumstances.
-//     *
-//     * If creating a new Thing to store (i.e. one that has a {@link things.model.PersistentValue} Value),
-//     * always use {@link ThingControl#createThing(String, Serializable)}.
-//     *
-//     * If creating a Thing for returning via the API, prefer the {@link Thing#Thing(String, Serializable)} constructor.
-//     */
-//    public Thing(String id, String key, String valuetype, Object valueId) {
-//        this.id = id;
-//        this.key = key;
-//        setThingType(valuetype);
-//        this.valueId = valueId;
-//    }
-
-//    /**
-//     * Constructor to be used when creating a Thing that will be returned to a client via the API.
-//     *
-//     * @param key the key
-//     * @param value the value
-//     */
-//    protected Thing(String key, V value) {
-//        this.key = key;
-//        this.setThingType(TypeRegistry.getType(value));
-//    }
-
-//    /**
-//     * Constructor used for internal purposes, don't use in normal circumstances.
-//     *
-//     * If creating a new Thing to store (i.e. one that has a {@link things.model.PersistentValue} Value),
-//     * always use {@link ThingControl#createThing(String, Serializable)}.
-//     *
-//     * If creating a Thing for returning via the API, prefer the {@link Thing#Thing(String, Serializable)} constructor.
-//     */
-//    public Thing(String key, String valueType, Object valueId) {
-//        this.key = key;
-//        setThingType(valueType);
-//        this.valueId = valueId;
-//    }
-
     @Override
     public int compareTo(Thing o) {
         return ComparisonChain.start().compare(getThingType(), o.getThingType())
                 .compare(getKey(), o.getKey())
-                //.compare(getValueId(), o.getValueId(), valueComparator)
-                //.compare(getValueId(), o.getValueId(), Ordering.natural().nullsFirst())
+                //.compare(getValue(), o.getValue(), valueComparator)
+                //.compare(getValue(), o.getValue(), Ordering.natural().nullsFirst())
                 .compare(getId(), o.getId(), Ordering.natural().nullsFirst())
                 .result();
     }
@@ -101,7 +61,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
         if (getClass().equals(obj.getClass())) {
             final Thing other = (Thing) obj;
             if ( getId() == null || other.getId() == null) {
-                return Objects.equals(getThingType(), other.getThingType()) && Objects.equals(getValueId(), other.getValueId());
+                return Objects.equals(getThingType(), other.getThingType()) && Objects.equals(getValue(), other.getValue());
             } else {
                 return getId().equals(other.getId());
             }
@@ -207,8 +167,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @return the value id
      */
-    public Object getValueId() {
-        return valueId;
+    public Object getValue() {
+        return value;
     }
 
     /**
@@ -216,16 +176,16 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * Don't use. Only used internally.
      *
-     * @param valueId the value id.
+     * @param value the value id.
      */
-    public void setValueId(Object valueId) {
-        this.valueId = valueId;
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     @Override
     public int hashCode() {
         if ( getId() == null ) {
-            return Objects.hash(getValueId(), getThingType());
+            return Objects.hash(getValue(), getThingType());
         }
         return Objects.hashCode(getId());
     }
@@ -251,7 +211,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
                 "id='" + id + '\'' +
                 ", type='" + getThingType() +
                 "', key='" + key + '\'' +
-                ", value='" + getValueId().toString() +
+                ", value='" + getValue().toString() +
                 "', otherThings=" + otherThings +
                 '}';
     }
