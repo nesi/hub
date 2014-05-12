@@ -1,10 +1,12 @@
 package things.thing;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import things.exceptions.TypeRuntimeException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,7 +15,6 @@ import java.util.Set;
 public class ThingReaders {
 
     private final Multimap<String, ThingReader> thingReaders = HashMultimap.create();
-    private final Map<String, ThingReader> readerNames = Maps.newHashMap();
 
     public ThingReaders() {
     }
@@ -21,7 +22,6 @@ public class ThingReaders {
     public void addReader(String matcher, ThingReader reader) {
 
         thingReaders.put(matcher, reader);
-        readerNames.put(reader.getReaderName(), reader);
 
     }
 
@@ -74,7 +74,4 @@ public class ThingReaders {
         return r;
     }
 
-    public ThingReader getNamed(String name) {
-        return readerNames.get(name);
-    }
 }

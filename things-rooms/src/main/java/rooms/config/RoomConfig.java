@@ -7,12 +7,12 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import rooms.actions.LightAction;
+import rooms.control.LightUtil;
 import things.config.mongo.MongoConfig;
 import things.mongo.MongoConnector;
-import things.thing.ThingControl;
-import things.thing.ThingReaders;
-import things.thing.ThingUtils;
-import things.thing.ThingWriters;
+import things.thing.*;
 import things.utils.json.ThingsObjectMapper;
 
 import javax.validation.Validation;
@@ -42,7 +42,7 @@ public class RoomConfig extends MongoConfig {
 
     @Bean
     public MongoConnector defaultConnector() throws Exception {
-        MongoConnector mc = new MongoConnector("defaultReader", mongoTemplate());
+        MongoConnector mc = new MongoConnector(mongoTemplate());
         return mc;
     }
 
@@ -68,6 +68,28 @@ public class RoomConfig extends MongoConfig {
         return tw;
     }
 
+    @Bean
+    public LightUtil lightUtil() throws Exception {
+        return new LightUtil();
+    }
+
+    @Bean
+    @DependsOn(value = "thingControl")
+    public LightAction lightAction() throws Exception {
+        LightAction lc = new LightAction();
+        return lc;
+    }
+
+    @Bean
+    ThingActions thingActions() throws Exception {
+        ThingActions ta = new ThingActions();
+        ta.addAction("set_light", lightAction());
+        ta.addAction("toggle", lightAction());
+        ta.addAction("turn_on", lightAction());
+        ta.addAction("turn_off", lightAction());
+        return ta;
+    }
+
     @Bean(name = "valueValidator")
     public Validator validator() {
         ValidatorFactory factory =
@@ -79,7 +101,7 @@ public class RoomConfig extends MongoConfig {
 
     @Bean
     public ThingControl thingControl() throws Exception {
-        ThingControl tc = new ThingControl(thingReaders(), thingWriters(), validator());
+        ThingControl tc = new ThingControl(thingReaders(), thingWriters(), thingActions(), validator());
         return tc;
     }
 

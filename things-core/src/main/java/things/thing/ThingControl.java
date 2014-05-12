@@ -24,8 +24,8 @@ public class ThingControl extends ThingControlMinimal {
 
 
     @Inject
-    public ThingControl(ThingReaders thingReaders, ThingWriters thingWriters, Validator validator) {
-        super(thingReaders, thingWriters, validator);
+    public ThingControl(ThingReaders thingReaders, ThingWriters thingWriters, ThingActions thingActions, Validator validator) {
+        super(thingReaders, thingWriters, thingActions, validator);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ThingControl extends ThingControlMinimal {
         return obs.toBlockingObservable().single();
     }
 
-    private <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<Thing<V>> things) {
+    public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<Thing> things) {
         return things.filter(t -> TypeRegistry.equalsType(type, t.getThingType())).map(t -> convertToTyped(type, t));
     }
 
@@ -112,7 +112,7 @@ public class ThingControl extends ThingControlMinimal {
 
         Observable<Thing> obs = Observable.merge(all);
         if ( populateValues ) {
-            return obs.lift(POPULATE);
+            return obs.lift(POPULATE_THINGS);
         }
         return obs;
     }
@@ -124,7 +124,7 @@ public class ThingControl extends ThingControlMinimal {
     public Observable<Thing> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
         Observable<Thing> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
         if ( populateValue ) {
-            return obs.lift(POPULATE);
+            return obs.lift(POPULATE_THINGS);
         } else {
             return obs;
         }
@@ -182,7 +182,7 @@ public class ThingControl extends ThingControlMinimal {
 
         Observable<Thing> obs = Observable.merge(observables);
         if ( populate ) {
-            return obs.lift(POPULATE);
+            return obs.lift(POPULATE_THINGS);
         } else {
             return obs;
         }
@@ -197,7 +197,7 @@ public class ThingControl extends ThingControlMinimal {
         return Lists.newArrayList(observeChildsMatchingTypeAndKey(things, typeMatch, keyMatch, true).toBlockingObservable().toIterable());
     }
 
-    public List<Thing> getChilds(Observable<Thing> things) {
+    public List<Thing> getChildren(Observable<Thing> things) {
         return Lists.newArrayList(observeChilds(things, true).toBlockingObservable().toIterable());
     }
 

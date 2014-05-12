@@ -16,8 +16,6 @@ import things.utils.MatcherUtils;
  */
 public interface ThingReader {
 
-    abstract String getReaderName();
-
     default Observable<Thing> findThingsMatchingType(String typeMatcher) {
         return findThingsMatchingTypeAndKey(typeMatcher, "*");
     }

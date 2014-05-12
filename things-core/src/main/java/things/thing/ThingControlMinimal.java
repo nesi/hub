@@ -2,10 +2,12 @@ package things.thing;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Subscriber;
+import things.exceptions.ActionException;
 import things.exceptions.ThingException;
 import things.exceptions.TypeRuntimeException;
 import things.utils.MatcherUtils;
@@ -13,10 +15,7 @@ import things.utils.MatcherUtils;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Project: things-to-build
@@ -30,17 +29,21 @@ public class ThingControlMinimal {
     private static final Logger myLogger = LoggerFactory
             .getLogger(ThingControl.class);
 
-    protected final PopluateOperator POPULATE;
+    protected final PopluateOperator POPULATE_THINGS;
 
     protected final ThingReaders thingReaders;
     protected final ThingWriters thingWriters;
+    protected final ThingActions thingActions;
+
     protected Validator validator;
 
-    public ThingControlMinimal(ThingReaders thingReaders, ThingWriters thingWriters, Validator validator) {
+    public ThingControlMinimal(ThingReaders thingReaders, ThingWriters thingWriters,
+                               ThingActions thingActions, Validator validator) {
         this.thingReaders = thingReaders;
         this.thingWriters = thingWriters;
+        this.thingActions = thingActions;
         this.validator = validator;
-        this.POPULATE = new PopluateOperator(this);
+        this.POPULATE_THINGS = new PopluateOperator(this);
     }
 
     /**
@@ -63,6 +66,24 @@ public class ThingControlMinimal {
         boolean key_match = MatcherUtils.wildCardMatch(key1_key, key2_key);
 
         return type_match && key_match;
+
+    }
+
+    public String executeAction(String actionName, Observable<Thing> things, Map<String, String> parameters) throws ActionException {
+
+        ThingAction ta = thingActions.get(actionName);
+
+        if (ta == null) {
+            throw new ActionException("Can't find action with name: " + actionName, actionName);
+        }
+
+        if ( parameters == null ) {
+            parameters = Maps.newHashMap();
+        }
+
+        String actionId = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
+
+        return actionId;
 
     }
 
@@ -94,19 +115,19 @@ public class ThingControlMinimal {
         }
 
         if (populated) {
-            return result.lift(POPULATE);
+            return result.lift(POPULATE_THINGS);
         } else {
             return result;
         }
 
     }
 
-    public Observable<Thing> findThingForId(String readerName, String id) {
-
-        ThingReader r = thingReaders.getNamed(readerName);
-        Observable<Thing> child = r.findThingForId(id);
-        return child;
-    }
+//    public Observable<Thing> findThingForId(String readerName, String id) {
+//
+//        ThingReader r = thingReaders.getNamed(readerName);
+//        Observable<Thing> child = r.findThingForId(id);
+//        return child;
+//    }
 
     protected <V> Thing<V> convertToTyped(Class<V> type, Thing untyped) {
         try {
@@ -224,7 +245,7 @@ public class ThingControlMinimal {
             result = Observable.merge(observables);
         }
         if (populated) {
-            return result.lift(POPULATE);
+            return result.lift(POPULATE_THINGS);
         } else {
             return result;
         }
@@ -328,7 +349,7 @@ public class ThingControlMinimal {
         Observable<Thing> obs = Observable.merge(all);
 
         if ( populate ) {
-            return obs.lift(POPULATE);
+            return obs.lift(POPULATE_THINGS);
         }
         return obs;
     }

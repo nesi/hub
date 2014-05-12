@@ -37,16 +37,9 @@ public class MongoConnector implements ThingReader, ThingWriter {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-    private String name;
 
-    public MongoConnector(String name, MongoTemplate mongoTemplate) throws Exception {
-        this.name = name;
+    public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
         this.mongoTemplate = mongoTemplate;
-    }
-
-    @Override
-    public String getReaderName() {
-        return name;
     }
 
     @Override
@@ -132,10 +125,5 @@ public class MongoConnector implements ThingReader, ThingWriter {
             }
         }
         return vId;
-    }
-
-    @Override
-    public String getWriterName() {
-        return name;
     }
 }

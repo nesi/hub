@@ -1,32 +1,39 @@
-package rooms.control;
+package rooms.actions;
 
 import com.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Bridge;
 import rooms.types.Light;
 import things.thing.Thing;
 import things.thing.ThingControl;
+import things.thing.TypeRegistry;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
- * Project: things-to-build
+ * Project: things
  * <p>
  * Written by: Markus Binsteiner
- * Date: 2/05/14
- * Time: 7:49 PM
+ * Date: 12/05/14
+ * Time: 10:44 PM
  */
+@Component
 public class LightUtil {
 
-    @Autowired
     private ThingControl tc;
 
     private List<Thing<Bridge>> bridges;
     private Map<String, LightWhiteV2> lights;
 
+    @Inject
+    public LightUtil(ThingControl tc) {
+        this.tc = tc;
+    }
 
     public synchronized List<Thing<Bridge>> getBridges() {
         if ( bridges == null ) {
@@ -55,4 +62,11 @@ public class LightUtil {
         return lights;
     }
 
+    public static Stream<Thing<Light>> filterLights(List<Thing> lights) {
+
+        return lights.stream()
+                .filter(t -> TypeRegistry.equalsType(t.getThingType(), Light.class))
+                .map(t -> (Thing<Light>)t);
+
+    }
 }

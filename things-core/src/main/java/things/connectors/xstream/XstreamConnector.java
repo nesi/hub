@@ -30,11 +30,9 @@ public class XstreamConnector implements ThingReader, ThingWriter {
     private final XStream xstream = new XStream();
     private final File thingsFolder;
     private final File valuesFolder;
-    private final String name;
 
     @Inject
-    public XstreamConnector(@Named("readerName") String readerName, @Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder) {
-        this.name = readerName;
+    public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder) {
         this.thingsFolder = thingsFolder;
         this.thingsFolder.mkdirs();
         this.valuesFolder = valuesFolder;
@@ -109,11 +107,6 @@ public class XstreamConnector implements ThingReader, ThingWriter {
 
     private Path getPath(Thing t) {
         return getPath(t.getThingType(), t.getKey(), t.getId());
-    }
-
-    @Override
-    public String getReaderName() {
-        return name;
     }
 
     @Override

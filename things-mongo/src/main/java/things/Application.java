@@ -4,10 +4,7 @@ import com.mongodb.Mongo;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import rx.Observable;
 import things.mongo.MongoConnector;
-import things.thing.Thing;
-import things.thing.ThingControl;
-import things.thing.ThingReaders;
-import things.thing.ThingWriters;
+import things.thing.*;
 import things.types.Address;
 import things.types.Person;
 import things.types.Role;
@@ -29,7 +26,7 @@ public class Application {
 
         Mongo m = new Mongo();
         MongoTemplate mt = new MongoTemplate(m, "helloKitty");
-        MongoConnector defaultConnector = new MongoConnector("defaultReader", mt);
+        MongoConnector defaultConnector = new MongoConnector(mt);
 
         mt.dropCollection(Person.class);
         mt.dropCollection(Thing.class);
@@ -52,7 +49,7 @@ public class Application {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        ThingControl tc = new ThingControl(tr, tw, validator);
+        ThingControl tc = new ThingControl(tr, tw, new ThingActions(), validator);
 
         Person user = new Person();
             user.setFirstName("Person");
