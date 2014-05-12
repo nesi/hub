@@ -94,8 +94,8 @@ public class Application {
             Observable<Thing> childs2 = tc.observeChildsMatchingTypeAndKey(pt, "address", "*", true);
 
             childs2.toBlockingObservable().forEach(t -> System.out.println(t));
-
-
+            System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+            tc.getChilds(pt).stream().forEach((t) -> System.out.println(t));
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -102,11 +102,6 @@ public class XstreamConnector implements ThingReader, ThingWriter {
         return vId;
     }
 
-    @Override
-    public String getWriterName() {
-        return name;
-    }
-
     private Path getPath(String type, String key, String id) {
         Path path = FileSystems.getDefault().getPath(thingsFolder.getAbsolutePath(), type, key + "_id_" + id + ".thing");
         return path;

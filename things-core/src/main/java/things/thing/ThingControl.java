@@ -174,12 +174,10 @@ public class ThingControl extends ThingControlMinimal {
     public Observable<Thing> observeChilds(Thing t, boolean populate) {
 
         List<Observable<Thing>> observables = Lists.newLinkedList();
-        //TODO why does the below doesn't work for String?
-        for (Object link : t.getParents()) {
+        for (ThingReader r : thingReaders.getAll()) {
 
-            Observable<Thing> child = findThingForId(extractReaderName((String)link), extractId((String)link));
+            Observable<Thing> child = r.getChildrenForId(t.getId());
             observables.add(child);
-
         }
 
         Observable<Thing> obs = Observable.merge(observables);
