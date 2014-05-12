@@ -135,10 +135,10 @@ public class MongoReader {
 //    }
 //
 //    @Override
-//	public List<Thing> getOtherThings(Thing t) {
+//	public List<Thing> getParents(Thing t) {
 //
 //		Query q = new Query();
-//		q.addCriteria(Criteria.where("_id").in(t.getOtherThings()));
+//		q.addCriteria(Criteria.where("_id").in(t.getParents()));
 //
 //		List<Thing> result = mongoTemplate.find(q, Thing.class);
 //		return result;
@@ -183,7 +183,7 @@ public class MongoReader {
 //
 //            String regex = MatcherUtils.convertGlobToRegex(type);
 //
-//            q.addCriteria(Criteria.where("_id").in(t.getOtherThings()).and("type").regex(regex));
+//            q.addCriteria(Criteria.where("_id").in(t.getParents()).and("type").regex(regex));
 //
 //            List<Thing> things = mongoTemplate.find(q, Thing.class);
 //            return things.parallelStream();
@@ -192,7 +192,7 @@ public class MongoReader {
 //
 //            String regex = MatcherUtils.convertGlobToRegex(key);
 //
-//            q.addCriteria(Criteria.where("_id").in(t.getOtherThings()).and("key").regex(regex));
+//            q.addCriteria(Criteria.where("_id").in(t.getParents()).and("key").regex(regex));
 //
 //            List<Thing> things = mongoTemplate.find(q, Thing.class);
 //            return things.parallelStream();
@@ -200,7 +200,7 @@ public class MongoReader {
 //            Query q = new Query();
 //            String regexType = MatcherUtils.convertGlobToRegex(type);
 //            String regexKey = MatcherUtils.convertGlobToRegex(key);
-//            q.addCriteria(Criteria.where("_id").in(t.getOtherThings()).and("type").regex(regexType).and("key").regex(regexKey));
+//            q.addCriteria(Criteria.where("_id").in(t.getParents()).and("type").regex(regexType).and("key").regex(regexKey));
 //
 //            List<Thing> things = mongoTemplate.find(q, Thing.class);
 //
@@ -248,7 +248,7 @@ public class MongoReader {
 //        String typeRegex = MatcherUtils.convertGlobToRegex(type);
 //        Query q = new Query();
 //
-//        q.addCriteria(Criteria.where("_id").in(parent.getOtherThings())
+//        q.addCriteria(Criteria.where("_id").in(parent.getParents())
 //                .and("type").regex(typeRegex));
 //        List<Thing> result = mongoTemplate.find(q, Thing.class);
 //

@@ -19,7 +19,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     private String id;
 
     private String key;
-    private Set<String> otherThings = Sets.newHashSet();
+    private Set<String> parents = Sets.newHashSet();
     private String thingType;
     protected Object value;
     private Boolean valueIsLink = true;
@@ -119,8 +119,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @return this Things' other Things
      */
-    public Set<String> getOtherThings() {
-        return otherThings;
+    public Set<String> getParents() {
+        return parents;
     }
 
     /**
@@ -135,8 +135,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @param ids the list of ids that point to this Things' other Things
      */
-    public void setOtherThings(Set<String> ids) {
-        this.otherThings = ids;
+    public void setParents(Set<String> ids) {
+        this.parents = ids;
     }
 
     /**
@@ -212,7 +212,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
                 ", type='" + getThingType() +
                 "', key='" + key + '\'' +
                 ", value='" + getValue().toString() +
-                "', otherThings=" + otherThings +
+                "', parents=" + parents +
                 '}';
     }
 }

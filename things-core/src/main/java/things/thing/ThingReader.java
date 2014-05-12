@@ -1,7 +1,6 @@
 package things.thing;
 
 
-import com.google.common.base.Strings;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.TypeRuntimeException;
@@ -55,29 +54,29 @@ public interface ThingReader {
         return allThings.filter(t -> id.equals(t.getId())).single();
     }
 
-    default Observable<Thing> getChildsMatchingType(Thing thing, String typeMatcher) {
+    default Observable<Thing> getChildrenMatchingType(Thing thing, String typeMatcher) {
         Observable<Thing> allThingsMatchingType = findThingsMatchingType(typeMatcher);
-        return allThingsMatchingType.filter(t -> thing.getOtherThings().contains(getReaderName()+"/"+t.getId()));
+        return allThingsMatchingType.filter(t -> t.getParents().contains(getReaderName()+"/"+thing.getId()));
     }
 
-    default Observable<Thing> getChildsForType(Thing thing, String type) {
+    default Observable<Thing> getChildrenForType(Thing thing, String type) {
         Observable<Thing> allThingsForType = findThingsForType(type);
-        return allThingsForType.filter(t -> thing.getOtherThings().contains(getReaderName()+"/"+t.getId()));
+        return allThingsForType.filter(t -> t.getParents().contains(getReaderName()+"/"+thing.getId()));
     }
 
-    default Observable<Thing> getChildsMatchingKey(Thing thing, String keyMatcher) {
+    default Observable<Thing> getChildrenMatchingKey(Thing thing, String keyMatcher) {
         Observable<Thing> allThingsMatchingType = findThingsMatchingKey(keyMatcher);
-        return allThingsMatchingType.filter(t -> thing.getOtherThings().contains(getReaderName()+"/"+t.getId()));
+        return allThingsMatchingType.filter(t -> t.getParents().contains(getReaderName()+"/"+thing.getId()));
     }
 
-    default Observable<Thing> getChildsForKey(Thing thing, String key) {
+    default Observable<Thing> getChildrenForKey(Thing thing, String key) {
         Observable<Thing> allThingsForType = findThingsForType(key);
-        return allThingsForType.filter(t -> thing.getOtherThings().contains(getReaderName()+"/"+t.getId()));
+        return allThingsForType.filter(t -> t.getParents().contains(getReaderName()+"/"+thing.getId()));
     }
 
-    default Observable<Thing> getChildsMatchingTypeAndKey(Thing thing, String typeMatcher, String keyMatcher) {
+    default Observable<Thing> getChildrenMatchingTypeAndKey(Thing thing, String typeMatcher, String keyMatcher) {
         Observable<Thing> allThingsMatchingType = findThingsMatchingTypeAndKey(typeMatcher, keyMatcher);
-        return allThingsMatchingType.filter(t -> thing.getOtherThings().contains(getReaderName()+"/"+t.getId()));
+        return allThingsMatchingType.filter(t -> t.getParents().contains(getReaderName()+"/"+thing.getId()));
     }
 
 

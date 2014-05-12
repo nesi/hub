@@ -133,4 +133,9 @@ public class MongoConnector implements ThingReader, ThingWriter {
         }
         return vId;
     }
+
+    @Override
+    public String getWriterName() {
+        return name;
+    }
 }

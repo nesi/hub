@@ -29,6 +29,9 @@ public class ThingControlMinimal {
 
     private static final Logger myLogger = LoggerFactory
             .getLogger(ThingControl.class);
+
+    protected final PopluateOperator POPULATE;
+
     protected final ThingReaders thingReaders;
     protected final ThingWriters thingWriters;
     protected Validator validator;
@@ -37,6 +40,7 @@ public class ThingControlMinimal {
         this.thingReaders = thingReaders;
         this.thingWriters = thingWriters;
         this.validator = validator;
+        this.POPULATE = new PopluateOperator(this);
     }
 
     /**
@@ -63,9 +67,8 @@ public class ThingControlMinimal {
     }
 
     public Thing addChildThing(Thing parent, Thing child) {
-        ThingReader r = thingReaders.getUnique(child);
-        parent.getOtherThings().add(r.getReaderName()+"/"+child.getId());
-        return saveThing(parent);
+        ThingWriter w = thingWriters.getUnique(child.getThingType(), child.getKey());
+        return w.addChild(parent, child);
     }
 
     public <V> Thing<V> saveThing(Thing<V> thing) {
@@ -77,7 +80,7 @@ public class ThingControlMinimal {
         List<Observable<Thing>> observables = Lists.newArrayList();
         List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         for (ThingReader r : readers) {
-            Observable<Thing> result = r.getChildsMatchingTypeAndKey(t, typeMatch, keyMatch);
+            Observable<Thing> result = r.getChildrenMatchingTypeAndKey(t, typeMatch, keyMatch);
             observables.add(result);
         }
 
@@ -91,7 +94,7 @@ public class ThingControlMinimal {
         }
 
         if (populated) {
-            return ensurePolulatedValueUntyped(result);
+            return result.lift(POPULATE);
         } else {
             return result;
         }
@@ -192,16 +195,16 @@ public class ThingControlMinimal {
 
         return obs;
     }
-
-    protected Observable<Thing> ensurePolulatedValueUntyped(Observable<Thing> things) {
-        Observable<Thing> result = things.map(t -> ensurePopulatedValueUntyped(t));
-        return result;
-    }
-
-    protected <V> Observable<Thing<V>> ensurePopluatedValue(Observable<Thing<V>> things) {
-        Observable<Thing<V>> result = things.map(t -> ensurePoplutedValue(t));
-        return result;
-    }
+//
+//    protected Observable<Thing> ensurePolulatedValueUntyped(Observable<Thing> things) {
+//        Observable<Thing> result = things.map(t -> ensurePopulatedValueUntyped(t));
+//        return result;
+//    }
+//
+//    protected <V> Observable<Thing<V>> ensurePopluatedValue(Observable<Thing<V>> things) {
+//        Observable<Thing<V>> result = things.map(t -> ensurePoplutedValue(t));
+//        return result;
+//    }
 
 
     public <V> Observable<Thing<V>> observeThingsWithKeyAndValue(String key, V value, boolean populated) {
@@ -221,7 +224,7 @@ public class ThingControlMinimal {
             result = Observable.merge(observables);
         }
         if (populated) {
-            return ensurePopluatedValue(result);
+            return result.lift(POPULATE);
         } else {
             return result;
         }
@@ -242,16 +245,16 @@ public class ThingControlMinimal {
 //    }
 
 
-    protected Thing ensurePopulatedValueUntyped(Thing thing) {
-        if (thing.getValueIsLink()) {
-            Object value = getValue(thing);
-            thing.setValue(value);
-            thing.setValueIsLink(false);
-        }
-        return thing;
-    }
+//    protected Thing ensurePopulatedValueUntyped(Thing thing) {
+//        if (thing.getValueIsLink()) {
+//            Object value = getValue(thing);
+//            thing.setValue(value);
+//            thing.setValueIsLink(false);
+//        }
+//        return thing;
+//    }
 
-    protected <V> Thing<V> ensurePoplutedValue(Thing<V> thing) {
+    protected <V> Thing<V> ensurePopulatedValue(Thing<V> thing) {
         if (thing.getValueIsLink()) {
             V value = getValue(thing);
             thing.setValue(value);
@@ -267,6 +270,14 @@ public class ThingControlMinimal {
         ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
         return r.readValue(thing);
     }
+
+//    protected Object getValueUntyped(Thing thing) {
+//        if ( ! thing.getValueIsLink() ) {
+//            return thing.getValue();
+//        }
+//        ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
+//        return r.readValue(thing);
+//    }
 
     public Observable<Thing> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {
         List<Observable<Thing>> all = Lists.newArrayList();
@@ -317,7 +328,7 @@ public class ThingControlMinimal {
         Observable<Thing> obs = Observable.merge(all);
 
         if ( populate ) {
-            return ensurePolulatedValueUntyped(obs);
+            return obs.lift(POPULATE);
         }
         return obs;
     }

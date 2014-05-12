@@ -20,7 +20,7 @@ public class ThingWriteConverter  {
 //        dbo.put("type", source.getThingType());
 //        dbo.put("key", source.getKey());
 //        dbo.put("value", source.getValue());
-//        dbo.put("otherThings", source.getOtherThings());
+//        dbo.put("otherThings", source.getParents());
 //        return dbo;
 //
 //    }

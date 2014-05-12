@@ -7,8 +7,15 @@ import java.util.Optional;
  */
 public interface ThingWriter {
 
+    default Thing addChild(Thing parent, Thing child) {
+        child.getParents().add(getWriterName()+"/"+parent.getId());
+        return saveThing(child);
+    }
+
     abstract <V> Thing<V> saveThing(Thing<V> t);
 
     abstract Object saveValue(Optional valueId, Object value);
+
+    abstract String getWriterName();
 
 }

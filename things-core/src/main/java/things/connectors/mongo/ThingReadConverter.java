@@ -16,7 +16,7 @@ public class ThingReadConverter  {
 //        t.setValue((String)source.get("value"));
 //        String type = ((String)source.get("type"));
 //        t.setThingType(type);
-//        t.setOtherThings(new HashSet<String>((java.util.List<String>) source.get("otherThings")));
+//        t.setParents(new HashSet<String>((java.util.List<String>) source.get("otherThings")));
 //
 //        return t;
 //    }

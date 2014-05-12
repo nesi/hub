@@ -112,7 +112,7 @@ public class ThingControl extends ThingControlMinimal {
 
         Observable<Thing> obs = Observable.merge(all);
         if ( populateValues ) {
-            return ensurePolulatedValueUntyped(obs);
+            return obs.lift(POPULATE);
         }
         return obs;
     }
@@ -124,7 +124,7 @@ public class ThingControl extends ThingControlMinimal {
     public Observable<Thing> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
         Observable<Thing> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
         if ( populateValue ) {
-            return ensurePolulatedValueUntyped(obs);
+            return obs.lift(POPULATE);
         } else {
             return obs;
         }
@@ -135,7 +135,7 @@ public class ThingControl extends ThingControlMinimal {
         try {
             Thing t = obs.toBlockingObservable().single();
             if ( popluateValue ) {
-                t = ensurePoplutedValue(t);
+                t = ensurePopulatedValue(t);
             }
             return Optional.of(t);
         } catch (NoSuchElementException nsee) {
@@ -175,7 +175,7 @@ public class ThingControl extends ThingControlMinimal {
 
         List<Observable<Thing>> observables = Lists.newLinkedList();
         //TODO why does the below doesn't work for String?
-        for (Object link : t.getOtherThings()) {
+        for (Object link : t.getParents()) {
 
             Observable<Thing> child = findThingForId(extractReaderName((String)link), extractId((String)link));
             observables.add(child);
@@ -184,7 +184,7 @@ public class ThingControl extends ThingControlMinimal {
 
         Observable<Thing> obs = Observable.merge(observables);
         if ( populate ) {
-            return ensurePolulatedValueUntyped(obs);
+            return obs.lift(POPULATE);
         } else {
             return obs;
         }
