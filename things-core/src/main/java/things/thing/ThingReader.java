@@ -4,7 +4,6 @@ package things.thing;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
-import things.exceptions.TypeRuntimeException;
 import things.utils.MatcherUtils;
 
 /**
@@ -16,83 +15,76 @@ import things.utils.MatcherUtils;
  */
 public interface ThingReader {
 
-    default Observable<Thing> findThingsMatchingType(String typeMatcher) {
+    default Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher) {
         return findThingsMatchingTypeAndKey(typeMatcher, "*");
     }
 
-    default Observable<Thing> findThingsMatchingKey(String keyMatcher) {
+    default Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher) {
         return findThingsMatchingTypeAndKey("*", keyMatcher);
     }
 
-    default Observable<Thing> findThingsForType(String type) {
-        if (MatcherUtils.isGlob(type)) {
-            throw new TypeRuntimeException("Type can't be glob when using the find for type method", type);
-        }
+    default Observable<? extends Thing<?>> findThingsForType(String type) {
         return findThingsMatchingTypeAndKey(type, "*");
     }
 
-    default Observable<Thing> findThingsForKey(String key) {
-        if (MatcherUtils.isGlob(key)) {
-            throw new TypeRuntimeException("Type can't be glob when using the find for key method", key);
-        }
+    default Observable<? extends Thing<?>> findThingsForKey(String key) {
+
         return findThingsMatchingTypeAndKey("*", key);
     }
 
-    default Observable<Thing> findThingsForTypeAndKey(String type, String key) {
-        if (MatcherUtils.isGlob(type)) {
-            throw new TypeRuntimeException("Type can't be glob when using the find for type method", type);
-        }
-        if (MatcherUtils.isGlob(key)) {
-            throw new TypeRuntimeException("Type can't be glob when using the find for key method", key);
-        }
+    default Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
         return findThingsMatchingTypeAndKey(type, key);
     }
 
-    default Observable<Thing> findThingForId(String id) {
-        Observable<Thing> allThings = findAllThings();
+    default Observable<? extends Thing<?>> findThingForId(String id) {
+        Observable<? extends Thing<?>> allThings = findAllThings();
         return allThings.filter(t -> id.equals(t.getId())).single();
     }
 
-    default Observable<Thing> getChildrenForId(String id) {
-        Observable<Thing> obs = findAllThings();
+    default Observable<? extends Thing<?>> getChildrenForId(String id) {
+        Observable<? extends Thing<?>> obs = findAllThings();
         return obs.filter(t -> t.getParents().contains(id));
     }
 
-    default Observable<Thing> getChildrenMatchingType(Thing thing, String typeMatcher) {
-        return getChildrenMatchingTypeAndKey(thing, typeMatcher, "*");
-    }
+//    default Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher) {
+//        return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
+//    }
+//
+//    default Observable<? extends Thing<?>> getChildrenForType(Observable<? extends Thing<?>> things, String type) {
+//        if ( MatcherUtils.isGlob(type)) {
+//            throw new ThingRuntimeException("Type can't be glob for this query");
+//        }
+//        return getChildrenMatchingTypeAndKey(things, type, "*");
+//    }
+//
+//    default Observable<? extends Thing<?>> getChildrenMatchingKey(Observable<? extends Thing<?>> things, String keyMatcher) {
+//        return getChildrenMatchingTypeAndKey(things, "*", keyMatcher);
+//    }
+//
+//    default Observable<? extends Thing<?>> getChildrenForKey(Observable<? extends Thing<?>> things, String key) {
+//        if (MatcherUtils.isGlob(key)) {
+//            throw new ThingRuntimeException("Key can't be glob for this query");
+//        }
+//        return getChildrenMatchingTypeAndKey(things, "*", key);
+//    }
 
-    default Observable<Thing> getChildrenForType(Thing thing, String type) {
-        if ( MatcherUtils.isGlob(type)) {
-            throw new ThingRuntimeException("Type can't be glob for this query");
-        }
-        return getChildrenMatchingTypeAndKey(thing, type, "*");
-    }
-
-    default Observable<Thing> getChildrenMatchingKey(Thing thing, String keyMatcher) {
-        return getChildrenMatchingTypeAndKey(thing, "*", keyMatcher);
-    }
-
-    default Observable<Thing> getChildrenForKey(Thing thing, String key) {
-        if (MatcherUtils.isGlob(key)) {
-            throw new ThingRuntimeException("Key can't be glob for this query");
-        }
-        return getChildrenMatchingTypeAndKey(thing, "*", key);
-    }
-
-    default Observable<Thing> getChildrenForTypeAndKey(Thing thing, String type, String key) {
+    default Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key) {
         if (MatcherUtils.isGlob(type)) {
             throw new ThingRuntimeException("Type can't be glob for this query");
         }
         if (MatcherUtils.isGlob(key)) {
             throw new ThingRuntimeException("Key can't be glob for this query");
         }
-        return getChildrenMatchingTypeAndKey(thing, "*", key);
+        return getChildrenMatchingTypeAndKey(things, "*", key);
     }
 
-    default Observable<Thing> getChildrenMatchingTypeAndKey(Thing thing, String typeMatcher, String keyMatcher) {
-        Observable<Thing> allThingsMatchingTypeAndKey = findThingsMatchingTypeAndKey(typeMatcher, keyMatcher);
-        return allThingsMatchingTypeAndKey.filter(t -> t.getParents().contains(thing.getId()));
+    default Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
+
+        Observable result = things.flatMap(t -> getChildrenForId(t.getId()))
+                .filter(t -> MatcherUtils.wildCardMatch(t.getThingType(), typeMatcher)
+                        && MatcherUtils.wildCardMatch(t.getKey(), keyMatcher));
+
+        return result;
     }
 
 
@@ -115,7 +107,7 @@ public interface ThingReader {
      * @param key  the key (or key-glob)
      * @return a stream of Things that match the provided type and key
      */
-    default Observable<Thing> findThingsMatchingTypeAndKey(final String type,
+    default Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                            final String key) {
 
         Observable obs = Observable.create((Subscriber<? super Object> subscriber) -> {
@@ -134,9 +126,28 @@ public interface ThingReader {
         return obs;
     }
 
-    abstract Observable<Thing> findAllThings();
+    abstract Observable<? extends Thing<?>> findAllThings();
 
     abstract <V> V readValue(Thing<V> thing);
 
-    abstract <V> Observable<Thing<V>> findThingsByKeyAndValue(String key, V value);
+    default <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
+        Observable<? extends Thing<?>> obs = findThingsMatchingTypeAndKey(TypeRegistry.getType(value), keyMatcher);
+        Observable<Thing<V>> result = findThingsForValue(obs, value).map(t -> (Thing<V>)t);
+        return result;
+    }
+
+    default <V> Observable<Thing<V>> findThingsForValue(V value) {
+        Observable<? extends Thing<?>> obs = findThingsForType(TypeRegistry.getType(value));
+        Observable<Thing<V>> result = findThingsForValue(obs, value).map(t -> (Thing<V>)t);
+        return result;
+    }
+
+    default <V> Observable<Thing<V>> getChildrenForValue(Observable<? extends Thing<?>> thing, V value) {
+        return findThingsForValue(thing.flatMap(t -> getChildrenForId(t.getId())), value);
+    }
+
+    default <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value) {
+
+        return things.filter(t -> readValue(t).equals(value)).map(t -> (Thing<V>)t);
+    }
 }

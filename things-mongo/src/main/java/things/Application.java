@@ -49,7 +49,10 @@ public class Application {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        ThingControl tc = new ThingControl(tr, tw, new ThingActions(), validator);
+        ThingControl tc = new ThingControl();
+        tc.setThingReaders(tr);
+        tc.setThingWriters(tw);
+        tc.setValidator(validator);
 
         Person user = new Person();
             user.setFirstName("Person");
@@ -84,12 +87,12 @@ public class Application {
             tc.addChildThing(pt, r3t);
 
 
-            Observable<Thing> childs = tc.observeChildsMatchingTypeAndKey(pt, "role", "*2*", true);
+            Observable<? extends Thing<?>> childs = tc.observeChildrenMatchingTypeAndKey(pt, "role", "*2*", true);
 
             childs.toBlockingObservable().forEach(t -> System.out.println(t));
 
 
-            Observable<Thing> childs2 = tc.observeChildsMatchingTypeAndKey(pt, "address", "*", true);
+            Observable<? extends Thing<?>> childs2 = tc.observeChildrenMatchingTypeAndKey(pt, "address", "*", true);
 
             childs2.toBlockingObservable().forEach(t -> System.out.println(t));
 

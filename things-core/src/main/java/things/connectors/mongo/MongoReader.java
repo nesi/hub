@@ -22,7 +22,7 @@ public class MongoReader {
 //	}
 //
 //
-//	private Optional<Thing> findThingById(Object id) {
+//	private Optional<Thing> observeThingById(Object id) {
 //
 //		if (id == null) {
 //			throw new IllegalArgumentException("Id can't be null");
@@ -74,7 +74,7 @@ public class MongoReader {
 //
 //
 //    @Override
-//    public <V> Observable<Thing<V>> findThingsByKeyAndValue(String key, V value) {
+//    public <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String key, V value) {
 //        return null;
 //    }
 //

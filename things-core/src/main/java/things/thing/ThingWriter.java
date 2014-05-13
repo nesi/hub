@@ -7,7 +7,7 @@ import java.util.Optional;
  */
 public interface ThingWriter {
 
-    default Thing addChild(Thing parent, Thing child) {
+    default Thing<?> addChild(Thing<?> parent, Thing<?> child) {
         child.getParents().add(parent.getId());
         return saveThing(child);
     }

@@ -6,8 +6,10 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.inject.Singleton;
 import org.springframework.stereotype.Component;
 import things.exceptions.TypeRuntimeException;
+import things.utils.json.ThingsObjectMapper;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -24,15 +26,24 @@ import java.util.Set;
  * Time: 10:22 AM
  */
 @Component
+@Singleton
 public class ThingUtils {
 
-    private final ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     private ImmutableMap<String, JsonSchema> schemaMap = null;
     private ImmutableMap<String, Map<String, String>> typePropertiesMap = null;
+    
+    private ThingsObjectMapper tom;
+    private ThingControl tc;
 
-    public ThingUtils(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public ThingUtils() {
+    }
+
+//    @Inject
+    public void setThingControl(ThingControl tc) {
+        this.tc = tc;
+        tom = new ThingsObjectMapper(this.tc);
     }
 
     /**

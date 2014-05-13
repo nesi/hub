@@ -1,10 +1,7 @@
 package things.view.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import things.thing.ThingControl;
-import things.thing.ThingUtils;
 
 /**
  * Project: things-to-build
@@ -17,11 +14,11 @@ import things.thing.ThingUtils;
 @RequestMapping(value = "/query")
 public class QueryRestController {
 
-    @Autowired
-    private ThingControl thingControl;
-
-    @Autowired
-    private ThingUtils thingUtils;
+//    @Autowired
+//    private ThingControl thingControl;
+//
+//    @Autowired
+//    private ThingUtils thingUtils;
 
 
 //    @Transactional(readOnly = true)

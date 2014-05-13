@@ -17,6 +17,10 @@ apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'
 
+springBoot {
+    mainClass = "hub.RoomService"
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

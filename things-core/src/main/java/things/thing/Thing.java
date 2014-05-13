@@ -21,7 +21,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     private String key;
     private Set<String> parents = Sets.newHashSet();
     private String thingType;
-    protected Object value;
+    protected V value;
     private Boolean valueIsLink = true;
 
     public Boolean getValueIsLink() {
@@ -167,7 +167,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @return the value id
      */
-    public Object getValue() {
+    public V getValue() {
         return value;
     }
 
@@ -178,7 +178,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @param value the value id.
      */
-    public void setValue(Object value) {
+    public void setValue(V value) {
         this.value = value;
     }
 

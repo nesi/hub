@@ -44,7 +44,7 @@ public class IdRestController {
 //    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
 //    public Thing getThing(@PathVariable("id") String id) throws NoSuchThingException {
 //
-////        Thing thing = thingControl.findThingById(id);
+////        Thing thing = thingControl.observeThingById(id);
 ////        return thing;
 //        return null;
 //

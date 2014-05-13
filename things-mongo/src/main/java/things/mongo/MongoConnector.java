@@ -43,9 +43,9 @@ public class MongoConnector implements ThingReader, ThingWriter {
     }
 
     @Override
-    public Observable<Thing> findAllThings() {
+    public Observable<? extends Thing<?>> findAllThings() {
         List<Thing> things = mongoTemplate.findAll(Thing.class);
-		return Observable.from(things);
+		return Observable.from(things).map(t -> (Thing<?>)t);
     }
 
     @Override
@@ -64,10 +64,7 @@ public class MongoConnector implements ThingReader, ThingWriter {
         }
     }
 
-    @Override
-    public <V> Observable<Thing<V>> findThingsByKeyAndValue(String key, V value) {
-        return null;
-    }
+
 
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {

@@ -110,9 +110,9 @@ public class XstreamConnector implements ThingReader, ThingWriter {
     }
 
     @Override
-    public Observable<Thing> findAllThings() {
+    public Observable<? extends Thing<?>> findAllThings() {
 
-        Observable<Thing> obs = Observable.create((Subscriber<? super Thing> subscriber) -> {
+        Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
             new Thread( () -> {
                 try {
                     Files.walk(Paths.get(thingsFolder.toURI()))
@@ -141,16 +141,11 @@ public class XstreamConnector implements ThingReader, ThingWriter {
     }
 
 
-    @Override
-    public <V> Observable<Thing<V>> findThingsByKeyAndValue(String key, V value) {
-        return null;
-    }
-
-    private Thing assembleThing(Path path) {
+    private Thing<?> assembleThing(Path path) {
         return assembleThing(path.toFile());
     }
 
-    private Thing assembleThing(File file) {
+    private Thing<?> assembleThing(File file) {
         Thing t = (Thing) xstream.fromXML(file);
         return t;
     }

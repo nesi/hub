@@ -22,4 +22,6 @@ include 'things-core'
 include 'things-test'
 include 'things-rest'
 include 'things-mongo'
+include 'things-hub'
 include 'things-rooms'
+

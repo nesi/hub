@@ -1,21 +1,26 @@
 package things.thing;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.*;
+
+import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ActionException;
 import things.exceptions.ThingException;
+import things.exceptions.ThingRuntimeException;
 import things.exceptions.TypeRuntimeException;
 import things.utils.MatcherUtils;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import java.util.*;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Project: things-to-build
@@ -31,19 +36,94 @@ public class ThingControlMinimal {
 
     protected final PopluateOperator POPULATE_THINGS;
 
-    protected final ThingReaders thingReaders;
-    protected final ThingWriters thingWriters;
-    protected final ThingActions thingActions;
+    protected ThingReaders thingReaders = new ThingReaders();
+    protected ThingWriters thingWriters = new ThingWriters();
+    protected ThingActions thingActions = new ThingActions();
+    protected ThingQueries thingQueries = new ThingQueries();
 
-    protected Validator validator;
+    protected Validator validator = null;
 
-    public ThingControlMinimal(ThingReaders thingReaders, ThingWriters thingWriters,
-                               ThingActions thingActions, Validator validator) {
-        this.thingReaders = thingReaders;
-        this.thingWriters = thingWriters;
-        this.thingActions = thingActions;
-        this.validator = validator;
+    public ThingControlMinimal() {
         this.POPULATE_THINGS = new PopluateOperator(this);
+    }
+
+    @Inject
+    public void setThingReaders(ThingReaders thingReaders) {
+        this.thingReaders = thingReaders;
+    }
+
+    @Inject
+    public void setThingWriters(ThingWriters thingWriters) {
+        this.thingWriters = thingWriters;
+    }
+
+    @Inject
+    public void setThingActions(ThingActions thingActions) {
+        this.thingActions = thingActions;
+    }
+
+    @Inject
+    public void setThingQueries(ThingQueries thingQueries) {
+        this.thingQueries = thingQueries;
+    }
+
+    public Observable<? extends Thing<?>> observeChilds(Thing t, boolean populate) {
+
+        List<Observable<? extends Thing<?>>> observables = Lists.newLinkedList();
+        for (ThingReader r : thingReaders.getAll()) {
+
+            Observable<? extends Thing<?>> child = r.getChildrenForId(t.getId());
+            observables.add(child);
+        }
+
+        Observable<? extends Thing<?>> obs = Observable.merge(observables);
+        if ( populate ) {
+            return obs.lift(POPULATE_THINGS);
+        } else {
+            return obs;
+        }
+    }
+
+    public List<? extends Thing<?>> findParents(Thing<?> t) {
+        return findParents(Observable.just(t));
+    }
+
+    public List<? extends Thing<?>> findParents(Observable<? extends Thing<?>> things) {
+
+        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
+
+    }
+
+    public Observable<? extends Thing<?>> observeParents(Thing<?> t) {
+        return observeParents(Observable.just(t));
+    }
+
+    public Observable<? extends Thing<?>> observeParents(Observable<? extends Thing<?>> things) {
+
+        return things.flatMap(t -> observeThingsById(Observable.from(t.getParents())));
+
+    }
+
+    public Observable<? extends Thing<?>> observeThingsById(Observable<String> id) {
+        return id.flatMap(i -> observeThingById(i));
+    }
+
+    public Observable<? extends Thing<?>> observeThingById(String id) {
+
+        List<Observable<? extends Thing<?>>> all = Lists.newLinkedList();
+
+        //TODO make that smarter? maybe cache?
+        for ( ThingReader r : thingReaders.getAll() ) {
+            all.add(r.findThingForId(id));
+        }
+        Observable<? extends Thing<?>> obs = Observable.merge(all);
+
+        return obs.first();
+    }
+
+    @Inject
+    public void setValidator(Validator validator) {
+        this.validator = validator;
     }
 
     /**
@@ -69,7 +149,7 @@ public class ThingControlMinimal {
 
     }
 
-    public String executeAction(String actionName, Observable<Thing> things, Map<String, String> parameters) throws ActionException {
+    public String executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
         ThingAction ta = thingActions.get(actionName);
 
@@ -87,7 +167,30 @@ public class ThingControlMinimal {
 
     }
 
-    public Thing addChildThing(Thing parent, Thing child) {
+    public String executeQuery(String actionName, Observable<Thing> things, Map<String, String> parameters) throws ActionException {
+
+        ThingAction ta = thingActions.get(actionName);
+
+        if (ta == null) {
+            throw new ActionException("Can't find action with name: " + actionName, actionName);
+        }
+
+        if ( parameters == null ) {
+            parameters = Maps.newHashMap();
+        }
+
+        String actionId = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
+
+        return actionId;
+
+    }
+
+    public Thing<?> addChildThingToObservable(Observable<? extends Thing<?>> parents, Thing<?> child) {
+        parents.map(p -> addChildThing(p, child)).toBlockingObservable();
+        return child;
+    }
+
+    public Thing<?> addChildThing(Thing<?> parent, Thing<?> child) {
         ThingWriter w = thingWriters.getUnique(child.getThingType(), child.getKey());
         return w.addChild(parent, child);
     }
@@ -97,15 +200,15 @@ public class ThingControlMinimal {
         return t;
     }
 
-    public Observable<Thing> observeChildsMatchingTypeAndKey(Thing t, String typeMatch, String keyMatch, boolean populated) {
-        List<Observable<Thing>> observables = Lists.newArrayList();
+    public Observable<? extends Thing<?>> observeChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> t, String typeMatch, String keyMatch, boolean populated) {
+        List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
         List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         for (ThingReader r : readers) {
-            Observable<Thing> result = r.getChildrenMatchingTypeAndKey(t, typeMatch, keyMatch);
+            Observable<? extends Thing<?>> result = r.getChildrenMatchingTypeAndKey(t, typeMatch, keyMatch);
             observables.add(result);
         }
 
-        Observable<Thing> result = null;
+        Observable<? extends Thing<?>> result = null;
         if (observables.size() == 0) {
             throw new TypeRuntimeException("No connector found for type " + TypeRegistry.getType(typeMatch) + " and key " + keyMatch, typeMatch);
         } else if (observables.size() == 1) {
@@ -144,14 +247,27 @@ public class ThingControlMinimal {
      * @param keyMatch  the key (or key-glob)
      * @return whether such a Thing exists
      */
-    public boolean thingWithTypeAndKeyExists(final String typeMatch, final String keyMatch) {
+    public boolean thingMatchingTypeAndKeyExists(final String typeMatch, final String keyMatch) {
 
-        Observable<Thing> obs = observeThingsMatchingTypeAndKey(typeMatch, keyMatch, false);
+        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(typeMatch, keyMatch, false);
+        return !obs.isEmpty().toBlockingObservable().single();
+    }
+
+    /**
+     * Checks whether a thing with the specified type and key exists.
+     *
+     * @param typeMatch the type (or type-glob)
+     * @param keyMatch  the key (or key-glob)
+     * @return whether such a Thing exists
+     */
+    public boolean thingForTypeAndKeyExists(final String typeMatch, final String keyMatch) {
+
+        Observable<? extends Thing<?>> obs = observeThingsForTypeAndKey(typeMatch, keyMatch, false);
         return !obs.isEmpty().toBlockingObservable().single();
     }
 
 
-    protected <V> Observable<Thing<V>> observeCreateThing(String key, V value) {
+    public <V> Observable<Thing<V>> observeCreateThing(String key, V value) {
 
         Preconditions.checkArgument(key != null, "Can't create thing, no key provided");
         Preconditions.checkArgument(!MatcherUtils.isGlob(key), "Key can't be glob when creating a thing");
@@ -166,7 +282,7 @@ public class ThingControlMinimal {
                         .getClass()))
 
                 {
-                    if (thingWithTypeAndKeyExists(TypeRegistry.getType(value), key)) {
+                    if (thingMatchingTypeAndKeyExists(TypeRegistry.getType(value), key)) {
                         subscriber.onError(
                                 new ThingException(
                                         "There's already a thing stored for key "
@@ -189,11 +305,11 @@ public class ThingControlMinimal {
                     Object valueId = null;
                     if (TypeRegistry.isSimpleValue(value)) {
                         valueId = value;
-                        newThing.setValue(valueId);
+                        newThing.setValue((V) valueId);
                         newThing.setValueIsLink(false);
                     } else {
                         valueId = tw.saveValue(Optional.empty(), value);
-                        newThing.setValue(valueId);
+                        newThing.setValue((V) valueId);
                         newThing.setValueIsLink(true);
                     }
 
@@ -228,15 +344,22 @@ public class ThingControlMinimal {
 //    }
 
 
-    public <V> Observable<Thing<V>> observeThingsWithKeyAndValue(String key, V value, boolean populated) {
 
-        List<Observable<Thing<V>>> observables = Lists.newArrayList();
+    public <V> Observable<Thing<V>> filterThingsWithValue(Observable<? extends Thing<?>> things, V value) {
+
+        return things.filter(t -> value.equals(getValue(t))).map(t -> (Thing<V>)t);
+
+    }
+
+    public <V> Observable<Thing<V>> observeThingsWithKeyAndValue(String key, V value) {
+
+        List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
         for (ThingReader r : thingReaders.get(TypeRegistry.getType(value.getClass()), key)) {
-            Observable<Thing<V>> t = r.findThingsByKeyAndValue(key, value);
+            Observable<? extends Thing<?>> t = r.findThingsMatchingKey(key);
             observables.add(t);
         }
 
-        Observable<Thing<V>> result = null;
+        Observable<? extends Thing<?>> result = null;
         if (observables.size() == 0) {
             throw new TypeRuntimeException("No connector found for type " + TypeRegistry.getType(value) + " and key " + key, TypeRegistry.getType(value));
         } else if (observables.size() == 1) {
@@ -244,11 +367,8 @@ public class ThingControlMinimal {
         } else {
             result = Observable.merge(observables);
         }
-        if (populated) {
-            return result.lift(POPULATE_THINGS);
-        } else {
-            return result;
-        }
+
+        return filterThingsWithValue(result, value);
     }
 
 //    protected <V> Observable<V> getValueObservable(final Thing<V> thing) {
@@ -300,8 +420,30 @@ public class ThingControlMinimal {
 //        return r.readValue(thing);
 //    }
 
-    public Observable<Thing> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {
-        List<Observable<Thing>> all = Lists.newArrayList();
+    public <V> Observable<Thing<V>> observeThingsForTypeAndKey(Class<V> typeClass, String key, boolean populate) {
+
+        return observeThingsForTypeAndKey(TypeRegistry.getType(typeClass), key, populate)
+                .map(t -> convertToTyped(typeClass, t));
+
+    }
+
+    public Observable<? extends Thing<?>> observeThingsForTypeAndKey(String type, String  key, boolean populate) {
+        if ( MatcherUtils.isGlob(key) ) {
+            throw new ThingRuntimeException("Key can't be glob for this query: "+key);
+        }
+
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query: "+type);
+        }
+
+        ThingReader reader = thingReaders.getUnique(type, key);
+
+        return reader.findThingsForTypeAndKey(type, key);
+
+    }
+
+    public Observable<? extends Thing<?>> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {
+        List<Observable<? extends Thing<?>>> all = Lists.newArrayList();
         List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         if ("*".equals(typeMatch)) {
             if ("*".equals(keyMatch)) {
@@ -346,7 +488,7 @@ public class ThingControlMinimal {
             }
         }
 
-        Observable<Thing> obs = Observable.merge(all);
+        Observable<? extends Thing<?>> obs = Observable.merge(all);
 
         if ( populate ) {
             return obs.lift(POPULATE_THINGS);
