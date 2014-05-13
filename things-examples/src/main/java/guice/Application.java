@@ -1,17 +1,16 @@
-package things;
+package guice;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.bval.guice.ValidationModule;
 import rx.Observable;
-import things.config.XstreamModule;
+import things.config.ThingReaders;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.thing.ThingReaders;
-import things.types.Address;
-import things.types.Person;
-import things.types.Role;
 import things.utils.FileUtils;
+import types.Address;
+import types.Person;
+import types.Role;
 
 import javax.validation.Validator;
 import java.nio.file.Paths;
@@ -47,11 +46,6 @@ public class Application {
 
             ThingReaders re = injector.getInstance(ThingReaders.class);
             Validator val = injector.getInstance(Validator.class);
-//        MongoOperations
-
-//        mo.dropCollection(Thing.class);
-//        mo.dropCollection(Person.class);
-//        mo.dropCollection(Role.class);
 
             Person user = new Person();
             user.setFirstName("Person");

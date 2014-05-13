@@ -1,4 +1,4 @@
-package things.types;
+package types;
 
 
 import org.apache.bval.constraints.NotEmpty;
@@ -19,10 +19,6 @@ public class Role implements SimpleValue<String> {
 
     @NotEmpty
     private String role;
-
-    public Role() {
-
-    }
 
     public Role(String role) {
         setRole(role);

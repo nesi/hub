@@ -1,12 +1,12 @@
-package things.config;
+package guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import things.config.ThingReaders;
+import things.config.ThingWriters;
 import things.connectors.xstream.XstreamConnector;
 import things.thing.ThingControl;
-import things.thing.ThingReaders;
-import things.thing.ThingWriters;
 
 import java.io.File;
 

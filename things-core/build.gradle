@@ -11,7 +11,6 @@ dependencies {
 
     compile ("com.thoughtworks.xstream:xstream:1.4.7")
 
-    compile ("com.google.inject:guice:4.0-beta")
 
     compile("com.netflix.rxjava:rxjava-core:0.18.1")
     compile("com.google.guava:guava:17.0")

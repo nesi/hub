@@ -24,4 +24,5 @@ include 'things-rest'
 include 'things-mongo'
 include 'things-hub'
 include 'things-rooms'
+include 'things-examples'
 

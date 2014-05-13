@@ -1,4 +1,4 @@
-package hub.config;
+package rest_spring_boot;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -6,12 +6,13 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import things.config.mongo.MongoConfig;
-import things.mongo.MongoConnector;
 import things.config.ThingActions;
-import things.thing.ThingControl;
+import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
+import things.config.mongo.MongoConfig;
+import things.mongo.MongoConnector;
+import things.thing.ThingControl;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -27,11 +28,11 @@ import javax.validation.ValidatorFactory;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan({"things.thing", "things.view.rest"})
-public class HubConfig extends MongoConfig {
+public class ThingsConfig extends MongoConfig {
 
     @Override
     protected String getDatabaseName() {
-        return "research-hub";
+        return "things-rest-test";
     }
 
     @Bean
@@ -44,6 +45,9 @@ public class HubConfig extends MongoConfig {
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();
+        tr.addReader("person/*", defaultConnector());
+        tr.addReader("role/*", defaultConnector());
+        tr.addReader("address/*", defaultConnector());
 
         return tr;
     }
@@ -52,10 +56,18 @@ public class HubConfig extends MongoConfig {
     public ThingWriters thingWriters() throws Exception {
 
         ThingWriters tw = new ThingWriters();
+        tw.addWriter("person/*", defaultConnector());
+        tw.addWriter("role/*", defaultConnector());
+        tw.addWriter("address/*", defaultConnector());
 
         return tw;
     }
 
+    @Bean
+    public ThingQueries thingQueries() {
+        ThingQueries tq = new ThingQueries();
+        return tq;
+    }
 
     @Bean
     ThingActions thingActions() throws Exception {

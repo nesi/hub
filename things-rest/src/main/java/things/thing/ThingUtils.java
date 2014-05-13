@@ -6,11 +6,11 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.inject.Singleton;
 import org.springframework.stereotype.Component;
 import things.exceptions.TypeRuntimeException;
 import things.utils.json.ThingsObjectMapper;
 
+import javax.inject.Singleton;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

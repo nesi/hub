@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import rx.Observable;
 import rx.Subscriber;
+import things.config.ThingActions;
+import things.config.ThingQueries;
+import things.config.ThingReaders;
+import things.config.ThingWriters;
 import things.exceptions.ActionException;
 import things.exceptions.ThingException;
 import things.exceptions.ThingRuntimeException;

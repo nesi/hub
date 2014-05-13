@@ -1,11 +1,11 @@
 package things.thing;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Singleton;
 import rx.Observable;
 import things.exceptions.ThingException;
 import things.exceptions.ValueException;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;

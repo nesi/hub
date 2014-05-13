@@ -1,13 +1,16 @@
-package things;
+package mongo;
 
 import com.mongodb.Mongo;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import rx.Observable;
+import things.config.ThingReaders;
+import things.config.ThingWriters;
 import things.mongo.MongoConnector;
-import things.thing.*;
-import things.types.Address;
-import things.types.Person;
-import things.types.Role;
+import things.thing.Thing;
+import things.thing.ThingControl;
+import types.Address;
+import types.Person;
+import types.Role;
 
 import javax.validation.Validation;
 import javax.validation.Validator;

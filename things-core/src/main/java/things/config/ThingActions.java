@@ -1,6 +1,7 @@
-package things.thing;
+package things.config;
 
 import com.google.common.collect.Maps;
+import things.thing.ThingAction;
 
 import java.util.Map;
 

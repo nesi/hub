@@ -1,4 +1,4 @@
-package things.types;
+package types;
 
 import things.model.types.Value;
 
@@ -16,10 +16,6 @@ public class Address {
     private int nr;
     private String city;
     private String country;
-
-    public Address() {
-
-    }
 
     public String getStreet() {
         return street;

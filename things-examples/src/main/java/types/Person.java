@@ -1,4 +1,4 @@
-package things.types;
+package types;
 
 import org.apache.bval.constraints.Email;
 import org.apache.bval.constraints.NotEmpty;
@@ -37,7 +37,6 @@ public class Person {
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
-
 
     public Person(String firstName, String lastName, String email) {
         this.firstName = firstName;

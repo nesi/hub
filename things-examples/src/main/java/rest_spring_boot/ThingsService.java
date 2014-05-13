@@ -1,4 +1,6 @@
-package things;
+package rest_spring_boot;
+
+import org.springframework.boot.SpringApplication;
 
 /**
  * Project: things
@@ -11,7 +13,7 @@ public class ThingsService {
 
     public static void main(String[] args) {
 
-        //SpringApplication.run(RoomConfig.class);
+        SpringApplication.run(ThingsConfig.class);
 
     }
 }

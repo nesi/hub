@@ -1,9 +1,11 @@
-package things.thing;
+package things.config;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import things.exceptions.TypeRuntimeException;
+import things.thing.ThingControl;
+import things.thing.ThingWriter;
 
 import java.util.List;
 import java.util.Set;
