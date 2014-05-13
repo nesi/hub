@@ -30,7 +30,7 @@ public class ThingRestExceptionHandler {
 	public ErrorInfo exception(final HttpServletRequest req,
                             final Exception ex) {
 
-        myLogger.debug("Exception: " + ex.getLocalizedMessage());
+        myLogger.debug("Exception: " + ex.getLocalizedMessage(), ex);
 
         return new ErrorInfo(req.getRequestURL().toString(), ex);
     }
@@ -41,7 +41,7 @@ public class ThingRestExceptionHandler {
 	public ErrorInfo noSuchThingException(final HttpServletRequest req,
                             final NoSuchThingException ex) {
 
-        myLogger.debug("NoSuchEntityException: " + ex.getLocalizedMessage());
+        myLogger.debug("NoSuchEntityException: " + ex.getLocalizedMessage(), ex);
 
         return new ErrorInfo(req.getRequestURL().toString(), ex);
     }
