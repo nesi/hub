@@ -1,4 +1,4 @@
-package rest_spring_boot;
+package spring_boot_rest_mongo;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
