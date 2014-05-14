@@ -1,7 +1,7 @@
 package hub;
 
-import org.springframework.boot.SpringApplication;
 import hub.config.HubConfig;
+import org.springframework.boot.SpringApplication;
 
 /**
  * Project: hub

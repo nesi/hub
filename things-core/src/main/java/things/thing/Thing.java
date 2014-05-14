@@ -22,7 +22,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     private Set<String> parents = Sets.newHashSet();
     private String thingType;
     protected V value;
-    private Boolean valueIsLink = true;
+    private Boolean valueIsLink = false;
 
     public Boolean getValueIsLink() {
         return valueIsLink;

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import things.thing.ThingControl;
 
+import javax.inject.Inject;
+
 /**
  * Project: things
  * <p>
@@ -13,14 +15,18 @@ import things.thing.ThingControl;
  */
 public class ThingsObjectMapper extends ObjectMapper {
 
-    private final ThingControl tc;
+    private ThingControl tc;
     
-    public ThingsObjectMapper(ThingControl tc) {
-        this.tc = tc;
+    public ThingsObjectMapper() {
         registerModule(new GuavaModule());
         registerModule(new ThingModule(this, tc));
         registerModule(new JSR310Module());
         registerModule(new AfterburnerModule());
+    }
+
+    @Inject
+    public void setThingControl(ThingControl tc) {
+        this.tc = tc;
     }
 
     public ThingControl getThingControl() {

@@ -280,57 +280,62 @@ public class ThingControlMinimal {
 
         Observable<Thing<V>> obs = Observable.just(value).create((Subscriber<? super Thing<V>> subscriber) -> {
 
-            new Thread(() -> {
+            new Thread() {
 
-                if (TypeRegistry.valueNeedsUniqueKey(value
-                        .getClass()))
+                public void run() {
 
-                {
-                    if (thingMatchingTypeAndKeyExists(TypeRegistry.getType(value), key)) {
-                        subscriber.onError(
-                                new ThingException(
-                                        "There's already a thing stored for key "
-                                                + key
-                                                + " and type "
-                                                + TypeRegistry.getType(value
-                                                .getClass())
-                                )
-                        );
-                    }
-                }
+                    if (TypeRegistry.valueNeedsUniqueKey(value
+                            .getClass()))
 
-                try {
-                    validateValue(value);
-
-                    ThingWriter tw = thingWriters.getUnique(TypeRegistry.getType(value), key);
-
-                    Thing<V> newThing = new Thing();
-
-                    Object valueId = null;
-                    if (TypeRegistry.isSimpleValue(value)) {
-                        valueId = value;
-                        newThing.setValue((V) valueId);
-                        newThing.setValueIsLink(false);
-                    } else {
-                        valueId = tw.saveValue(Optional.empty(), value);
-                        newThing.setValue((V) valueId);
-                        newThing.setValueIsLink(true);
+                    {
+                        if (thingMatchingTypeAndKeyExists(TypeRegistry.getType(value), key)) {
+                            subscriber.onError(
+                                    new ThingException(
+                                            "There's already a thing stored for key "
+                                                    + key
+                                                    + " and type "
+                                                    + TypeRegistry.getType(value
+                                                    .getClass())
+                                    )
+                            );
+                            subscriber.onCompleted();
+                            return;
+                        }
                     }
 
-                    String type = TypeRegistry.getType(value);
+                    try {
+                        validateValue(value);
 
-                    newThing.setKey(key);
-                    newThing.setThingType(type);
+                        ThingWriter tw = thingWriters.getUnique(TypeRegistry.getType(value), key);
 
-                    Thing<V> t = saveThing(newThing);
+                        Thing<V> newThing = new Thing();
 
-                    subscriber.onNext(t);
-                    subscriber.onCompleted();
+                        Object valueId = null;
+                        if (TypeRegistry.isSimpleValue(value)) {
+                            valueId = value;
+                            newThing.setValue((V) valueId);
+                            newThing.setValueIsLink(false);
+                        } else {
+                            valueId = tw.saveValue(Optional.empty(), value);
+                            newThing.setValue((V) valueId);
+                            newThing.setValueIsLink(true);
+                        }
 
-                } catch (Exception e) {
-                    subscriber.onError(e);
+                        String type = TypeRegistry.getType(value);
+
+                        newThing.setKey(key);
+                        newThing.setThingType(type);
+
+                        Thing<V> t = saveThing(newThing);
+
+                        subscriber.onNext(t);
+                        subscriber.onCompleted();
+
+                    } catch (Exception e) {
+                        subscriber.onError(e);
+                    }
                 }
-            }).start();
+        }.start();
 
         });
 
@@ -355,7 +360,7 @@ public class ThingControlMinimal {
 
     }
 
-    public <V> Observable<Thing<V>> observeThingsWithKeyAndValue(String key, V value) {
+    public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValue(String key, V value) {
 
         List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
         for (ThingReader r : thingReaders.get(TypeRegistry.getType(value.getClass()), key)) {

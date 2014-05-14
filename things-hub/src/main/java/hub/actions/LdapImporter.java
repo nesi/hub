@@ -126,21 +126,24 @@ public class LdapImporter implements ThingAction {
 
             Person p = u.getPerson();
             String nesi_username = (p.getFirst_name()+"_"+p.getLast_name()).toLowerCase();
-            Observable<Thing<Person>> tp = null;
+            Thing<Person> tp = null;
             try {
-                tp = tc.observeCreateThing(nesi_username, p);
+                tp = tc.createThing(nesi_username, p);
             } catch (Exception te) {
                 System.out.println("Can't create thing for person "+p.nameToString()+": "+te.getLocalizedMessage());
-                Observable<Thing<Person>> existing = tc.observeThingsForTypeAndKey(Person.class, nesi_username, false);
-                tp = existing.single();
+                Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
+                if ( ! opt.isPresent() ) {
+                    throw new ThingRuntimeException("Could not find person for key: "+nesi_username);
+                }
+                tp = opt.get();
             }
 
             for ( String key : u.getUsernames().keySet() ) {
                 for ( String un : u.getUsernames().get(key) ) {
                     try {
                         Username username = new Username(un);
-                        Observable<Thing<Username>> obs = tc.observeChildrenForType(tp, Username.class, false);
-                        Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(tp, username);
+                        List<Thing<Username>> obs = tc.getChildrenForType(tp, Username.class, false);
+                        Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(Observable.just(tp), username);
 
                         if ( ! childMatches.isEmpty().toBlockingObservable().single() ) {
                             System.out.println("Username already in db: "+un);
@@ -148,13 +151,13 @@ public class LdapImporter implements ThingAction {
                         }
 
                         Thing<?> tu = tc.createThing(key, username);
-                        tc.addChildThingToObservable(tp, tu);
+                        tc.addChildThing(tp, tu);
                     } catch (Exception e) {
-                        throw new ThingRuntimeException("Could not import: "+un);
+                        throw new ThingRuntimeException("Could not import: "+un, e);
                     }
                 }
             }
-            System.out.println("All imported: "+tp.toBlockingObservable().single().getKey());
+            System.out.println("All imported: "+tp.getKey());
 
         }
 

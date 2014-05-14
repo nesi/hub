@@ -67,16 +67,16 @@ public interface ThingReader {
 //        }
 //        return getChildrenMatchingTypeAndKey(things, "*", key);
 //    }
-
-    default Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key) {
-        if (MatcherUtils.isGlob(type)) {
-            throw new ThingRuntimeException("Type can't be glob for this query");
-        }
-        if (MatcherUtils.isGlob(key)) {
-            throw new ThingRuntimeException("Key can't be glob for this query");
-        }
-        return getChildrenMatchingTypeAndKey(things, "*", key);
-    }
+//
+//    default Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key) {
+//        if (MatcherUtils.isGlob(type)) {
+//            throw new ThingRuntimeException("Type can't be glob for this query");
+//        }
+//        if (MatcherUtils.isGlob(key)) {
+//            throw new ThingRuntimeException("Key can't be glob for this query");
+//        }
+//        return getChildrenMatchingTypeAndKey(things, "*", key);
+//    }
 
     default Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
 
@@ -119,7 +119,9 @@ public interface ThingReader {
                                 subscriber.onNext(thing);
                             }
                         },
-                        (throwable) -> subscriber.onError(throwable),
+                        (throwable) -> {
+                            subscriber.onError(throwable);
+                        },
                         () -> subscriber.onCompleted()
                 );
         });

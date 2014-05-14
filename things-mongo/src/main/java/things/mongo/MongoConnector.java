@@ -11,11 +11,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import rx.Observable;
 import things.connectors.mongo.IdWrapper;
+import things.exceptions.NoSuchThingException;
 import things.exceptions.TypeRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingReader;
 import things.thing.ThingWriter;
 import things.thing.TypeRegistry;
+import things.utils.MatcherUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -47,6 +49,62 @@ public class MongoConnector implements ThingReader, ThingWriter {
         List<Thing> things = mongoTemplate.findAll(Thing.class);
 		return Observable.from(things).map(t -> (Thing<?>)t);
     }
+    
+    @Override
+    public Observable<? extends Thing<?>> findThingForId(String id) {
+
+		if (id == null) {
+			throw new IllegalArgumentException("Id can't be null");
+		}
+
+		Query q = new Query();
+		try {
+			q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+		} catch (IllegalArgumentException iae) {
+			throw new NoSuchThingException(id);
+		}
+
+		Thing thing = mongoTemplate.findOne(q, Thing.class);
+
+		if (thing == null) {
+			throw new NoSuchThingException(id);
+		}
+
+		return Observable.just((Thing<?>)thing);
+	}
+
+    public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Thing<?> thing, String typeMatcher, String keyMatcher) {
+        Query q = new Query();
+        String regexType = MatcherUtils.convertGlobToRegex(typeMatcher);
+        String regexKey = MatcherUtils.convertGlobToRegex(keyMatcher);
+        q.addCriteria(Criteria.where("parents").is(thing.getId()).and("thingType").regex(regexType).and("key").regex(regexKey));
+
+
+        List<Thing> things = mongoTemplate.find(q, Thing.class);
+        return Observable.from(things).map(t -> (Thing<?>)t);
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
+
+        return things.flatMap(t -> getChildrenMatchingTypeAndKey(t, typeMatcher, keyMatcher));
+    }
+
+    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                           final String key) {
+
+        Query q = new Query();
+        String regexType = MatcherUtils.convertGlobToRegex(type);
+        String regexKey = MatcherUtils.convertGlobToRegex(key);
+        
+        q.addCriteria(Criteria.where("thingType").regex(regexType).and("key").regex(regexKey));
+
+        List<Thing> things = mongoTemplate.find(q, Thing.class);
+
+        return Observable.from(things).map(t -> (Thing<?>)t);
+
+    }
+
 
     @Override
     public <V> V readValue(Thing<V> t) {
@@ -64,14 +122,12 @@ public class MongoConnector implements ThingReader, ThingWriter {
         }
     }
 
-
-
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {
-
+        myLogger.debug("Saving thing: "+t.toString());
         // mongo gives it an id if necessary
         mongoTemplate.save(t);
-
+        myLogger.debug("Saved: "+t.toString());
         return t;
     }
 
@@ -105,7 +161,7 @@ public class MongoConnector implements ThingReader, ThingWriter {
 
     @Override
     public Object saveValue(Optional valueId, Object value) {
-        myLogger.debug("Saving value");
+        myLogger.debug("Saving value: "+value);
 
         Object vId = null;
         if ( TypeRegistry.isSimpleValue(value) ) {
@@ -123,4 +179,5 @@ public class MongoConnector implements ThingReader, ThingWriter {
         }
         return vId;
     }
+
 }

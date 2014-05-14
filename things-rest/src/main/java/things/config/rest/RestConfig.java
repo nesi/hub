@@ -1,4 +1,4 @@
-package config.rest;
+package things.config.rest;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;

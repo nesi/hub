@@ -22,21 +22,21 @@ import java.util.Objects;
 public class Username {
 
     @NotEmpty
-    private String value;
+    private String username;
 
-    public Username(String value) {
-        this.value = value;
+    public Username(String username) {
+        this.username = username;
     }
 
     public Username() {
     }
 
-    public String getValue() {
-        return value;
+    public String getUsername() {
+        return username;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public boolean equals(Object obj) {
@@ -45,19 +45,19 @@ public class Username {
 
         if (getClass().equals(obj.getClass())) {
             final Username other = (Username) obj;
-            return Objects.equals(getValue(), other.getValue());
+            return Objects.equals(getUsername(), other.getUsername());
         } else {
             return false;
         }
     }
 
     public int hashCode() {
-        return Objects.hashCode(getValue());
+        return Objects.hashCode(getUsername());
     }
 
     @Override
     public String toString() {
-        return getValue();
+        return getUsername();
     }
 
 }

@@ -45,4 +45,15 @@ public class ThingRestExceptionHandler {
 
         return new ErrorInfo(req.getRequestURL().toString(), ex);
     }
+
+    @ExceptionHandler(Error.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+	public ErrorInfo error(final HttpServletRequest req,
+                            final Error ex) {
+
+        myLogger.debug("Exception: " + ex.getLocalizedMessage(), ex);
+
+        return new ErrorInfo(req.getRequestURL().toString(), ex);
+    }
 }

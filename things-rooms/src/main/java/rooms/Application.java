@@ -66,7 +66,7 @@ public class Application {
             Bridge bridge = tc.getValue(bridgeThing);
             LimitlessLEDControllerV2 c = new LimitlessLEDControllerV2(b.getHost(), b.getPort());
 
-            List<Thing<Light>> lightThings = tc.getChildrenForType(Observable.just(bridgeThing), Light.class);
+            List<Thing<Light>> lightThings = tc.getChildrenForType(Observable.just(bridgeThing), Light.class, true);
             for ( Thing<Light> tempLight : lightThings ) {
                 Light ll = tc.getValue(tempLight);
                 LightWhiteV2 white = new LightWhiteV2(tempLight.getKey(), c, ll.getGroup());

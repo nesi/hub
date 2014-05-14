@@ -19,29 +19,29 @@ import java.util.Objects;
 public class Role  {
 
     @NotEmpty
-    private String rolename;
+    private String role;
 
-    public Role(String rolename) {
-        this.rolename = rolename;
+    public Role(String role) {
+        this.role = role;
     }
 
     public Role() {
     }
 
-    public String getValue() {
-        return rolename;
+    public String getRole() {
+        return role;
     }
 
-    public void setValue(String value) {
-        this.rolename = value;
+    public void setRole(String value) {
+        this.role = value;
     }
 
     public int hashCode() {
-        return Objects.hashCode(getValue());
+        return Objects.hashCode(getRole());
     }
 
     @Override
     public String toString() {
-        return getValue();
+        return getRole();
     }
 }

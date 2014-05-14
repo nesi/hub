@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import things.exceptions.TypeRuntimeException;
 import things.utils.json.ThingsObjectMapper;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -40,10 +41,14 @@ public class ThingUtils {
     public ThingUtils() {
     }
 
-//    @Inject
+    @Inject
     public void setThingControl(ThingControl tc) {
         this.tc = tc;
-        tom = new ThingsObjectMapper(this.tc);
+    }
+
+    @Inject
+    public void setThingsObjectMapper(ThingsObjectMapper tom) {
+        this.tom = tom;
     }
 
     /**

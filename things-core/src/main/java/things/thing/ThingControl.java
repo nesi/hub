@@ -1,8 +1,11 @@
 package things.thing;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import things.exceptions.ThingException;
+import things.exceptions.ThingRuntimeException;
 import things.exceptions.ValueException;
 
 import javax.inject.Singleton;
@@ -20,6 +23,8 @@ import java.util.Optional;
 @Singleton
 public class ThingControl extends ThingControlMinimal {
 
+
+    private static final Logger myLogger = LoggerFactory.getLogger(ThingControl.class);
 
     public ThingControl() {
         super();
@@ -102,14 +107,22 @@ public class ThingControl extends ThingControlMinimal {
         return result.map(t -> convertToTyped(typeClass, t));
     }
 
-    public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass) {
-        return Lists.newArrayList(observeChildrenForType(things, typeClass, true).toBlockingObservable().toIterable());
+    public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
+        return Lists.newArrayList(observeChildrenForType(things, typeClass, populateValues).toBlockingObservable().toIterable());
+    }
+
+    public <V> List<Thing<V>> getChildrenForType(Thing<?> thing, Class<V> typeClass, boolean populateValues) {
+        return Lists.newArrayList(observeChildrenForType(Observable.just(thing), typeClass, populateValues).toBlockingObservable().toIterable());
     }
 
     public Observable<? extends Thing<?>> observeChildsMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
 
         Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, type, "*", populateValues);
         return result;
+    }
+
+    public <V> Observable<Thing<V>> observeUniqueThingMatchingKeyAndValue(String key, V value) {
+        return observeThingsMatchingKeyAndValue(key, value).single();
     }
 
     public List<Thing> getChildsMatchingType(Observable<? extends Thing<?>> things, String type) {
@@ -142,13 +155,33 @@ public class ThingControl extends ThingControlMinimal {
         }
     }
 
+    public <V> Observable<Thing<V>> observeUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean populateValue) {
+        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(TypeRegistry.getType(type), key, populateValue).single();
+
+        try {
+            return obs.map(t -> convertToTyped(type, t)).single();
+        } catch (IllegalArgumentException iae) {
+            throw new ThingRuntimeException("Too many results for type '" +type+"' and key '"+key+"'");
+        }
+
+
+    }
+
+    public <V> Optional<Thing<V>> findUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean popluateValue) {
+        Observable<Thing<V>> obs = observeUniqueThingMatchingTypeAndKey(type, key, popluateValue);
+        try {
+            myLogger.debug("Finding unique thing for: "+TypeRegistry.getType(type)+"/"+key);
+            Thing<V> t = obs.toBlockingObservable().single();
+            return Optional.of(t);
+        } catch (NoSuchElementException nsee) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<? extends Thing<?>> findUniqueThingMatchingTypeAndKey(String type, String key, boolean popluateValue) {
-        Observable<? extends Thing<?>> obs = observeUniqueThingMatchingTypeAndKey(type, key, false);
+        Observable<? extends Thing<?>> obs = observeUniqueThingMatchingTypeAndKey(type, key, popluateValue);
         try {
             Thing<?> t = obs.toBlockingObservable().single();
-            if ( popluateValue ) {
-                t = ensurePopulatedValue(t);
-            }
             return Optional.of(t);
         } catch (NoSuchElementException nsee) {
             return Optional.empty();

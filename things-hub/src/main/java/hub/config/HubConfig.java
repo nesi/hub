@@ -1,17 +1,26 @@
 package hub.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hub.actions.UserUtils;
+import hub.readers.UserReader;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import things.config.mongo.MongoConfig;
-import things.mongo.MongoConnector;
-import things.config.ThingActions;
-import things.thing.ThingControl;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
+import things.config.mongo.MongoConfig;
+import things.mongo.MongoConnector;
+import things.thing.ThingControl;
+import things.utils.json.ThingsObjectMapper;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -25,8 +34,15 @@ import javax.validation.ValidatorFactory;
  * Time: 2:16 PM
  */
 @Configuration
-@EnableAutoConfiguration
-@ComponentScan({"things.thing", "things.view.rest"})
+@EnableTransactionManagement
+@PropertySource("classpath:application.properties")
+@PropertySource("classpath:pan_audit.properties")
+@PropertySource("classpath:projectdb.properties")
+@PropertySource("classpath:sshJobLister.properties")
+@PropertySource(value = "file:/etc/hub/hub.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
+@ComponentScan({"hub.config", "things.thing", "things.view.rest", "things.config.jetm"})
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 public class HubConfig extends MongoConfig {
 
     @Override
@@ -35,16 +51,30 @@ public class HubConfig extends MongoConfig {
     }
 
     @Bean
-    public MongoConnector defaultConnector() throws Exception {
+    public MongoConnector mongoConnector() throws Exception {
         MongoConnector mc = new MongoConnector(mongoTemplate());
         return mc;
+    }
+
+    @Bean
+    public UserUtils userUtils() {
+        return new UserUtils();
+    }
+
+    @Bean
+    public UserReader userReader() {
+        return new UserReader();
     }
 
     @Bean
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();
-
+        tr.addReader("person/*", mongoConnector());
+        tr.addReader("type/*", mongoConnector());
+        tr.addReader("role/*", mongoConnector());
+        tr.addReader("username/*", mongoConnector());
+        tr.addReader("user/*", userReader());
         return tr;
     }
 
@@ -52,15 +82,18 @@ public class HubConfig extends MongoConfig {
     public ThingWriters thingWriters() throws Exception {
 
         ThingWriters tw = new ThingWriters();
-
+        tw.addWriter("person/*", mongoConnector());
+        tw.addWriter("type/*", mongoConnector());
+        tw.addWriter("role/*", mongoConnector());
+        tw.addWriter("username/*", mongoConnector());
         return tw;
     }
 
 
     @Bean
-    ThingActions thingActions() throws Exception {
-        ThingActions ta = new ThingActions();
-        return ta;
+    public ThingQueries thingQueries() {
+        ThingQueries tq = new ThingQueries();
+        return tq;
     }
 
     @Bean(name = "valueValidator")
@@ -76,6 +109,12 @@ public class HubConfig extends MongoConfig {
     public ThingControl thingControl() throws Exception {
         ThingControl tc = new ThingControl();
         return tc;
+    }
+    
+    @Bean
+    public ObjectMapper objectMapper() {
+        ThingsObjectMapper tom = new ThingsObjectMapper();
+        return tom;
     }
 
     @Bean
