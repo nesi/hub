@@ -54,7 +54,7 @@ public class ThingControl extends ThingControlMinimal {
     }
 
     public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<? extends Thing<?>> things) {
-        return things.filter(t -> TypeRegistry.equalsType(type, t.getThingType())).map(t -> convertToTyped(type, t));
+        return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> convertToTyped(type, t));
     }
 
     /**
@@ -65,7 +65,7 @@ public class ThingControl extends ThingControlMinimal {
      * @return whether such a Thing exists
      */
     public boolean thingMatchingTypeAndKeyExists(Class type, String key) {
-        return thingMatchingTypeAndKeyExists(TypeRegistry.getType(type), key);
+        return thingMatchingTypeAndKeyExists(typeRegistry.getType(type), key);
     }
 
     /**
@@ -76,11 +76,11 @@ public class ThingControl extends ThingControlMinimal {
      * @return whether such a Thing exists
      */
     public boolean thingForTypeAndKeyExists(Class type, String key) {
-        return thingForTypeAndKeyExists(TypeRegistry.getType(type), key);
+        return thingForTypeAndKeyExists(typeRegistry.getType(type), key);
     }
 
     public <V> Observable<Thing<V>> observeThingsForType(Class<V> typeClass, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(TypeRegistry.getType(typeClass), "*", populateValues);
+        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
         return result.map(t -> convertToTyped(typeClass, t));
     }
 
@@ -103,7 +103,7 @@ public class ThingControl extends ThingControlMinimal {
 
     public <V> Observable<Thing<V>> observeChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
 
-        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, TypeRegistry.getType(typeClass), "*", populateValues);
+        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, typeRegistry.getType(typeClass), "*", populateValues);
         return result.map(t -> convertToTyped(typeClass, t));
     }
 
@@ -156,7 +156,7 @@ public class ThingControl extends ThingControlMinimal {
     }
 
     public <V> Observable<Thing<V>> observeUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean populateValue) {
-        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(TypeRegistry.getType(type), key, populateValue).single();
+        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(typeRegistry.getType(type), key, populateValue).single();
 
         try {
             return obs.map(t -> convertToTyped(type, t)).single();
@@ -170,7 +170,7 @@ public class ThingControl extends ThingControlMinimal {
     public <V> Optional<Thing<V>> findUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean popluateValue) {
         Observable<Thing<V>> obs = observeUniqueThingMatchingTypeAndKey(type, key, popluateValue);
         try {
-            myLogger.debug("Finding unique thing for: "+TypeRegistry.getType(type)+"/"+key);
+            myLogger.debug("Finding unique thing for: "+ typeRegistry.getType(type)+"/"+key);
             Thing<V> t = obs.toBlockingObservable().single();
             return Optional.of(t);
         } catch (NoSuchElementException nsee) {

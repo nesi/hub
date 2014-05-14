@@ -8,7 +8,7 @@ import rooms.types.Light;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.thing.TypeRegistry;
+import things.types.TypeUtil;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -69,7 +69,7 @@ public class LightUtil {
     public static Stream<Thing<Light>> filterLights(List<Thing> lights) {
 
         return lights.stream()
-                .filter(t -> TypeRegistry.equalsType(t.getThingType(), Light.class))
+                .filter(t -> TypeUtil.equalsType(t.getThingType(), Light.class))
                 .map(t -> (Thing<Light>)t);
 
     }

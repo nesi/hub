@@ -13,10 +13,11 @@ import rx.Observable;
 import things.connectors.mongo.IdWrapper;
 import things.exceptions.NoSuchThingException;
 import things.exceptions.TypeRuntimeException;
+import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingReader;
 import things.thing.ThingWriter;
-import things.thing.TypeRegistry;
+import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
 import java.lang.reflect.Field;
@@ -30,17 +31,18 @@ import java.util.Optional;
  * Date: 10/05/14
  * Time: 10:58 PM
  */
-public class MongoConnector implements ThingReader, ThingWriter {
+public class MongoConnector extends AbstractThingReader implements ThingReader, ThingWriter {
 
 
 
     private static final Logger myLogger = LoggerFactory
 			.getLogger(MongoConnector.class);
 
-	@Autowired
 	private MongoTemplate mongoTemplate;
 
-    public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
+    @Autowired
+    public MongoConnector(MongoTemplate mongoTemplate, TypeRegistry typeRegistry) throws Exception {
+        super(typeRegistry);
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -108,10 +110,17 @@ public class MongoConnector implements ThingReader, ThingWriter {
 
     @Override
     public <V> V readValue(Thing<V> t) {
+
+        boolean stringConverter = typeRegistry.convertsFromString(t.getThingType());
+        if ( stringConverter ) {
+            return (V) typeRegistry.convertFromString(t.getThingType(), (String) t.getValue());
+        }
+
+
         Query q = new Query();
         q.addCriteria(Criteria.where("_id").is(new ObjectId((String)t.getValue())));
 //
-        Class typeClass = TypeRegistry.getTypeClass(t.getThingType());
+        Class typeClass = typeRegistry.getTypeClass(t.getThingType());
         if (hasUsableId(typeClass)) {
             Object v = mongoTemplate.findOne(q, typeClass);
             return (V) v;
@@ -146,16 +155,16 @@ public class MongoConnector implements ThingReader, ThingWriter {
         return id;
     }
 
-    private static Object extractId(MongoPersistentProperty id, Object value) {
+    private Object extractId(MongoPersistentProperty id, Object value) {
 
         try {
             Field idField = id.getField();
             String idValue = (String) idField.get(value);
             return idValue;
         } catch (IllegalAccessException e) {
-            throw new TypeRuntimeException("Can't extract id from type "+TypeRegistry.getType(value), TypeRegistry.getType(value), e);
+            throw new TypeRuntimeException("Can't extract id from type "+ typeRegistry.getType(value), typeRegistry.getType(value), e);
         } catch (ClassCastException cce) {
-            throw new TypeRuntimeException("Can't extract id for type "+TypeRegistry.getType(value)+": id is not of String type", TypeRegistry.getType(value));
+            throw new TypeRuntimeException("Can't extract id for type "+ typeRegistry.getType(value)+": id is not of String type", typeRegistry.getType(value));
         }
     }
 
@@ -164,16 +173,17 @@ public class MongoConnector implements ThingReader, ThingWriter {
         myLogger.debug("Saving value: "+value);
 
         Object vId = null;
-        if ( TypeRegistry.isSimpleValue(value) ) {
+        Optional<String> stringValue = typeRegistry.convertToString(value);
+        if ( stringValue.isPresent() ) {
             vId = value;
         } else {
             MongoPersistentProperty idField = getIdField(value.getClass());
             if ( idField == null ) {
                 IdWrapper wrapper = new IdWrapper(value);
-                mongoTemplate.save(wrapper, TypeRegistry.getType(value));
+                mongoTemplate.save(wrapper, typeRegistry.getType(value));
                 vId = wrapper.getId();
             } else {
-                mongoTemplate.save(value, TypeRegistry.getType(value));
+                mongoTemplate.save(value, typeRegistry.getType(value));
                 vId = extractId(idField, value);
             }
         }

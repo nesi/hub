@@ -5,10 +5,11 @@ import com.thoughtworks.xstream.XStream;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
+import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingReader;
 import things.thing.ThingWriter;
-import things.thing.TypeRegistry;
+import things.types.TypeRegistry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,18 +26,22 @@ import java.util.UUID;
 /**
  * @author: Markus Binsteiner
  */
-public class XstreamConnector implements ThingReader, ThingWriter {
+public class XstreamConnector extends AbstractThingReader implements ThingReader, ThingWriter {
 
     private final XStream xstream = new XStream();
     private final File thingsFolder;
     private final File valuesFolder;
 
+    private final TypeRegistry typeRegistry;
+
     @Inject
-    public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder) {
+    public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder, @Named("typeRegistry")TypeRegistry typeRegistry) {
+        super(typeRegistry);
         this.thingsFolder = thingsFolder;
         this.thingsFolder.mkdirs();
         this.valuesFolder = valuesFolder;
         this.valuesFolder.mkdirs();
+        this.typeRegistry = typeRegistry;
         xstream.processAnnotations(Thing.class);
     }
 
@@ -48,7 +53,7 @@ public class XstreamConnector implements ThingReader, ThingWriter {
 
     private File getValueFile(Object value, String id) {
 
-        String type = TypeRegistry.getType(value);
+        String type = typeRegistry.getType(value);
         File folder = getTypeFolder(type);
 
         return new File(folder, id+".value");

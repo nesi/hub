@@ -50,6 +50,12 @@ public class RoomConfig extends MongoConfig {
     }
 
     @Bean
+    public void typeRegistry() {
+
+
+    }
+
+    @Bean
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();

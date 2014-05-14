@@ -7,7 +7,7 @@ import things.exceptions.ThingRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingReader;
-import things.thing.TypeRegistry;
+import things.types.TypeUtil;
 
 import javax.inject.Inject;
 
@@ -32,7 +32,7 @@ public class UserReader implements ThingReader {
     @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                            final String key) {
-        return tc.observeThingsMatchingTypeAndKey(TypeRegistry.getType(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>) p));
+        return tc.observeThingsMatchingTypeAndKey(TypeUtil.getType(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>) p));
     }
 
     @Override

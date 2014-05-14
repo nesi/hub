@@ -20,6 +20,7 @@ import things.exceptions.ActionException;
 import things.exceptions.ThingException;
 import things.exceptions.ThingRuntimeException;
 import things.exceptions.TypeRuntimeException;
+import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
 import com.google.common.base.Preconditions;
@@ -45,10 +46,17 @@ public class ThingControlMinimal {
     protected ThingActions thingActions = new ThingActions();
     protected ThingQueries thingQueries = new ThingQueries();
 
+    protected TypeRegistry typeRegistry = new TypeRegistry();
+
     protected Validator validator = null;
 
     public ThingControlMinimal() {
         this.POPULATE_THINGS = new PopluateOperator(this);
+    }
+
+    @Inject
+    public void setTypeRegistry(TypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
     }
 
     @Inject
@@ -214,7 +222,7 @@ public class ThingControlMinimal {
 
         Observable<? extends Thing<?>> result = null;
         if (observables.size() == 0) {
-            throw new TypeRuntimeException("No connector found for type " + TypeRegistry.getType(typeMatch) + " and key " + keyMatch, typeMatch);
+            throw new TypeRuntimeException("No connector found for type " + typeRegistry.getThingType(typeMatch) + " and key " + keyMatch, typeMatch);
         } else if (observables.size() == 1) {
             result = observables.get(0);
         } else {
@@ -240,7 +248,7 @@ public class ThingControlMinimal {
         try {
             return (Thing<V>) untyped;
         } catch (ClassCastException cce) {
-            throw new TypeRuntimeException("Can't convert to type", TypeRegistry.getType(type));
+            throw new TypeRuntimeException("Can't convert to type", type.getClass().toString());
         }
     }
 
@@ -284,18 +292,16 @@ public class ThingControlMinimal {
 
                 public void run() {
 
-                    if (TypeRegistry.valueNeedsUniqueKey(value
-                            .getClass()))
+                    if (typeRegistry.needsUniqueKey(value))
 
                     {
-                        if (thingMatchingTypeAndKeyExists(TypeRegistry.getType(value), key)) {
+                        if (thingMatchingTypeAndKeyExists(typeRegistry.getType(value), key)) {
                             subscriber.onError(
                                     new ThingException(
                                             "There's already a thing stored for key "
                                                     + key
                                                     + " and type "
-                                                    + TypeRegistry.getType(value
-                                                    .getClass())
+                                                    + typeRegistry.getType(value)
                                     )
                             );
                             subscriber.onCompleted();
@@ -306,25 +312,12 @@ public class ThingControlMinimal {
                     try {
                         validateValue(value);
 
-                        ThingWriter tw = thingWriters.getUnique(TypeRegistry.getType(value), key);
+                        ThingWriter tw = thingWriters.getUnique(typeRegistry.getType(value), key);
 
                         Thing<V> newThing = new Thing();
 
-                        Object valueId = null;
-                        if (TypeRegistry.isSimpleValue(value)) {
-                            valueId = value;
-                            newThing.setValue((V) valueId);
-                            newThing.setValueIsLink(false);
-                        } else {
-                            valueId = tw.saveValue(Optional.empty(), value);
-                            newThing.setValue((V) valueId);
-                            newThing.setValueIsLink(true);
-                        }
-
-                        String type = TypeRegistry.getType(value);
-
                         newThing.setKey(key);
-                        newThing.setThingType(type);
+                        newThing.setThingType(typeRegistry.getType(value));
 
                         Thing<V> t = saveThing(newThing);
 
@@ -333,6 +326,7 @@ public class ThingControlMinimal {
 
                     } catch (Exception e) {
                         subscriber.onError(e);
+                        subscriber.onCompleted();
                     }
                 }
         }.start();
@@ -363,14 +357,14 @@ public class ThingControlMinimal {
     public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValue(String key, V value) {
 
         List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
-        for (ThingReader r : thingReaders.get(TypeRegistry.getType(value.getClass()), key)) {
+        for (ThingReader r : thingReaders.get(typeRegistry.getType(value), key)) {
             Observable<? extends Thing<?>> t = r.findThingsMatchingKey(key);
             observables.add(t);
         }
 
         Observable<? extends Thing<?>> result = null;
         if (observables.size() == 0) {
-            throw new TypeRuntimeException("No connector found for type " + TypeRegistry.getType(value) + " and key " + key, TypeRegistry.getType(value));
+            throw new TypeRuntimeException("No connector found for type " + typeRegistry.getType(value) + " and key " + key, typeRegistry.getType(value));
         } else if (observables.size() == 1) {
             result = observables.get(0);
         } else {
@@ -431,7 +425,7 @@ public class ThingControlMinimal {
 
     public <V> Observable<Thing<V>> observeThingsForTypeAndKey(Class<V> typeClass, String key, boolean populate) {
 
-        return observeThingsForTypeAndKey(TypeRegistry.getType(typeClass), key, populate)
+        return observeThingsForTypeAndKey(typeRegistry.getType(typeClass), key, populate)
                 .map(t -> convertToTyped(typeClass, t));
 
     }

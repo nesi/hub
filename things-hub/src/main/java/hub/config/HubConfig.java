@@ -71,7 +71,7 @@ public class HubConfig extends MongoConfig {
 
         ThingReaders tr = new ThingReaders();
         tr.addReader("person/*", mongoConnector());
-        tr.addReader("type/*", mongoConnector());
+        tr.addReader("typeClass/*", mongoConnector());
         tr.addReader("role/*", mongoConnector());
         tr.addReader("username/*", mongoConnector());
         tr.addReader("user/*", userReader());
@@ -83,7 +83,7 @@ public class HubConfig extends MongoConfig {
 
         ThingWriters tw = new ThingWriters();
         tw.addWriter("person/*", mongoConnector());
-        tw.addWriter("type/*", mongoConnector());
+        tw.addWriter("typeClass/*", mongoConnector());
         tw.addWriter("role/*", mongoConnector());
         tw.addWriter("username/*", mongoConnector());
         return tw;

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 import things.exceptions.TypeRuntimeException;
+import things.types.TypeRegistry;
 import things.utils.json.ThingsObjectMapper;
 
 import javax.inject.Inject;
@@ -37,6 +38,7 @@ public class ThingUtils {
     
     private ThingsObjectMapper tom;
     private ThingControl tc;
+    private TypeRegistry tr;
 
     public ThingUtils() {
     }
@@ -51,14 +53,19 @@ public class ThingUtils {
         this.tom = tom;
     }
 
+    @Inject
+    public void setTypeRegistry(TypeRegistry tr) {
+        this.tr = tr;
+    }
+
     /**
      * Returns a list of all types that where registered on startup (by being annotated
      * with the {@link things.model.types.Value} annotation).
      *
      * @return the list of types
      */
-    public static Set<String> getAllRegisteredTypes() {
-        return TypeRegistry.getTypeMap().keySet();
+    public Set<String> getAllRegisteredTypes() {
+        return tr.getAllTypes();
     }
 
 
@@ -66,8 +73,8 @@ public class ThingUtils {
 
         if (schemaMap == null) {
             Map<String, JsonSchema> temp = Maps.newTreeMap();
-            for (String type : TypeRegistry.getTypeMap().keySet()) {
-                Class typeClass = TypeRegistry.getTypeMap().get(type);
+            for (String type : tr.getAllTypes()) {
+                Class typeClass = tr.getTypeClass(type);
 
                 SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
                 try {
@@ -87,8 +94,8 @@ public class ThingUtils {
 
         if ( typePropertiesMap == null ) {
             Map<String, Map<String, String>> temp = Maps.newTreeMap();
-            for ( String type : TypeRegistry.getTypeMap().keySet() ) {
-                Class typeClass = TypeRegistry.getTypeMap().get(type);
+            for ( String type : tr.getAllTypes() ) {
+                Class typeClass = tr.getTypeClass(type);
                 BeanInfo info = null;
                 try {
                     info = Introspector.getBeanInfo(typeClass);

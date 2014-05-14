@@ -8,7 +8,7 @@ import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingReader;
-import things.thing.TypeRegistry;
+import things.types.TypeUtil;
 
 import javax.inject.Inject;
 
@@ -46,7 +46,7 @@ public class LightStateReader implements ThingReader {
 
         Thing<LightState> lightState = new Thing();
         lightState.setId("light:"+light.getId());
-        lightState.setThingType(TypeRegistry.getType(LightState.class));
+        lightState.setThingType(TypeUtil.getType(LightState.class));
         lightState.setValueIsLink(false);
         lightState.setValue(ls);
         lightState.setKey(light.getKey());

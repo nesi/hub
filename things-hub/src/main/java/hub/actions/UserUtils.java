@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.thing.TypeRegistry;
+import things.types.TypeUtil;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class UserUtils {
 	public Observable<Thing<Username>> lookupUsernames(Observable<? extends Thing<?>> usernameOrPerson) {
 
         return usernameOrPerson
-                .filter(t -> TypeRegistry.equalsType(t.getThingType(), Person.class) || TypeRegistry.equalsType(t.getThingType(), Username.class))
+                .filter(t -> TypeUtil.equalsType(t.getThingType(), Person.class) || TypeUtil.equalsType(t.getThingType(), Username.class))
                 .flatMap(t -> convertToUsername(t));
     }
 
@@ -57,8 +57,8 @@ public class UserUtils {
 	 */
 	public Observable<Thing<Person>> convertToPerson(Thing<?> usernameOrPerson) {
 
-		if (TypeRegistry.equalsType(Person.class,
-				usernameOrPerson.getThingType())) {
+		if (TypeUtil.equalsType(Person.class,
+                usernameOrPerson.getThingType())) {
 			return Observable.just((Thing<Person>) usernameOrPerson);
 		} else {
 			Observable<? extends Thing<?>> obs = tc
@@ -75,8 +75,8 @@ public class UserUtils {
 	public Observable<Thing<Username>> convertToUsername(
 			Thing<?> usernameOrPerson) {
 
-		if (TypeRegistry.equalsType(Username.class,
-				usernameOrPerson.getThingType())) {
+		if (TypeUtil.equalsType(Username.class,
+                usernameOrPerson.getThingType())) {
 			return Observable.just((Thing<Username>) usernameOrPerson);
 		} else {
 			Observable<Thing<Username>> obs = tc.observeChildrenForType(
@@ -126,7 +126,7 @@ public class UserUtils {
         tu.setValueIsLink(false);
         tu.setId("person:"+person.getId());
         tu.setKey(person.getKey());
-        tu.setThingType(TypeRegistry.getType(User.class));
+        tu.setThingType(TypeUtil.getType(User.class));
 
         return tu;
 	}
