@@ -4,11 +4,12 @@ import hub.types.dynamic.User;
 import hub.types.persistent.Person;
 import hub.types.persistent.Role;
 import hub.types.persistent.Username;
+import org.eclipse.jetty.util.TypeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.types.TypeUtil;
+import things.types.TypeRegistry;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class UserUtils {
 
 	@Autowired
 	private ThingControl tc;
+
+    @Autowired
+    private TypeRegistry tr;
 
 	/**
 	 * Converts a {@link Username} or {@link Person} thing into a list of
@@ -36,7 +40,7 @@ public class UserUtils {
 	public Observable<Thing<Username>> lookupUsernames(Observable<? extends Thing<?>> usernameOrPerson) {
 
         return usernameOrPerson
-                .filter(t -> TypeUtil.equalsType(t.getThingType(), Person.class) || TypeUtil.equalsType(t.getThingType(), Username.class))
+                .filter(t -> tr.equals(t.getThingType(), Person.class) || tr.equals(t.getThingType(), Username.class))
                 .flatMap(t -> convertToUsername(t));
     }
 
@@ -57,7 +61,7 @@ public class UserUtils {
 	 */
 	public Observable<Thing<Person>> convertToPerson(Thing<?> usernameOrPerson) {
 
-		if (TypeUtil.equalsType(Person.class,
+		if (tr.equals(Person.class,
                 usernameOrPerson.getThingType())) {
 			return Observable.just((Thing<Person>) usernameOrPerson);
 		} else {
@@ -75,7 +79,7 @@ public class UserUtils {
 	public Observable<Thing<Username>> convertToUsername(
 			Thing<?> usernameOrPerson) {
 
-		if (TypeUtil.equalsType(Username.class,
+		if (tr.equals(Username.class,
                 usernameOrPerson.getThingType())) {
 			return Observable.just((Thing<Username>) usernameOrPerson);
 		} else {
@@ -126,7 +130,7 @@ public class UserUtils {
         tu.setValueIsLink(false);
         tu.setId("person:"+person.getId());
         tu.setKey(person.getKey());
-        tu.setThingType(TypeUtil.getType(User.class));
+        tu.setThingType(tr.getType(User.class));
 
         return tu;
 	}

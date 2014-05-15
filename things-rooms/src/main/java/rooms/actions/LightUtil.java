@@ -8,12 +8,10 @@ import rooms.types.Light;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.types.TypeUtil;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Project: things
@@ -35,7 +33,7 @@ public class LightUtil {
     @Inject
     public void setThingControl(ThingControl tc) {
         this.tc = tc;
-        new Thread(() -> getLights()).start();
+//        new Thread(() -> getLights()).start();
 
     }
 
@@ -66,11 +64,4 @@ public class LightUtil {
         return lights;
     }
 
-    public static Stream<Thing<Light>> filterLights(List<Thing> lights) {
-
-        return lights.stream()
-                .filter(t -> TypeUtil.equalsType(t.getThingType(), Light.class))
-                .map(t -> (Thing<Light>)t);
-
-    }
 }

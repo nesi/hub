@@ -36,7 +36,7 @@ public class ThingUtils {
     private ImmutableMap<String, JsonSchema> schemaMap = null;
     private ImmutableMap<String, Map<String, String>> typePropertiesMap = null;
     
-    private ThingsObjectMapper tom;
+//    private ThingsObjectMapper tom;
     private ThingControl tc;
     private TypeRegistry tr;
 
@@ -48,10 +48,10 @@ public class ThingUtils {
         this.tc = tc;
     }
 
-    @Inject
-    public void setThingsObjectMapper(ThingsObjectMapper tom) {
-        this.tom = tom;
-    }
+//    @Inject
+//    public void setThingsObjectMapper(ThingsObjectMapper tom) {
+//        this.tom = tom;
+//    }
 
     @Inject
     public void setTypeRegistry(TypeRegistry tr) {

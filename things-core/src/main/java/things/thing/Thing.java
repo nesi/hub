@@ -4,6 +4,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+import java.beans.Transient;
 import java.util.Objects;
 import java.util.Set;
 
@@ -179,7 +180,9 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      * @param value the value id.
      */
     public void setValue(V value) {
-        this.value = value;
+        if ( this.value == null || this.value.equals(value) ) {
+            this.value = value;
+        }
     }
 
     @Override
@@ -211,7 +214,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
                 "id='" + id + '\'' +
                 ", type='" + getThingType() +
                 "', key='" + key + '\'' +
-                ", value='" + getValue().toString() +
+                ", value='" + value +
                 "', parents=" + parents +
                 '}';
     }

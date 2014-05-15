@@ -17,7 +17,6 @@ import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingReader;
 import things.thing.ThingWriter;
-import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
 import java.lang.reflect.Field;
@@ -41,8 +40,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 	private MongoTemplate mongoTemplate;
 
     @Autowired
-    public MongoConnector(MongoTemplate mongoTemplate, TypeRegistry typeRegistry) throws Exception {
-        super(typeRegistry);
+    public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -168,7 +166,6 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         }
     }
 
-    @Override
     public Object saveValue(Optional valueId, Object value) {
         myLogger.debug("Saving value: "+value);
 

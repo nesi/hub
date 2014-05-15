@@ -32,11 +32,8 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
     private final File thingsFolder;
     private final File valuesFolder;
 
-    private final TypeRegistry typeRegistry;
-
     @Inject
-    public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder, @Named("typeRegistry")TypeRegistry typeRegistry) {
-        super(typeRegistry);
+    public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder) {
         this.thingsFolder = thingsFolder;
         this.thingsFolder.mkdirs();
         this.valuesFolder = valuesFolder;
@@ -61,7 +58,7 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
 
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {
-        
+
         if ( Strings.isNullOrEmpty(t.getId()) ) {
             t.setId(UUID.randomUUID().toString());
         }
@@ -80,7 +77,6 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
     }
 
 
-    @Override
     public Object saveValue(Optional valueId, Object value) {
 
         FileWriter writer = null;

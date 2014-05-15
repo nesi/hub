@@ -5,10 +5,10 @@ import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Light;
 import rooms.types.LightState;
 import rx.Observable;
+import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingReader;
-import things.types.TypeUtil;
 
 import javax.inject.Inject;
 
@@ -19,10 +19,13 @@ import javax.inject.Inject;
  * Date: 13/05/14
  * Time: 7:40 PM
  */
-public class LightStateReader implements ThingReader {
+public class LightStateReader extends AbstractThingReader implements ThingReader {
 
     private ThingControl tc;
     private LightUtil lightUtil;
+
+    public LightStateReader() {
+    }
 
     @Inject
     public void setLightUtil(LightUtil lightUtil) {
@@ -46,7 +49,7 @@ public class LightStateReader implements ThingReader {
 
         Thing<LightState> lightState = new Thing();
         lightState.setId("light:"+light.getId());
-        lightState.setThingType(TypeUtil.getType(LightState.class));
+        lightState.setThingType(typeRegistry.getType(LightState.class));
         lightState.setValueIsLink(false);
         lightState.setValue(ls);
         lightState.setKey(light.getKey());

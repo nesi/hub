@@ -1,6 +1,8 @@
 package things.types;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import things.exceptions.NoSuchTypeException;
 
 import java.util.*;
@@ -21,18 +23,21 @@ public class TypeRegistry {
     }
 
     public TypeRegistry(Collection<? extends ThingType<?>> types) {
+        Preconditions.checkArgument(types != null, "Types can't be null");
         for ( ThingType<?> type : types ) {
             addType(type);
         }
     }
 
     public void addType(ThingType<?> type) {
+        Preconditions.checkArgument(type != null, "Type can't be null");
         types.put(type.getType(), type);
         typeClasses.put(type.getTypeClass(), type);
     }
 
     public ThingType getThingType(Class<?> type) {
-        if ( typeClasses.get(type) == null ) {
+        Preconditions.checkArgument(type != null, "Type can't be null");
+        if ( typeClasses.get(type) != null ) {
             return typeClasses.get(type);
         } else {
             throw new NoSuchTypeException("Can't find typeClass for class: "+type.toString());
@@ -40,7 +45,8 @@ public class TypeRegistry {
     }
 
     public ThingType getThingType(String type) {
-        if ( types.get(type) == null ) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(type), "Type can't be null or empty");
+        if ( types.get(type) != null ) {
             return types.get(type);
         } else {
             throw new NoSuchTypeException("Can't find typeClass: " + type);
@@ -76,11 +82,14 @@ public class TypeRegistry {
     }
 
     public Optional<String> convertToString(Object value) {
+        Preconditions.checkArgument(value != null, "Value can't be null");
         return getThingType(value).convertToString(value);
 
     }
 
     public Optional<? extends Object> convertFromString(String type, String valueString) {
+        Preconditions.checkArgument(type != null, "Type can't be null");
+        Preconditions.checkArgument(valueString != null, "Value string can't be null");
         return getThingType(type).convertFromString(valueString);
     }
 
@@ -122,6 +131,7 @@ public class TypeRegistry {
 
 
     public boolean convertsFromString(String thingType) {
+        Preconditions.checkArgument(thingType != null, "Type can't be null");
         return getThingType(thingType).convertsFromString();
     }
 }

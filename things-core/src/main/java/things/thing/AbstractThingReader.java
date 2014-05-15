@@ -5,6 +5,8 @@ import rx.Subscriber;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
+import javax.inject.Inject;
+
 /**
  * Project: things
  * <p>
@@ -16,7 +18,8 @@ abstract public class AbstractThingReader implements ThingReader {
 
     protected TypeRegistry typeRegistry = null;
 
-    public AbstractThingReader(TypeRegistry typeRegistry) {
+    @Inject
+    public void setTypeRegistry(TypeRegistry typeRegistry) {
         this.typeRegistry = typeRegistry;
     }
 

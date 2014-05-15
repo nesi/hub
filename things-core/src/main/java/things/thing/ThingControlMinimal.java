@@ -318,7 +318,7 @@ public class ThingControlMinimal {
 
                         newThing.setKey(key);
                         newThing.setThingType(typeRegistry.getType(value));
-
+                        newThing.setValue(value);
                         Thing<V> t = saveThing(newThing);
 
                         subscriber.onNext(t);

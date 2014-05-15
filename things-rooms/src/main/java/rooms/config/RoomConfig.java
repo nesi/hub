@@ -1,5 +1,6 @@
 package rooms.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -15,7 +16,11 @@ import things.config.ThingReaders;
 import things.config.ThingWriters;
 import things.config.mongo.MongoConfig;
 import things.mongo.MongoConnector;
-import things.thing.*;
+import things.thing.ThingControl;
+import things.types.AnnotationTypeFactory;
+import things.types.ThingType;
+import things.types.TypeRegistry;
+import things.utils.json.ThingsObjectMapper;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -50,9 +55,12 @@ public class RoomConfig extends MongoConfig {
     }
 
     @Bean
-    public void typeRegistry() {
-
-
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
     }
 
     @Bean
@@ -119,6 +127,12 @@ public class RoomConfig extends MongoConfig {
     public ThingControl thingControl() throws Exception {
         ThingControl tc = new ThingControl();
         return tc;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ThingsObjectMapper tom = new ThingsObjectMapper();
+        return tom;
     }
 
     @Bean
