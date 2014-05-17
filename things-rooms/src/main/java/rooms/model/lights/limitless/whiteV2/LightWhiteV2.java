@@ -54,16 +54,16 @@ public class LightWhiteV2 implements Light {
         calibrateBrightness(default_calibrate_brightness_full);
         calibrateWarmth(default_calibrate_warmth_full);
 
-        if (old_brightness == null) {
-            if (default_calibrate_brightness_full) {
+        if ( old_brightness == null ) {
+            if ( default_calibrate_brightness_full ) {
                 old_brightness = BRIGHTNESS_MAX;
             } else {
                 old_brightness = BRIGHTNESS_MIN;
             }
         }
 
-        if (old_warmth == null) {
-            if (default_calibrate_warmth_full) {
+        if ( old_warmth == null ) {
+            if ( default_calibrate_warmth_full ) {
                 old_warmth = WARMTH_MAX;
             } else {
                 old_warmth = WARMTH_MIN;
@@ -74,7 +74,7 @@ public class LightWhiteV2 implements Light {
 
     private void calibrateBrightness(boolean full) {
         setOn(true);
-        if (full) {
+        if ( full ) {
             send(Cmd.BRIGHTNESS_UP, CALIBRATION_THRESHOLD);
             this.brightness = BRIGHTNESS_MAX;
         } else {
@@ -88,7 +88,7 @@ public class LightWhiteV2 implements Light {
 
     private void calibrateWarmth(boolean full) {
         setOn(true);
-        if (full) {
+        if ( full ) {
             send(Cmd.WARMTH_UP, CALIBRATION_THRESHOLD);
             this.warmth = WARMTH_MAX;
         } else {
@@ -101,29 +101,29 @@ public class LightWhiteV2 implements Light {
 // -------------------------- OTHER METHODS --------------------------
 
     public void changeBrightness(int steps) {
-        if (steps == 0) {
+        if ( steps == 0 ) {
             return;
         }
 
         setOn(true);
 
-        if (brightness != null && (
+        if ( brightness != null && (
                 (steps < 0 && brightness == BRIGHTNESS_MIN) || (steps > 0 && brightness == BRIGHTNESS_MAX))
                 ) {
             return;
         }
 
-        if (steps > 0) {
+        if ( steps > 0 ) {
             controller.sendWhite(this.group, Cmd.BRIGHTNESS_UP, steps);
         } else {
             controller.sendWhite(this.group, Cmd.BRIGHTNESS_DOWN, Math.abs(steps));
         }
-        if (brightness != null) {
+        if ( brightness != null ) {
             brightness = brightness + steps;
         } else {
             brightness_shadow = brightness_shadow + steps;
-            if (Math.abs(brightness_shadow) >= CALIBRATION_THRESHOLD) {
-                if (brightness_shadow > 0) {
+            if ( Math.abs(brightness_shadow) >= CALIBRATION_THRESHOLD ) {
+                if ( brightness_shadow > 0 ) {
                     brightness = BRIGHTNESS_MAX;
                 } else {
                     brightness = BRIGHTNESS_MIN;
@@ -135,27 +135,27 @@ public class LightWhiteV2 implements Light {
     }
 
     public void changeWarmth(int steps) {
-        if (steps == 0) {
+        if ( steps == 0 ) {
             return;
         }
 
-        if (warmth != null &&
+        if ( warmth != null &&
                 ((steps < 0 && warmth == WARMTH_MIN) || (steps > 0 && warmth == WARMTH_MAX))
                 ) {
             return;
         }
 
-        if (steps > 0) {
+        if ( steps > 0 ) {
             controller.sendWhite(this.group, Cmd.WARMTH_UP, steps);
         } else {
             controller.sendWhite(this.group, Cmd.WARMTH_DOWN, Math.abs(steps));
         }
-        if (warmth != null) {
+        if ( warmth != null ) {
             warmth = warmth + steps;
         } else {
             warmth_shadow = warmth_shadow + steps;
-            if (Math.abs(warmth_shadow) >= CALIBRATION_THRESHOLD) {
-                if (warmth_shadow > 0) {
+            if ( Math.abs(warmth_shadow) >= CALIBRATION_THRESHOLD ) {
+                if ( warmth_shadow > 0 ) {
                     warmth = WARMTH_MAX;
                 } else {
                     warmth_shadow = WARMTH_MIN;
@@ -168,8 +168,8 @@ public class LightWhiteV2 implements Light {
 
     private String debugState() {
         String onString = null;
-        if (on != null) {
-            if (on) {
+        if ( on != null ) {
+            if ( on ) {
                 onString = "on";
             } else {
                 onString = "off";
@@ -238,8 +238,8 @@ public class LightWhiteV2 implements Light {
 
     @Override
     public void set(Map<String, String> properties) {
-        for (String key : properties.keySet()) {
-            switch (key) {
+        for ( String key : properties.keySet() ) {
+            switch ( key ) {
                 case "brightness":
                     setBrightness(Integer.parseInt(properties.get(key)));
                     break;
@@ -256,11 +256,11 @@ public class LightWhiteV2 implements Light {
     }
 
     public void setBrightness(int absBrightness) {
-        if (absBrightness < 0) {
+        if ( absBrightness < 0 ) {
             return;
         }
         setOn(true);
-        if (this.brightness == null) {
+        if ( this.brightness == null ) {
             calibrateBrightness(absBrightness > BRIGHTNESS_MAX / 2);
         }
 
@@ -273,10 +273,10 @@ public class LightWhiteV2 implements Light {
 
     public void setBrightnessAndWarmth(int brightness, int warmth) {
         setOn(true);
-        if (this.brightness == null) {
+        if ( this.brightness == null ) {
             calibrateBrightness(brightness > BRIGHTNESS_MAX / 2);
         }
-        if (this.warmth == null) {
+        if ( this.warmth == null ) {
             calibrateWarmth(warmth > WARMTH_MAX / 2);
         }
 
@@ -291,9 +291,9 @@ public class LightWhiteV2 implements Light {
         // make the transition a bit smoother, instead of changing brightness & warmth after each other
         int maxSteps = Math.max(delta_brightness, delta_warmth);
 
-        for (int i = 0; i < maxSteps; i++) {
-            if (Math.abs(delta_warmth) > 0) {
-                if (warmth_increase) {
+        for ( int i = 0; i < maxSteps; i++ ) {
+            if ( Math.abs(delta_warmth) > 0 ) {
+                if ( warmth_increase ) {
                     increaseWarmth();
                     delta_warmth = delta_warmth - 1;
                 } else {
@@ -301,8 +301,8 @@ public class LightWhiteV2 implements Light {
                     delta_warmth = delta_warmth + 1;
                 }
             }
-            if (Math.abs(delta_brightness) > 0) {
-                if (brightness_increase) {
+            if ( Math.abs(delta_brightness) > 0 ) {
+                if ( brightness_increase ) {
                     increaseBrightness();
                     delta_brightness = delta_brightness - 1;
                 } else {
@@ -326,11 +326,11 @@ public class LightWhiteV2 implements Light {
     }
 
     public void setOn(Boolean on) {
-        if (on == null) {
+        if ( on == null ) {
             return;
         }
-        if (this.on == null) {
-            if (on) {
+        if ( this.on == null ) {
+            if ( on ) {
                 send(Cmd.ON);
                 this.on = true;
             } else {
@@ -338,8 +338,8 @@ public class LightWhiteV2 implements Light {
                 this.on = false;
             }
         } else {
-            if (!this.on.equals(on)) {
-                if (on) {
+            if ( !this.on.equals(on) ) {
+                if ( on ) {
                     send(Cmd.ON);
                     this.on = true;
                 } else {
@@ -351,11 +351,11 @@ public class LightWhiteV2 implements Light {
     }
 
     public void setWarmth(int absWarmth) {
-        if (absWarmth < 0) {
+        if ( absWarmth < 0 ) {
             return;
         }
         setOn(true);
-        if (this.warmth == null) {
+        if ( this.warmth == null ) {
             calibrateWarmth(absWarmth > WARMTH_MAX / 2);
         }
 
@@ -368,11 +368,11 @@ public class LightWhiteV2 implements Light {
 
     public String toString() {
         String brightness_string = brightness.toString();
-        if (brightness == null) {
+        if ( brightness == null ) {
             brightness_string = "n/a";
         }
         String warmth_string = warmth.toString();
-        if (warmth == null) {
+        if ( warmth == null ) {
             warmth_string = "n/a";
         }
 
@@ -381,7 +381,7 @@ public class LightWhiteV2 implements Light {
     }
 
     public void toggle() {
-        if (isOn() == null || !isOn()) {
+        if ( isOn() == null || !isOn() ) {
             setOn(true);
         } else {
             setOn(false);

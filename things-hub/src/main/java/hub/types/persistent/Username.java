@@ -32,10 +32,10 @@ public class Username {
     }
 
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if ( obj == this ) return true;
+        if ( obj == null ) return false;
 
-        if (getClass().equals(obj.getClass())) {
+        if ( getClass().equals(obj.getClass()) ) {
             final Username other = (Username) obj;
             return Objects.equals(getUsername(), other.getUsername());
         } else {

@@ -2,6 +2,7 @@ package things.thing;
 
 import rx.Observable;
 import rx.Subscriber;
+import things.exceptions.ThingRuntimeException;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
@@ -68,8 +69,8 @@ abstract public class AbstractThingReader implements ThingReader {
 
             findAllThings().subscribe(
                     (thing) -> {
-                        if (MatcherUtils.wildCardMatch(thing.getThingType(), type)
-                                && MatcherUtils.wildCardMatch(thing.getKey(), key)) {
+                        if ( MatcherUtils.wildCardMatch(thing.getThingType(), type)
+                                && MatcherUtils.wildCardMatch(thing.getKey(), key) ) {
                             subscriber.onNext(thing);
                         }
                     },
@@ -87,8 +88,46 @@ abstract public class AbstractThingReader implements ThingReader {
         return obs.filter(t -> t.getParents().contains(id));
     }
 
+    public Observable<? extends Thing<?>> getChildrenForKey(Observable<? extends Thing<?>> things, String key) {
+
+        if ( MatcherUtils.isGlob(key) ) {
+            throw new ThingRuntimeException("Key can't be glob for this query: " + key);
+        }
+
+        return getChildrenMatchingTypeAndKey(things, "*", key);
+    }
+
+    public Observable<? extends Thing<?>> getChildrenForType(Observable<? extends Thing<?>> things, String type) {
+
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query: " + type);
+        }
+
+        return getChildrenMatchingTypeAndKey(things, type, "*");
+    }
+
+    public Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key) {
+
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query: " + type);
+        }
+        if ( MatcherUtils.isGlob(key) ) {
+            throw new ThingRuntimeException("Key can't be glob for this query: " + key);
+        }
+
+        return getChildrenMatchingTypeAndKey(things, type, "*");
+    }
+
     public <V> Observable<Thing<V>> getChildrenForValue(Observable<? extends Thing<?>> thing, V value) {
         return findThingsForValue(thing.flatMap(t -> getChildrenForId(t.getId())), value);
+    }
+
+    public Observable<? extends Thing<?>> getChildrenMatchingKey(Observable<? extends Thing<?>> things, String keyMatcher) {
+        return getChildrenMatchingTypeAndKey(things, "*", keyMatcher);
+    }
+
+    public Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher) {
+        return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
     }
 
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {

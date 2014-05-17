@@ -31,7 +31,7 @@ public class LightAction implements ThingAction {
 
         Observable<Thing<Light>> lights = tc.filterThingsOfType(Light.class, things);
 
-        switch (command) {
+        switch ( command ) {
             case "toggle":
                 lights.toBlockingObservable().forEach(l -> toggleLight(l.getKey()));
                 break;

@@ -20,7 +20,7 @@ public class FileUtils {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                if (exc == null) {
+                if ( exc == null ) {
                     Files.delete(dir);
                     return FileVisitResult.CONTINUE;
                 } else {

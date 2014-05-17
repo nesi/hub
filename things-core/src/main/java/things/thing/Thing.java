@@ -47,12 +47,12 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if ( obj == this ) return true;
+        if ( obj == null ) return false;
 
-        if (getClass().equals(obj.getClass())) {
+        if ( getClass().equals(obj.getClass()) ) {
             final Thing other = (Thing) obj;
-            if (getId() == null || other.getId() == null) {
+            if ( getId() == null || other.getId() == null ) {
                 return Objects.equals(getThingType(), other.getThingType()) && Objects.equals(getValue(), other.getValue());
             } else {
                 return getId().equals(other.getId());
@@ -121,7 +121,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     @Override
     public int hashCode() {
-        if (getId() == null) {
+        if ( getId() == null ) {
             return Objects.hash(getValue(), getThingType());
         }
         return Objects.hashCode(getId());
@@ -182,7 +182,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      * @param value the value id.
      */
     public void setValue(V value) {
-        if (this.value == null || this.value.equals(value)) {
+        if ( this.value == null || this.value.equals(value) ) {
             this.value = value;
         }
     }

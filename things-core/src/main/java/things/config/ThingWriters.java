@@ -4,8 +4,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import things.exceptions.TypeRuntimeException;
-import things.thing.ThingControl;
 import things.thing.ThingWriter;
+import things.utils.MatcherUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -33,14 +33,14 @@ public class ThingWriters {
         Set<String> keys = thingWriters.keySet();
 
         List<ThingWriter> connectors = Lists.newArrayList();
-        for (String key : keys) {
+        for ( String key : keys ) {
 
-            if (ThingControl.keyMatcheskey(match_key, key) || ThingControl.keyMatcheskey(key, match_key)) {
+            if ( MatcherUtils.keyMatcheskey(match_key, key) || MatcherUtils.keyMatcheskey(key, match_key) ) {
                 connectors.addAll(thingWriters.get(key));
             }
         }
 
-        if (connectors.size() == 0) {
+        if ( connectors.size() == 0 ) {
             throw new TypeRuntimeException("No connectors configured for: "
                     + match_key, queryType);
         }
@@ -50,9 +50,9 @@ public class ThingWriters {
 
     public ThingWriter getUnique(String queryType, String queryKey) {
         List<ThingWriter> c = get(queryType, queryKey);
-        if (c.size() == 0) {
+        if ( c.size() == 0 ) {
             throw new TypeRuntimeException("No connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
-        } else if (c.size() > 1) {
+        } else if ( c.size() > 1 ) {
             throw new TypeRuntimeException("More than one connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
         }
 

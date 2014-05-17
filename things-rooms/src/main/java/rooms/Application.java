@@ -36,7 +36,7 @@ public class Application {
         MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
         final ThingControl tc = (ThingControl) context.getBean("thingControl");
 
-        for (String s : context.getBeanDefinitionNames()) {
+        for ( String s : context.getBeanDefinitionNames() ) {
             System.out.println(s);
         }
 
@@ -61,13 +61,13 @@ public class Application {
 
         Map<String, LightWhiteV2> lights = Maps.newHashMap();
 
-        for (Thing<Bridge> bridgeThing : bridges) {
+        for ( Thing<Bridge> bridgeThing : bridges ) {
 
             Bridge bridge = tc.getValue(bridgeThing);
             LimitlessLEDControllerV2 c = new LimitlessLEDControllerV2(b.getHost(), b.getPort());
 
             List<Thing<Light>> lightThings = tc.getChildrenForType(Observable.just(bridgeThing), Light.class, true);
-            for (Thing<Light> tempLight : lightThings) {
+            for ( Thing<Light> tempLight : lightThings ) {
                 Light ll = tc.getValue(tempLight);
                 LightWhiteV2 white = new LightWhiteV2(tempLight.getKey(), c, ll.getGroup());
                 lights.put(white.getName(), white);

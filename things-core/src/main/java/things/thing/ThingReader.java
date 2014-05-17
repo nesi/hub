@@ -27,41 +27,7 @@ public interface ThingReader {
 
     abstract <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value);
 
-//    default Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher) {
-//        return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
-//    }
-//
-//    default Observable<? extends Thing<?>> getChildrenForType(Observable<? extends Thing<?>> things, String type) {
-//        if ( MatcherUtils.isGlob(type)) {
-//            throw new ThingRuntimeException("Type can't be glob for this query");
-//        }
-//        return getChildrenMatchingTypeAndKey(things, type, "*");
-//    }
-//
-//    default Observable<? extends Thing<?>> getChildrenMatchingKey(Observable<? extends Thing<?>> things, String keyMatcher) {
-//        return getChildrenMatchingTypeAndKey(things, "*", keyMatcher);
-//    }
-//
-//    default Observable<? extends Thing<?>> getChildrenForKey(Observable<? extends Thing<?>> things, String key) {
-//        if (MatcherUtils.isGlob(key)) {
-//            throw new ThingRuntimeException("Key can't be glob for this query");
-//        }
-//        return getChildrenMatchingTypeAndKey(things, "*", key);
-//    }
-//
-//    default Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key) {
-//        if (MatcherUtils.isGlob(type)) {
-//            throw new ThingRuntimeException("Type can't be glob for this query");
-//        }
-//        if (MatcherUtils.isGlob(key)) {
-//            throw new ThingRuntimeException("Key can't be glob for this query");
-//        }
-//        return getChildrenMatchingTypeAndKey(things, "*", key);
-//    }
-
     abstract Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher);
-
-    abstract <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value);
 
     abstract Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher);
 
@@ -89,7 +55,17 @@ public interface ThingReader {
 
     abstract Observable<? extends Thing<?>> getChildrenForId(String id);
 
+    abstract Observable<? extends Thing<?>> getChildrenForKey(Observable<? extends Thing<?>> things, String type);
+
+    abstract Observable<? extends Thing<?>> getChildrenForType(Observable<? extends Thing<?>> things, String type);
+
+    abstract Observable<? extends Thing<?>> getChildrenForTypeAndKey(Observable<? extends Thing<?>> things, String type, String key);
+
     abstract <V> Observable<Thing<V>> getChildrenForValue(Observable<? extends Thing<?>> thing, V value);
+
+    abstract Observable<? extends Thing<?>> getChildrenMatchingKey(Observable<? extends Thing<?>> things, String keyMatcher);
+
+    abstract Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher);
 
     abstract Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
 

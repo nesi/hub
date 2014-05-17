@@ -36,10 +36,10 @@ public class Person {
     }
 
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if ( obj == this ) return true;
+        if ( obj == null ) return false;
 
-        if (getClass().equals(obj.getClass())) {
+        if ( getClass().equals(obj.getClass()) ) {
             final Person other = (Person) obj;
             return Objects.equals(getFirst_name(), other.getFirst_name()) && Objects.equals(getLast_name(), other.getLast_name());
         } else {
@@ -80,7 +80,7 @@ public class Person {
      * @return the name string
      */
     public String nameToString() {
-        if (Strings.isNullOrEmpty(middle_names)) {
+        if ( Strings.isNullOrEmpty(middle_names) ) {
             return first_name + " " + last_name;
         } else {
             return first_name + " " + middle_names + " " + last_name;

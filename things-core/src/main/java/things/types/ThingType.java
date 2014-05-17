@@ -30,7 +30,7 @@ public class ThingType<V> {
     }
 
     public Optional<V> convertFromString(String valueString) {
-        if (converter != null) {
+        if ( converter != null ) {
             return Optional.of(converter.convertFromString(valueString));
         } else {
             return Optional.empty();
@@ -38,7 +38,7 @@ public class ThingType<V> {
     }
 
     public Optional<String> convertToString(V value) {
-        if (converter != null) {
+        if ( converter != null ) {
             return Optional.of(converter.convertToString(value));
         } else {
             return Optional.empty();
@@ -51,7 +51,7 @@ public class ThingType<V> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ThingType) {
+        if ( o instanceof ThingType ) {
             return Objects.equals(getType(), ((ThingType) o).getType());
         } else {
             return false;

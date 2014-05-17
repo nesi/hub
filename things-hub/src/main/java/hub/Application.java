@@ -25,7 +25,7 @@ public class Application {
         MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
         final ThingControl tc = (ThingControl) context.getBean("thingControl");
 
-        for (String s : context.getBeanDefinitionNames()) {
+        for ( String s : context.getBeanDefinitionNames() ) {
             System.out.println(s);
         }
 

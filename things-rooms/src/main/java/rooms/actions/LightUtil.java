@@ -30,22 +30,22 @@ public class LightUtil {
     }
 
     public synchronized List<Thing<Bridge>> getBridges() {
-        if (bridges == null) {
+        if ( bridges == null ) {
             bridges = tc.findThingsForType(Bridge.class);
         }
         return bridges;
     }
 
     public synchronized Map<String, LightWhiteV2> getLights() {
-        if (lights == null) {
+        if ( lights == null ) {
             lights = Maps.newHashMap();
-            for (Thing<Bridge> bridgeThing : getBridges()) {
+            for ( Thing<Bridge> bridgeThing : getBridges() ) {
 
                 Bridge bridge = tc.getValue(bridgeThing);
                 LimitlessLEDControllerV2 c = new LimitlessLEDControllerV2(bridge.getHost(), bridge.getPort());
 
                 List<Thing<Light>> lightThings = tc.getChildrenForType(Observable.just(bridgeThing), Light.class, true);
-                for (Thing<Light> tempLight : lightThings) {
+                for ( Thing<Light> tempLight : lightThings ) {
                     Light ll = tc.getValue(tempLight);
                     LightWhiteV2 white = new LightWhiteV2(tempLight.getKey(), c, ll.getGroup());
                     lights.put(white.getName(), white);

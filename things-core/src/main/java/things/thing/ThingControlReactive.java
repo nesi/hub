@@ -3,6 +3,7 @@ package things.thing;
 import com.google.common.collect.Lists;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
+import things.utils.MatcherUtils;
 
 import java.util.List;
 
@@ -19,21 +20,33 @@ public class ThingControlReactive extends ThingControlMinimal {
         super();
     }
 
+    public Thing<?> addChildThingToObservable(Observable<? extends Thing<?>> parents, Thing<?> child) {
+        parents.map(p -> addChildThing(p, child)).toBlockingObservable();
+        return child;
+    }
+
     public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<? extends Thing<?>> things) {
         return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> convertToTyped(type, t));
     }
 
-    public Observable<? extends Thing<?>> observeAllThings(boolean populateValues) {
-        List<Observable<? extends Thing<?>>> all = Lists.newArrayList();
-        for (ThingReader r : thingReaders.getAll()) {
-            all.add(r.findAllThings());
+    public List<? extends Thing<?>> findParents(Thing<?> t) {
+        return findParents(Observable.just(t));
+    }
+
+    public List<? extends Thing<?>> findParents(Observable<? extends Thing<?>> things) {
+
+        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
+
+    }
+
+    public Observable<? extends Thing<?>> observeChildrenForKey(Observable<? extends Thing<?>> things, String key, boolean populateValues) {
+
+        if ( MatcherUtils.isGlob(key) ) {
+            throw new ThingRuntimeException("Key can't be glob for this query: " + key);
         }
 
-        Observable<? extends Thing<?>> obs = Observable.merge(all);
-        if (populateValues) {
-            return obs.lift(POPULATE_THINGS);
-        }
-        return obs;
+        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, "*", key, populateValues);
+        return result;
     }
 
     public <V> Observable<Thing<V>> observeChildrenForType(Thing<?> thing, Class<V> typeClass, boolean populateValues) {
@@ -46,6 +59,28 @@ public class ThingControlReactive extends ThingControlMinimal {
         return result.map(t -> convertToTyped(typeClass, t));
     }
 
+    public Observable<? extends Thing<?>> observeChildrenForType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
+
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query: " + type);
+        }
+
+        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, type, "*", populateValues);
+        return result;
+    }
+
+    public Observable<? extends Thing<?>> observeChildrenMatchingKey(Observable<? extends Thing<?>> things, String key, boolean populateValues) {
+
+        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, "*", key, populateValues);
+        return result;
+    }
+
+    public Observable<? extends Thing<?>> observeChildrenMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
+
+        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, type, "*", populateValues);
+        return result;
+    }
+
     public Observable<? extends Thing<?>> observeChildrenMatchingTypeAndKey(Thing<?> t, String typeMatch, String keyMatch, boolean populated) {
         return observeChildrenMatchingTypeAndKey(Observable.just(t), typeMatch, keyMatch, populated);
     }
@@ -54,25 +89,36 @@ public class ThingControlReactive extends ThingControlMinimal {
         return observeChildrenMatchingTypeAndKey(Observable.from(t), typeMatch, keyMatch, populated);
     }
 
-    public Observable<? extends Thing<?>> observeChilds(Observable<? extends Thing<?>> things, boolean populate) {
-
-        return things.flatMap(t -> observeChilds(t, populate));
+    public Observable<? extends Thing<?>> observeParents(Thing<?> t) {
+        return observeParents(Observable.just(t));
     }
 
-    public Observable<? extends Thing<?>> observeChildsMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
+    public Observable<? extends Thing<?>> observeParents(Observable<? extends Thing<?>> things) {
 
-        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, type, "*", populateValues);
-        return result;
+        return things.flatMap(t -> observeThingsById(Observable.from(t.getParents())));
+
+    }
+
+    public Observable<? extends Thing<?>> observeThingsById(Observable<String> id) {
+        return id.flatMap(i -> observeThingById(i));
     }
 
     public <V> Observable<Thing<V>> observeThingsForType(Class<V> typeClass, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
+        Observable<? extends Thing<?>> result = observeThingsForTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
         return result.map(t -> convertToTyped(typeClass, t));
     }
 
     public Observable<? extends Thing<?>> observeThingsForType(String type, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(type, "*", populateValues);
+
+        Observable<? extends Thing<?>> result = observeThingsForTypeAndKey(type, "*", populateValues);
         return result;
+    }
+
+    public <V> Observable<Thing<V>> observeThingsForTypeAndKey(Class<V> typeClass, String key, boolean populate) {
+
+        return observeThingsForTypeAndKey(typeRegistry.getType(typeClass), key, populate)
+                .map(t -> convertToTyped(typeClass, t));
+
     }
 
     public Observable<? extends Thing<?>> observeThingsMatchingType(String type, boolean populateValues) {

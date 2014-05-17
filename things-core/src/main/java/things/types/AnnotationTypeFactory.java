@@ -33,9 +33,9 @@ public class AnnotationTypeFactory {
     private static Set<Class<?>> types;
 
     public synchronized static Set<ThingType<?>> getAllTypes() {
-        if (thingTypes == null) {
+        if ( thingTypes == null ) {
             thingTypes = Sets.newHashSet();
-            for (String type : getTypeMap().keySet()) {
+            for ( String type : getTypeMap().keySet() ) {
                 Class typeClass = getTypeMap().get(type);
                 ThingType tt = new ThingType(type, typeClass);
                 tt.setNeedsUniqueKey(typeNeedsUniqueKey(typeClass));
@@ -59,7 +59,7 @@ public class AnnotationTypeFactory {
      */
     public static Class<?> getSubordinateParentClass(Class<?> typeClass) {
         Subordinate annotation = typeClass.getAnnotation(Subordinate.class);
-        if (annotation == null) {
+        if ( annotation == null ) {
             return null;
         } else {
             return annotation.parentClass();
@@ -67,13 +67,13 @@ public class AnnotationTypeFactory {
     }
 
     public static BiMap<String, Class> getTypeMap() {
-        if (typeMap == null) {
+        if ( typeMap == null ) {
             types = singleton().getTypesAnnotatedWith(Value.class);
             HashBiMap<String, Class> temp = HashBiMap.create();
-            for (Class type : types) {
+            for ( Class type : types ) {
                 Value ann = (Value) type.getAnnotation(Value.class);
                 String key;
-                if (ann == null) {
+                if ( ann == null ) {
                     String name = type.getSimpleName();
                     key = Character.toLowerCase(name.charAt(0)) + name.substring(1);
                     myLogger.info("No annotation found for type: {}, using: " + key, type);
@@ -90,7 +90,7 @@ public class AnnotationTypeFactory {
 
     public static Reflections singleton() {
 
-        if (reflections == null) {
+        if ( reflections == null ) {
             reflections = new Reflections();
         }
 
@@ -108,12 +108,12 @@ public class AnnotationTypeFactory {
      */
     public static boolean typeNeedsUniqueKey(Class<?> typeClass) {
 
-        if (typeClass == null) {
+        if ( typeClass == null ) {
             throw new TypeRuntimeException("No typeClass provided", null);
         }
 
         UniqueKey annotation = typeClass.getAnnotation(UniqueKey.class);
-        if (annotation == null || annotation.unique() == false) {
+        if ( annotation == null || annotation.unique() == false ) {
             return false;
         } else {
             return true;
@@ -131,12 +131,12 @@ public class AnnotationTypeFactory {
      */
     public static boolean typeNeedsUniqueKeyWithinChildren(Class<?> typeClass) {
 
-        if (typeClass == null) {
+        if ( typeClass == null ) {
             throw new TypeRuntimeException("No typeClass provided", null);
         }
 
         UniqueKeyInOtherThings annotation = typeClass.getAnnotation(UniqueKeyInOtherThings.class);
-        if (annotation == null || annotation.unique() == false) {
+        if ( annotation == null || annotation.unique() == false ) {
             return false;
         } else {
             return true;
@@ -157,12 +157,12 @@ public class AnnotationTypeFactory {
      */
     public static boolean typeNeedsUniqueValue(Class<?> typeClass) {
 
-        if (typeClass == null) {
+        if ( typeClass == null ) {
             throw new TypeRuntimeException("No typeClass provided", null);
         }
 
         UniqueValueForKey annotation = typeClass.getAnnotation(UniqueValueForKey.class);
-        if (annotation == null || annotation.unique() == false) {
+        if ( annotation == null || annotation.unique() == false ) {
             return false;
         } else {
             return true;

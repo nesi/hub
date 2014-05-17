@@ -104,7 +104,7 @@ public class ThingControl extends ThingControlReactive {
     }
 
     public List<? extends Thing<?>> getChildren(Observable<? extends Thing<?>> things) {
-        return Lists.newArrayList(observeChilds(things, true).toBlockingObservable().toIterable());
+        return Lists.newArrayList(observeChildren(things, true).toBlockingObservable().toIterable());
     }
 
     public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
@@ -116,11 +116,11 @@ public class ThingControl extends ThingControlReactive {
     }
 
     public List<Thing> getChilds(Thing t) {
-        return Lists.newArrayList(observeChilds(t, true).toBlockingObservable().toIterable());
+        return Lists.newArrayList(observeChildren(t, true).toBlockingObservable().toIterable());
     }
 
     public List<Thing> getChildsMatchingType(Observable<? extends Thing<?>> things, String type) {
-        return Lists.newArrayList(observeChildsMatchingType(things, type, true).toBlockingObservable().toIterable());
+        return Lists.newArrayList(observeChildrenMatchingType(things, type, true).toBlockingObservable().toIterable());
     }
 
     public List<? extends Thing<?>> getChildsMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatch, String keyMatch) {
@@ -130,12 +130,26 @@ public class ThingControl extends ThingControlReactive {
     public Observable<? extends Thing<?>> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
         Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
 
-        if (populateValue) {
+        if ( populateValue ) {
             return obs.lift(POPULATE_THINGS);
         } else {
             return obs;
         }
     }
+
+    /**
+     * Checks whether a thing with the specified type and key exists.
+     *
+     * @param typeMatch the type (or type-glob)
+     * @param keyMatch  the key (or key-glob)
+     * @return whether such a Thing exists
+     */
+    public boolean thingForTypeAndKeyExists(final String typeMatch, final String keyMatch) {
+
+        Observable<? extends Thing<?>> obs = observeThingsForTypeAndKey(typeMatch, keyMatch, false);
+        return !obs.isEmpty().toBlockingObservable().single();
+    }
+
 
     /**
      * Checks whether a thing with the specified type and key exists.
@@ -158,6 +172,7 @@ public class ThingControl extends ThingControlReactive {
     public boolean thingMatchingTypeAndKeyExists(Class type, String key) {
         return thingMatchingTypeAndKeyExists(typeRegistry.getType(type), key);
     }
+
 
 //    public Optional<Thing> findUniqueThingMatchingKeyAndValue(String key, Object value) {
 //        return findv

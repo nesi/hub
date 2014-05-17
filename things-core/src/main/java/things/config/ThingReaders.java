@@ -6,8 +6,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import things.exceptions.TypeRuntimeException;
 import things.thing.Thing;
-import things.thing.ThingControl;
 import things.thing.ThingReader;
+import things.utils.MatcherUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -35,14 +35,14 @@ public class ThingReaders {
         Set<String> keys = thingReaders.keySet();
 
         List<ThingReader> connectors = Lists.newArrayList();
-        for (String key : keys) {
+        for ( String key : keys ) {
 
-            if (ThingControl.keyMatcheskey(match_key, key) || ThingControl.keyMatcheskey(key, match_key)) {
+            if ( MatcherUtils.keyMatcheskey(match_key, key) || MatcherUtils.keyMatcheskey(key, match_key) ) {
                 connectors.addAll(thingReaders.get(key));
             }
         }
 
-        if (connectors.size() == 0) {
+        if ( connectors.size() == 0 ) {
             throw new TypeRuntimeException("No connectors configured for: "
                     + match_key, queryType);
         }
@@ -64,9 +64,9 @@ public class ThingReaders {
 
     public ThingReader getUnique(String queryType, String queryKey) {
         List<ThingReader> c = get(queryType, queryKey);
-        if (c.size() == 0) {
+        if ( c.size() == 0 ) {
             throw new TypeRuntimeException("No connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
-        } else if (c.size() > 1) {
+        } else if ( c.size() > 1 ) {
             throw new TypeRuntimeException("More than one connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
         }
 

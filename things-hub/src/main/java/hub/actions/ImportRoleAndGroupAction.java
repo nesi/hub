@@ -48,16 +48,16 @@ public class ImportRoleAndGroupAction implements ThingAction {
             condition = jooq.select(Tables.ADVISER.FULLNAME, Tables.ADVISER.ID, Tables.ADVISER.ISADMIN).from(Tables.ADVISER)
                     .where(Tables.ADVISER.FULLNAME.contains(p.getFirst_name()))
                     .and(Tables.ADVISER.FULLNAME.contains(p.getLast_name()));
-            if (!StringUtils.isEmpty(p.getMiddle_names())) {
+            if ( !StringUtils.isEmpty(p.getMiddle_names()) ) {
                 condition = condition.and(Tables.ADVISER.FULLNAME.contains(p.getMiddle_names()));
 
             }
 
             Result<Record3<String, Integer, Byte>> result = condition.fetch();
 
-            if (result.size() == 0) {
+            if ( result.size() == 0 ) {
                 return;
-            } else if (result.size() > 1) {
+            } else if ( result.size() > 1 ) {
                 System.out.println("More than one match found for: " + p.nameToString() + ". Ignoring...");
             }
 
@@ -70,7 +70,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
             tc.addChildThing(person, adviserRole);
 
 
-            if (isAdmin.intValue() != 0) {
+            if ( isAdmin.intValue() != 0 ) {
                 Thing<Role> adminRole = getRole(PROJECT_DB_KEY, PROJECT_DB_ADMIN_VALUE);
                 myLogger.debug("Adding admin role to " + p.nameToString());
                 tc.addChildThing(person, adminRole);
@@ -99,18 +99,18 @@ public class ImportRoleAndGroupAction implements ThingAction {
                     .from(Tables.RESEARCHER)
                     .where(Tables.RESEARCHER.FULLNAME.contains(p.getFirst_name()))
                     .and(Tables.RESEARCHER.FULLNAME.contains(p.getLast_name()));
-            if (!StringUtils.isEmpty(p.getMiddle_names())) {
+            if ( !StringUtils.isEmpty(p.getMiddle_names()) ) {
                 condition = condition.and(Tables.RESEARCHER.FULLNAME.contains(p.getMiddle_names()));
             }
 
             Result<Record2<Integer, String>> result = condition.fetch();
 
-            if (result == null || result.size() == 0) {
+            if ( result == null || result.size() == 0 ) {
                 // means no researcher
                 myLogger.debug("Could not find researcher role for: " + p.nameToString());
                 System.out.println("Could not find researcher role for: " + p.nameToString());
                 return;
-            } else if (result.size() > 1) {
+            } else if ( result.size() > 1 ) {
                 myLogger.debug("Found multiple results for person: " + p.nameToString());
                 System.out.println("Found multiple results for person: " + p.nameToString());
                 return;
@@ -124,24 +124,24 @@ public class ImportRoleAndGroupAction implements ThingAction {
 
             Result<Record2<Integer, Integer>> projectsForResearcher = condition2.fetch();
 
-            if (projectsForResearcher.size() == 0) {
+            if ( projectsForResearcher.size() == 0 ) {
                 System.out.println("No projects found for " + p.nameToString());
             } else {
                 System.out.println(projectsForResearcher.size() + " projects found for " + p.nameToString());
             }
 
-            for (Record2<Integer, Integer> rec : projectsForResearcher) {
+            for ( Record2<Integer, Integer> rec : projectsForResearcher ) {
 
                 Integer projectId = rec.getValue(Tables.RESEARCHER_PROJECT.PROJECTID);
                 Integer roleId = rec.getValue(Tables.RESEARCHER_PROJECT.RESEARCHERROLEID);
 
                 String projectName = getProjectMap().get(projectId);
-                if (StringUtils.isEmpty(projectName)) {
+                if ( StringUtils.isEmpty(projectName) ) {
                     throw new ThingRuntimeException("Can't find project for id: " + projectId);
                 }
 
                 String roleName = getRoleMap().get(roleId);
-                if (StringUtils.isEmpty(roleName)) {
+                if ( StringUtils.isEmpty(roleName) ) {
                     throw new ThingRuntimeException("Can't find role for id: " + roleId);
                 }
 
@@ -167,7 +167,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
     }
 
     public synchronized Map<Integer, String> getProjectMap() {
-        if (projectMap == null) {
+        if ( projectMap == null ) {
             SelectJoinStep<Record2<Integer, String>> condition = jooq.select(Tables.PROJECT.ID, Tables.PROJECT.PROJECTCODE)
                     .from(Tables.PROJECT);
             projectMap = Maps.newHashMap();
@@ -179,7 +179,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
 
     private Thing<Role> getRole(String key, String rolename) throws ValueException, ThingException {
 
-        if (roles.get(key + "_" + rolename) == null) {
+        if ( roles.get(key + "_" + rolename) == null ) {
             Role temp = new Role(rolename);
             try {
                 Thing thing = tc.observeUniqueThingMatchingKeyAndValue(key, temp).toBlockingObservable().single();
@@ -195,7 +195,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
     }
 
     public synchronized Map<Integer, String> getRoleMap() {
-        if (roleMap == null) {
+        if ( roleMap == null ) {
             SelectJoinStep<Record> condition = jooq.select().from(Tables.RESEARCHERROLE);
             roleMap = Maps.newHashMap();
             Result<Record> result = condition.fetch();
@@ -204,7 +204,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
         return roleMap;
     }
 
-    @Resource(name = "projectDbContext")
+    @Resource( name = "projectDbContext" )
     public void setJooq(DefaultDSLContext jooq) {
         this.jooq = jooq;
     }

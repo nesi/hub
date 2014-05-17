@@ -45,8 +45,8 @@ public class JobStatus implements Comparable<JobStatus>, Serializable {
         unknown("");
 
         public static STATE get(String abrev) {
-            for (STATE state : STATE.values()) {
-                if (state.abrevs.contains(abrev)) {
+            for ( STATE state : STATE.values() ) {
+                if ( state.abrevs.contains(abrev) ) {
                     return state;
                 }
             }
@@ -60,6 +60,7 @@ public class JobStatus implements Comparable<JobStatus>, Serializable {
             this.abrevs = Sets.newHashSet(abrevs.split(","));
         }
     }
+
     private String dispatchDate;
     private String host;
     private String jobid;

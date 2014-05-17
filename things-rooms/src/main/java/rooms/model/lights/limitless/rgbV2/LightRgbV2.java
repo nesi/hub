@@ -66,8 +66,8 @@ public class LightRgbV2 implements Light {
 
         calibrateBrightness(default_calibrate_brightness_full);
 
-        if (old_brightness == null) {
-            if (default_calibrate_brightness_full) {
+        if ( old_brightness == null ) {
+            if ( default_calibrate_brightness_full ) {
                 old_brightness = BRIGHTNESS_MAX;
             } else {
                 old_brightness = BRIGHTNESS_MIN;
@@ -81,7 +81,7 @@ public class LightRgbV2 implements Light {
 
     public void calibrateBrightness(boolean full) {
         setOn(true);
-        if (full) {
+        if ( full ) {
             send(Cmd.BRIGHTNESS_UP, CALIBRATION_THRESHOLD);
             this.brightness = BRIGHTNESS_MAX;
         } else {
@@ -94,27 +94,27 @@ public class LightRgbV2 implements Light {
 // -------------------------- OTHER METHODS --------------------------
 
     public void changeBrightness(int steps) {
-        if (steps == 0) {
+        if ( steps == 0 ) {
             return;
         }
 
-        if (brightness != null && (
+        if ( brightness != null && (
                 (steps < 0 && brightness == BRIGHTNESS_MIN) || (steps > 0 && brightness == BRIGHTNESS_MAX))
                 ) {
             return;
         }
 
-        if (steps > 0) {
+        if ( steps > 0 ) {
             controller.sendRGB(Cmd.BRIGHTNESS_UP, steps);
         } else {
             controller.sendRGB(BRIGHTNESS_DOWN, Math.abs(steps));
         }
-        if (brightness != null) {
+        if ( brightness != null ) {
             brightness = brightness + steps;
         } else {
             brightness_shadow = brightness_shadow + steps;
-            if (Math.abs(brightness_shadow) >= CALIBRATION_THRESHOLD) {
-                if (brightness_shadow > 0) {
+            if ( Math.abs(brightness_shadow) >= CALIBRATION_THRESHOLD ) {
+                if ( brightness_shadow > 0 ) {
                     brightness = BRIGHTNESS_MAX;
                 } else {
                     brightness = BRIGHTNESS_MIN;
@@ -127,8 +127,8 @@ public class LightRgbV2 implements Light {
 
     public String debugState() {
         String onString = null;
-        if (on != null) {
-            if (on) {
+        if ( on != null ) {
+            if ( on ) {
                 onString = "on";
             } else {
                 onString = "off";
@@ -187,8 +187,8 @@ public class LightRgbV2 implements Light {
 
     @Override
     public void set(Map<String, String> properties) {
-        for (String key : properties.keySet()) {
-            switch (key) {
+        for ( String key : properties.keySet() ) {
+            switch ( key ) {
                 case "brightness":
                     setBrightness(Integer.parseInt(properties.get(key)));
                     break;
@@ -208,7 +208,7 @@ public class LightRgbV2 implements Light {
 
     public void setBrightness(int absBrightness) {
         setOn(true);
-        if (this.brightness == null) {
+        if ( this.brightness == null ) {
             calibrateBrightness(absBrightness > BRIGHTNESS_MAX / 2);
         }
 
@@ -225,8 +225,8 @@ public class LightRgbV2 implements Light {
     }
 
     public void setOn(Boolean on) {
-        if (this.on == null) {
-            if (on) {
+        if ( this.on == null ) {
+            if ( on ) {
                 send(Cmd.ON);
                 this.on = true;
             } else {
@@ -234,8 +234,8 @@ public class LightRgbV2 implements Light {
                 this.on = false;
             }
         } else {
-            if (!this.on.equals(on)) {
-                if (on) {
+            if ( !this.on.equals(on) ) {
+                if ( on ) {
                     send(Cmd.ON);
                     this.on = true;
                 } else {
@@ -253,11 +253,11 @@ public class LightRgbV2 implements Light {
 
     public String toString() {
         String brightness_string = brightness.toString();
-        if (brightness == null) {
+        if ( brightness == null ) {
             brightness_string = "n/a";
         }
         String colour_string = colour.toString();
-        if (colour == null) {
+        if ( colour == null ) {
             colour_string = "n/a";
         }
         String result = name + " - (state: " + on + ", brightness: " + brightness_string + ", colour: " + colour_string + ")";
@@ -265,7 +265,7 @@ public class LightRgbV2 implements Light {
     }
 
     public void toggle() {
-        if (isOn() == null || !isOn()) {
+        if ( isOn() == null || !isOn() ) {
             setOn(true);
         } else {
             setOn(false);

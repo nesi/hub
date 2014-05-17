@@ -38,10 +38,10 @@ public class Person {
     }
 
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if ( obj == this ) return true;
+        if ( obj == null ) return false;
 
-        if (getClass().equals(obj.getClass())) {
+        if ( getClass().equals(obj.getClass()) ) {
             final Person other = (Person) obj;
             return Objects.equals(getFirstName(), other.getFirstName()) && Objects.equals(getLastName(), other.getLastName())
                     && Objects.equals(getEmail(), other.getEmail());

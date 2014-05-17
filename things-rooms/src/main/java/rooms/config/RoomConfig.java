@@ -125,7 +125,7 @@ public class RoomConfig extends MongoConfig {
     @Bean
     public TypeRegistry typeRegistry() {
         TypeRegistry tr = new TypeRegistry();
-        for (ThingType tt : AnnotationTypeFactory.getAllTypes()) {
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
             tr.addType(tt);
         }
         return tr;

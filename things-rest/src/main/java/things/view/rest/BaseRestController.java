@@ -33,7 +33,7 @@ public class BaseRestController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Thing createThing(@RequestBody Thing thing) throws ThingException, ValueException {
 
-        if (!Strings.isNullOrEmpty(thing.getId())) {
+        if ( !Strings.isNullOrEmpty(thing.getId()) ) {
             throw new ThingException(thing, "Thing to create can't have an id set.");
         }
 

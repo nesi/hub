@@ -65,7 +65,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     @Override
     public Observable<? extends Thing<?>> findThingForId(String id) {
 
-        if (id == null) {
+        if ( id == null ) {
             throw new IllegalArgumentException("Id can't be null");
         }
 
@@ -78,7 +78,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
         Thing thing = mongoTemplate.findOne(q, Thing.class);
 
-        if (thing == null) {
+        if ( thing == null ) {
             throw new NoSuchThingException(id);
         }
 
@@ -125,7 +125,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     }
 
     private boolean hasUsableId(Class valueClass) {
-        if (getIdField(valueClass) == null) {
+        if ( getIdField(valueClass) == null ) {
             return false;
         } else {
             return true;
@@ -136,7 +136,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     public <V> V readValue(Thing<V> t) {
 
         boolean stringConverter = typeRegistry.convertsFromString(t.getThingType());
-        if (stringConverter) {
+        if ( stringConverter ) {
             return (V) typeRegistry.convertFromString(t.getThingType(), (String) t.getValue());
         }
 
@@ -145,7 +145,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         q.addCriteria(Criteria.where("_id").is(new ObjectId((String) t.getValue())));
 //
         Class typeClass = typeRegistry.getTypeClass(t.getThingType());
-        if (hasUsableId(typeClass)) {
+        if ( hasUsableId(typeClass) ) {
             Object v = mongoTemplate.findOne(q, typeClass);
             return (V) v;
         } else {
@@ -170,11 +170,11 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
         Object vId = null;
         Optional<String> stringValue = typeRegistry.convertToString(value);
-        if (stringValue.isPresent()) {
+        if ( stringValue.isPresent() ) {
             vId = value;
         } else {
             MongoPersistentProperty idField = getIdField(value.getClass());
-            if (idField == null) {
+            if ( idField == null ) {
                 IdWrapper wrapper = new IdWrapper(value);
                 mongoTemplate.save(wrapper, typeRegistry.getType(value));
                 vId = wrapper.getId();

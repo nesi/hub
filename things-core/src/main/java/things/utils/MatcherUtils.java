@@ -22,7 +22,7 @@ public class MatcherUtils {
      */
     public static final String convertGlobToRegex(String pattern) {
 
-        if (!isGlob(pattern)) {
+        if ( !isGlob(pattern) ) {
             return "^" + pattern + "$";
         }
 
@@ -31,15 +31,15 @@ public class MatcherUtils {
         int inClass = 0;
         int firstIndexInClass = -1;
         char[] arr = pattern.toCharArray();
-        for (int i = 0; i < arr.length; i++) {
+        for ( int i = 0; i < arr.length; i++ ) {
             char ch = arr[i];
-            switch (ch) {
+            switch ( ch ) {
                 case '\\':
-                    if (++i >= arr.length) {
+                    if ( ++i >= arr.length ) {
                         sb.append('\\');
                     } else {
                         char next = arr[i];
-                        switch (next) {
+                        switch ( next ) {
                             case ',':
                                 // escape not needed
                                 break;
@@ -54,11 +54,11 @@ public class MatcherUtils {
                     }
                     break;
                 case '*':
-                    if (inClass == 0) sb.append(".*");
+                    if ( inClass == 0 ) sb.append(".*");
                     else sb.append('*');
                     break;
                 case '?':
-                    if (inClass == 0) sb.append('.');
+                    if ( inClass == 0 ) sb.append('.');
                     else sb.append('?');
                     break;
                 case '[':
@@ -79,12 +79,12 @@ public class MatcherUtils {
                 case '$':
                 case '@':
                 case '%':
-                    if (inClass == 0 || (firstIndexInClass == i && ch == '^')) sb
+                    if ( inClass == 0 || (firstIndexInClass == i && ch == '^') ) sb
                             .append('\\');
                     sb.append(ch);
                     break;
                 case '!':
-                    if (firstIndexInClass == i) sb.append('^');
+                    if ( firstIndexInClass == i ) sb.append('^');
                     else sb.append('!');
                     break;
                 case '{':
@@ -96,7 +96,7 @@ public class MatcherUtils {
                     sb.append(')');
                     break;
                 case ',':
-                    if (inGroup > 0) sb.append('|');
+                    if ( inGroup > 0 ) sb.append('|');
                     else sb.append(',');
                     break;
                 default:
@@ -108,6 +108,29 @@ public class MatcherUtils {
 
     public static boolean isGlob(String key) {
         return key.contains("*");
+    }
+
+    /**
+     * Checks whether the key matches the other key, using key2 matching.
+     *
+     * @param key  the key
+     * @param key2 the other key
+     * @return whether one of the matching attemps in either direction is
+     * successful
+     */
+    public static boolean keyMatcheskey(String key, String key2) {
+
+        String key1_type = key.split("/")[0];
+        String key1_key = key.split("/")[1];
+
+        String key2_type = key2.split("/")[0];
+        String key2_key = key2.split("/")[1];
+
+        boolean type_match = wildCardMatch(key1_type, key2_type);
+        boolean key_match = wildCardMatch(key1_key, key2_key);
+
+        return type_match && key_match;
+
     }
 
 //	public static String returnRegExString(String key) {

@@ -43,7 +43,7 @@ public class LdapImporter implements ThingAction {
         Person p = new Person();
         p.setEmail(mail);
         String[] names = parseName(gecos);
-        if (names == null) {
+        if ( names == null ) {
             return Optional.empty();
         }
 
@@ -69,11 +69,11 @@ public class LdapImporter implements ThingAction {
         String[] result = new String[3];
         String[] tokens = gecosField.split(" ");
 
-        if (tokens.length == 3) {
+        if ( tokens.length == 3 ) {
             result[0] = tokens[0];
             result[1] = "";
             result[2] = tokens[1];
-        } else if (tokens.length > 3) {
+        } else if ( tokens.length > 3 ) {
             result[0] = tokens[0];
             result[1] = Joiner.on(" ").join(Arrays.copyOfRange(tokens, 1, tokens.length - 2));
             result[2] = tokens[tokens.length - 2];
@@ -108,6 +108,7 @@ public class LdapImporter implements ThingAction {
         return users;
 
     }
+
     @Autowired
     private ThingControl tc;
 
@@ -121,7 +122,7 @@ public class LdapImporter implements ThingAction {
             throw new ThingRuntimeException("Could not lookup ldap users");
         }
 
-        for (User u : users) {
+        for ( User u : users ) {
 
             Person p = u.getPerson();
             String nesi_username = (p.getFirst_name() + "_" + p.getLast_name()).toLowerCase();
@@ -131,20 +132,20 @@ public class LdapImporter implements ThingAction {
             } catch (Exception te) {
                 System.out.println("Can't create thing for person " + p.nameToString() + ": " + te.getLocalizedMessage());
                 Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
-                if (!opt.isPresent()) {
+                if ( !opt.isPresent() ) {
                     throw new ThingRuntimeException("Could not find person for key: " + nesi_username);
                 }
                 tp = opt.get();
             }
 
-            for (String key : u.getUsernames().keySet()) {
-                for (String un : u.getUsernames().get(key)) {
+            for ( String key : u.getUsernames().keySet() ) {
+                for ( String un : u.getUsernames().get(key) ) {
                     try {
                         Username username = new Username(un);
                         List<Thing<Username>> obs = tc.getChildrenForType(tp, Username.class, false);
                         Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(Observable.just(tp), username);
 
-                        if (!childMatches.isEmpty().toBlockingObservable().single()) {
+                        if ( !childMatches.isEmpty().toBlockingObservable().single() ) {
                             System.out.println("Username already in db: " + un);
                             continue;
                         }

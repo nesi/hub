@@ -37,7 +37,6 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
         this.thingsFolder.mkdirs();
         this.valuesFolder = valuesFolder;
         this.valuesFolder.mkdirs();
-        this.typeRegistry = typeRegistry;
         xstream.processAnnotations(Thing.class);
     }
 
@@ -106,7 +105,7 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {
 
-        if (Strings.isNullOrEmpty(t.getId())) {
+        if ( Strings.isNullOrEmpty(t.getId()) ) {
             t.setId(UUID.randomUUID().toString());
         }
 
@@ -129,7 +128,7 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
 
         Object vId = null;
 
-        if (valueId.isPresent()) {
+        if ( valueId.isPresent() ) {
             vId = valueId.get();
         } else {
             vId = UUID.randomUUID().toString();

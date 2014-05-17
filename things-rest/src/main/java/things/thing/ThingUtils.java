@@ -58,9 +58,9 @@ public class ThingUtils {
 
     public Map<String, Map<String, String>> getRegisteredTypeProperties() {
 
-        if (typePropertiesMap == null) {
+        if ( typePropertiesMap == null ) {
             Map<String, Map<String, String>> temp = Maps.newTreeMap();
-            for (String type : tr.getAllTypes()) {
+            for ( String type : tr.getAllTypes() ) {
                 Class typeClass = tr.getTypeClass(type);
                 BeanInfo info = null;
                 try {
@@ -71,9 +71,9 @@ public class ThingUtils {
 
                 Map<String, String> properties = Maps.newTreeMap();
 
-                for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
+                for ( PropertyDescriptor desc : info.getPropertyDescriptors() ) {
                     String name = desc.getName();
-                    if ("class".equals(name) || "id".equals(name)) {
+                    if ( "class".equals(name) || "id".equals(name) ) {
                         continue;
                     }
                     Class propClass = desc.getPropertyType();
@@ -89,9 +89,9 @@ public class ThingUtils {
 
     public Map<String, JsonSchema> getRegisteredTypeSchemata() {
 
-        if (schemaMap == null) {
+        if ( schemaMap == null ) {
             Map<String, JsonSchema> temp = Maps.newTreeMap();
-            for (String type : tr.getAllTypes()) {
+            for ( String type : tr.getAllTypes() ) {
                 Class typeClass = tr.getTypeClass(type);
 
                 SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();

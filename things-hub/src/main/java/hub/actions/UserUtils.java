@@ -57,8 +57,8 @@ public class UserUtils {
      */
     public Observable<Thing<Person>> convertToPerson(Thing<?> usernameOrPerson) {
 
-        if (tr.equals(Person.class,
-                usernameOrPerson.getThingType())) {
+        if ( tr.equals(Person.class,
+                usernameOrPerson.getThingType()) ) {
             return Observable.just((Thing<Person>) usernameOrPerson);
         } else {
             Observable<? extends Thing<?>> obs = tc
@@ -71,8 +71,8 @@ public class UserUtils {
     public Observable<Thing<Username>> convertToUsername(
             Thing<?> usernameOrPerson) {
 
-        if (tr.equals(Username.class,
-                usernameOrPerson.getThingType())) {
+        if ( tr.equals(Username.class,
+                usernameOrPerson.getThingType()) ) {
             return Observable.just((Thing<Username>) usernameOrPerson);
         } else {
             Observable<Thing<Username>> obs = tc.observeChildrenForType(
@@ -109,10 +109,10 @@ public class UserUtils {
         User user = new User();
         user.setPerson(person.getValue());
 
-        for (Thing<Username> un : usernames) {
+        for ( Thing<Username> un : usernames ) {
             user.addUsername(un.getKey(), un.getValue().getUsername());
         }
-        for (Thing<Role> r : roles) {
+        for ( Thing<Role> r : roles ) {
             user.addRole(r.getKey(), r.getValue().getRole());
         }
 

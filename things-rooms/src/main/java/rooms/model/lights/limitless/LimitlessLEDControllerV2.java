@@ -40,27 +40,27 @@ public class LimitlessLEDControllerV2 {
 
             Group lastGroup = null;
 
-            while (groupIterator.hasNext()) {
+            while ( groupIterator.hasNext() ) {
                 Group group = groupIterator.next();
 
 
                 Queue<LimitlessCommand> queue = queues.get(group);
 
                 LimitlessCommand cmd = queue.poll();
-                if (cmd != null) {
+                if ( cmd != null ) {
 
                     myLogger.debug("Executing command for group {}", group);
 
                     try {
-                        if ((group != Group.GROUP_COLOUR
+                        if ( (group != Group.GROUP_COLOUR
                                 || lastGroup == null)
                                 && group != lastGroup
                                 && !cmd.equals(Cmd.ON)
-                                && !cmd.equals(Cmd.OFF)) {
+                                && !cmd.equals(Cmd.OFF) ) {
                             // change to group
                             CommandsWhiteV2 temp = CommandsWhiteV2.lookup(group, Cmd.ON);
                             List<byte[]> tempSeq = temp.getCommand(null);
-                            for (byte[] t : tempSeq) {
+                            for ( byte[] t : tempSeq ) {
                                 send(t);
                                 try {
                                     Thread.sleep(WAIT_TIME);
@@ -76,9 +76,9 @@ public class LimitlessLEDControllerV2 {
                             repeat = Integer.parseInt(cmd.getOptions().get("repeat"));
                         } catch (Exception e) {
                         }
-                        for (int j = 0; j < repeat; j++) {
+                        for ( int j = 0; j < repeat; j++ ) {
                             List<byte[]> seq = cmd.getCommand().getCommand(cmd.getOptions());
-                            for (byte[] c : seq) {
+                            for ( byte[] c : seq ) {
                                 send(c);
                                 try {
                                     Thread.sleep(WAIT_TIME);
@@ -122,7 +122,7 @@ public class LimitlessLEDControllerV2 {
         }
 
         // initialize queues
-        for (Group g : groups) {
+        for ( Group g : groups ) {
             Queue<LimitlessCommand> temp = Lists.newLinkedList();
             queues.put(g, temp);
         }

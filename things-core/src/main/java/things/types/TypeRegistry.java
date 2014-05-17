@@ -24,7 +24,7 @@ public class TypeRegistry {
 
     public TypeRegistry(Collection<? extends ThingType<?>> types) {
         Preconditions.checkArgument(types != null, "Types can't be null");
-        for (ThingType<?> type : types) {
+        for ( ThingType<?> type : types ) {
             addType(type);
         }
     }
@@ -86,7 +86,7 @@ public class TypeRegistry {
 
     public ThingType getThingType(Class<?> type) {
         Preconditions.checkArgument(type != null, "Type can't be null");
-        if (typeClasses.get(type) != null) {
+        if ( typeClasses.get(type) != null ) {
             return typeClasses.get(type);
         } else {
             throw new NoSuchTypeException("Can't find typeClass for class: " + type.toString());
@@ -95,7 +95,7 @@ public class TypeRegistry {
 
     public ThingType getThingType(String type) {
         Preconditions.checkArgument(StringUtils.isNotBlank(type), "Type can't be null or empty");
-        if (types.get(type) != null) {
+        if ( types.get(type) != null ) {
             return types.get(type);
         } else {
             throw new NoSuchTypeException("Can't find typeClass: " + type);

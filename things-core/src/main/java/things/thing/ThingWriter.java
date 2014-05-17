@@ -5,12 +5,12 @@ package things.thing;
  */
 public interface ThingWriter {
 
+    abstract <V> Thing<V> saveThing(Thing<V> t);
+
     default Thing<?> addChild(Thing<?> parent, Thing<?> child) {
         child.getParents().add(parent.getId());
         return saveThing(child);
     }
-
-    abstract <V> Thing<V> saveThing(Thing<V> t);
 
 //    abstract Object saveValue(Optional valueId, Object value);
 

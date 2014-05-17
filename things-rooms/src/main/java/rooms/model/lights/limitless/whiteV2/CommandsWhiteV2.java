@@ -42,29 +42,30 @@ public enum CommandsWhiteV2 implements LimitlessControllerCommand {
     FULL_GROUP_3(GROUP_3_ON, Cmd.FULL, Group.GROUP_3, 183),
     FULL_GROUP_4(GROUP_4_ON, Cmd.FULL, Group.GROUP_4, 178);
 
-// ------------------------------ FIELDS ------------------------------
+    // ------------------------------ FIELDS ------------------------------
     private static final byte END = (byte) 85;
     private static final byte NO_CONF = (byte) 0;
 
     public static CommandsWhiteV2 lookup(Group group, Cmd cmd) {
-        for (CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values()) {
-            if (commandsWhite.group == group && commandsWhite.cmd == cmd) {
+        for ( CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values() ) {
+            if ( commandsWhite.group == group && commandsWhite.cmd == cmd ) {
                 return commandsWhite;
             }
         }
 
-        for (CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values()) {
-            if (commandsWhite.cmd == cmd) {
+        for ( CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values() ) {
+            if ( commandsWhite.cmd == cmd ) {
                 return commandsWhite;
             }
         }
         throw new RuntimeException("Can't find group/cmd combination.");
     }
+
     public final CommandsWhiteV2 before;
     public final byte byte_to_send;
     public final Cmd cmd;
 
-// -------------------------- STATIC METHODS --------------------------
+    // -------------------------- STATIC METHODS --------------------------
     public final Group group;
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -90,7 +91,7 @@ public enum CommandsWhiteV2 implements LimitlessControllerCommand {
 
         List<byte[]> result = Lists.newArrayList();
 
-        if (this.before != null) {
+        if ( this.before != null ) {
             List<byte[]> beforeResult = this.before.getCommandSequence();
             result.addAll(beforeResult);
         }
