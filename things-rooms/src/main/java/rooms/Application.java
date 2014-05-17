@@ -21,22 +21,22 @@ import java.util.Map;
 
 /**
  * Project: hub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 12/03/14
  * Time: 10:56 AM
  */
 public class Application {
-    
 
-	public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
-        
+
+    public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
+
         AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfig.class);
 
         MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
         final ThingControl tc = (ThingControl) context.getBean("thingControl");
 
-        for (String s : context.getBeanDefinitionNames() ) {
+        for (String s : context.getBeanDefinitionNames()) {
             System.out.println(s);
         }
 
@@ -61,17 +61,17 @@ public class Application {
 
         Map<String, LightWhiteV2> lights = Maps.newHashMap();
 
-        for ( Thing<Bridge> bridgeThing : bridges ) {
+        for (Thing<Bridge> bridgeThing : bridges) {
 
             Bridge bridge = tc.getValue(bridgeThing);
             LimitlessLEDControllerV2 c = new LimitlessLEDControllerV2(b.getHost(), b.getPort());
 
             List<Thing<Light>> lightThings = tc.getChildrenForType(Observable.just(bridgeThing), Light.class, true);
-            for ( Thing<Light> tempLight : lightThings ) {
+            for (Thing<Light> tempLight : lightThings) {
                 Light ll = tc.getValue(tempLight);
                 LightWhiteV2 white = new LightWhiteV2(tempLight.getKey(), c, ll.getGroup());
                 lights.put(white.getName(), white);
-                System.out.println("LIGHT: "+white.getName());
+                System.out.println("LIGHT: " + white.getName());
             }
         }
 
@@ -82,9 +82,7 @@ public class Application {
         lights.get("bedroom_bed").setOn(false);
         Thread.sleep(2000);
 
-	}
-
-
+    }
 
 
 }

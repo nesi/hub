@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 import things.exceptions.TypeRuntimeException;
 import things.types.TypeRegistry;
-import things.utils.json.ThingsObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,28 +33,12 @@ public class ThingUtils {
     private ObjectMapper objectMapper;
 
     private ImmutableMap<String, JsonSchema> schemaMap = null;
-    private ImmutableMap<String, Map<String, String>> typePropertiesMap = null;
-    
-//    private ThingsObjectMapper tom;
+    //    private ThingsObjectMapper tom;
     private ThingControl tc;
     private TypeRegistry tr;
+    private ImmutableMap<String, Map<String, String>> typePropertiesMap = null;
 
     public ThingUtils() {
-    }
-
-    @Inject
-    public void setThingControl(ThingControl tc) {
-        this.tc = tc;
-    }
-
-//    @Inject
-//    public void setThingsObjectMapper(ThingsObjectMapper tom) {
-//        this.tom = tom;
-//    }
-
-    @Inject
-    public void setTypeRegistry(TypeRegistry tr) {
-        this.tr = tr;
     }
 
     /**
@@ -68,6 +51,41 @@ public class ThingUtils {
         return tr.getAllTypes();
     }
 
+//    @Inject
+//    public void setThingsObjectMapper(ThingsObjectMapper tom) {
+//        this.tom = tom;
+//    }
+
+    public Map<String, Map<String, String>> getRegisteredTypeProperties() {
+
+        if (typePropertiesMap == null) {
+            Map<String, Map<String, String>> temp = Maps.newTreeMap();
+            for (String type : tr.getAllTypes()) {
+                Class typeClass = tr.getTypeClass(type);
+                BeanInfo info = null;
+                try {
+                    info = Introspector.getBeanInfo(typeClass);
+                } catch (IntrospectionException e) {
+                    throw new TypeRuntimeException("Can't generate info for type: " + type, type, e);
+                }
+
+                Map<String, String> properties = Maps.newTreeMap();
+
+                for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
+                    String name = desc.getName();
+                    if ("class".equals(name) || "id".equals(name)) {
+                        continue;
+                    }
+                    Class propClass = desc.getPropertyType();
+                    properties.put(name, propClass.getSimpleName());
+                }
+                temp.put(type, properties);
+            }
+            typePropertiesMap = ImmutableMap.copyOf(temp);
+        }
+        return typePropertiesMap;
+
+    }
 
     public Map<String, JsonSchema> getRegisteredTypeSchemata() {
 
@@ -90,35 +108,14 @@ public class ThingUtils {
         return schemaMap;
     }
 
-    public Map<String, Map<String, String>> getRegisteredTypeProperties() {
+    @Inject
+    public void setThingControl(ThingControl tc) {
+        this.tc = tc;
+    }
 
-        if ( typePropertiesMap == null ) {
-            Map<String, Map<String, String>> temp = Maps.newTreeMap();
-            for ( String type : tr.getAllTypes() ) {
-                Class typeClass = tr.getTypeClass(type);
-                BeanInfo info = null;
-                try {
-                    info = Introspector.getBeanInfo(typeClass);
-                } catch (IntrospectionException e) {
-                    throw new TypeRuntimeException("Can't generate info for type: "+type, type, e);
-                }
-
-                Map<String, String> properties = Maps.newTreeMap();
-
-                for ( PropertyDescriptor desc : info.getPropertyDescriptors() ) {
-                    String name = desc.getName();
-                    if ( "class".equals(name) || "id".equals(name) ) {
-                        continue;
-                    }
-                    Class propClass = desc.getPropertyType();
-                    properties.put(name, propClass.getSimpleName());
-                }
-                temp.put(type, properties);
-            }
-            typePropertiesMap = ImmutableMap.copyOf(temp);
-        }
-        return typePropertiesMap;
-
+    @Inject
+    public void setTypeRegistry(TypeRegistry tr) {
+        this.tr = tr;
     }
 
 

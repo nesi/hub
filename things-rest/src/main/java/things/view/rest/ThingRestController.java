@@ -33,16 +33,12 @@ public class ThingRestController {
     public Thing getUniqueThingForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key) throws ThingException, NoSuchThingException {
         Optional<? extends Thing<?>> thing = thingControl.findUniqueThingMatchingTypeAndKey(type, key, true);
 
-        if ( ! thing.isPresent() ) {
+        if (!thing.isPresent()) {
             throw new NoSuchThingException(type, key);
         }
 
         return thing.get();
     }
-    
-
-
-
 
 
 }

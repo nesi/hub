@@ -28,15 +28,14 @@ public class AnnotationTypeFactory {
     private static final Logger myLogger = LoggerFactory.getLogger(AnnotationTypeFactory.class);
 
     private static Reflections reflections = null;
+    private static Set<ThingType<?>> thingTypes = null;
     private static ImmutableBiMap<String, Class> typeMap;
     private static Set<Class<?>> types;
 
-    private static Set<ThingType<?>> thingTypes = null;
-
     public synchronized static Set<ThingType<?>> getAllTypes() {
-        if ( thingTypes == null ) {
+        if (thingTypes == null) {
             thingTypes = Sets.newHashSet();
-            for ( String type : getTypeMap().keySet() ) {
+            for (String type : getTypeMap().keySet()) {
                 Class typeClass = getTypeMap().get(type);
                 ThingType tt = new ThingType(type, typeClass);
                 tt.setNeedsUniqueKey(typeNeedsUniqueKey(typeClass));
@@ -48,13 +47,23 @@ public class AnnotationTypeFactory {
         return thingTypes;
     }
 
-    public static Reflections singleton() {
-
-        if (reflections == null) {
-            reflections = new Reflections();
+    /**
+     * Checks if a value of this type has restrictions as to which types it can
+     * be added to.
+     * <p>
+     * This is determined by looking up the {@link things.model.types.attributes.Subordinate} annotation.
+     * If no such annotation is present, null is returned.
+     *
+     * @param typeClass the type class
+     * @return the only parent class a thing of this type can be added to or null if no such class exists
+     */
+    public static Class<?> getSubordinateParentClass(Class<?> typeClass) {
+        Subordinate annotation = typeClass.getAnnotation(Subordinate.class);
+        if (annotation == null) {
+            return null;
+        } else {
+            return annotation.parentClass();
         }
-
-        return reflections;
     }
 
     public static BiMap<String, Class> getTypeMap() {
@@ -79,8 +88,16 @@ public class AnnotationTypeFactory {
         return typeMap;
     }
 
+    public static Reflections singleton() {
 
-        /**
+        if (reflections == null) {
+            reflections = new Reflections();
+        }
+
+        return reflections;
+    }
+
+    /**
      * Checks whether values of this type need to have a unique key.
      * <p>
      * To determine this, the {@link things.model.types.attributes.UniqueKey} annotation is used.
@@ -103,7 +120,7 @@ public class AnnotationTypeFactory {
         }
     }
 
-        /**
+    /**
      * Checks whether values of this type need to have a unique key when being added to another Thing.
      * <p>
      * To determine this, the {@link things.model.types.attributes.UniqueKeyInOtherThings} annotation is used.
@@ -126,7 +143,7 @@ public class AnnotationTypeFactory {
         }
     }
 
-        /**
+    /**
      * Checks whether values of this type need to have a unique value for this type.
      * <p>
      * To determine this, the {@link things.model.types.attributes.UniqueValueForKey} annotation is used.
@@ -149,25 +166,6 @@ public class AnnotationTypeFactory {
             return false;
         } else {
             return true;
-        }
-    }
-
-    /**
-     * Checks if a value of this type has restrictions as to which types it can
-     * be added to.
-     * <p>
-     * This is determined by looking up the {@link things.model.types.attributes.Subordinate} annotation.
-     * If no such annotation is present, null is returned.
-     *
-     * @param typeClass the type class
-     * @return the only parent class a thing of this type can be added to or null if no such class exists
-     */
-    public static Class<?> getSubordinateParentClass(Class<?> typeClass) {
-        Subordinate annotation = typeClass.getAnnotation(Subordinate.class);
-        if (annotation == null) {
-            return null;
-        } else {
-            return annotation.parentClass();
         }
     }
 

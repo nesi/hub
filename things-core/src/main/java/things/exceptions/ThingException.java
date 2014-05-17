@@ -5,7 +5,7 @@ import things.thing.Thing;
 
 /**
  * Project: researchHub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 14/01/14
  * Time: 4:19 PM
@@ -30,9 +30,10 @@ public class ThingException extends Exception {
     }
 
     public ThingException(String s, Exception e) {
-        super(s,e);
+        super(s, e);
         this.p = null;
     }
+
     public ThingException(Thing p, String msg, Exception e) {
         super(msg, e);
         this.p = p;

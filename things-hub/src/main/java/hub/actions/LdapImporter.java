@@ -23,33 +23,6 @@ import java.util.stream.Collectors;
  */
 public class LdapImporter implements ThingAction {
 
-    @Autowired
-    private ThingControl tc;
-
-    /**
-     * Connects to LDAP, looks up users and converts them into {@link hub.types.dynamic.User} objects.
-     *
-     * @return the list of users
-     * @throws com.unboundid.ldap.sdk.LDAPException if LDAP connection fails
-     */
-    public static List<User> retrieveLdapUsers() throws LDAPException {
-
-        LDAPConnection con = new LDAPConnection("pan-ldap.uoa.nesi.org.nz", 389);
-
-        SearchResult result = con.search("dc=uoa,dc=nesi,dc=org,dc=nz", SearchScope.SUB, "(&(objectClass=posixAccount)(gidNumber=5000))");
-
-        List<User> users = result.getSearchEntries().stream()
-                .map(entry -> createUser(entry))
-                .filter(u -> u.isPresent())
-                .map(Optional::get)
-                .collect(Collectors.toList());
-
-        con.close();
-
-        return users;
-
-    }
-
     /**
      * Assembles a {@link hub.types.dynamic.User} object from an LDAP search result entry.
      *
@@ -66,11 +39,11 @@ public class LdapImporter implements ThingAction {
         String homeDir = entry.getAttributeValue("homedirectory");
         String uid = entry.getAttributeValue("uidnumber");
         String shell = entry.getAttributeValue("loginshell");
-        
+
         Person p = new Person();
         p.setEmail(mail);
         String[] names = parseName(gecos);
-        if ( names == null ) {
+        if (names == null) {
             return Optional.empty();
         }
 
@@ -96,21 +69,47 @@ public class LdapImporter implements ThingAction {
         String[] result = new String[3];
         String[] tokens = gecosField.split(" ");
 
-        if ( tokens.length == 3 ) {
+        if (tokens.length == 3) {
             result[0] = tokens[0];
             result[1] = "";
             result[2] = tokens[1];
         } else if (tokens.length > 3) {
             result[0] = tokens[0];
             result[1] = Joiner.on(" ").join(Arrays.copyOfRange(tokens, 1, tokens.length - 2));
-            result[2] = tokens[tokens.length-2];
+            result[2] = tokens[tokens.length - 2];
         } else {
-            System.out.println("Could not parse: "+gecosField);
+            System.out.println("Could not parse: " + gecosField);
             return null;
         }
 
         return result;
     }
+
+    /**
+     * Connects to LDAP, looks up users and converts them into {@link hub.types.dynamic.User} objects.
+     *
+     * @return the list of users
+     * @throws com.unboundid.ldap.sdk.LDAPException if LDAP connection fails
+     */
+    public static List<User> retrieveLdapUsers() throws LDAPException {
+
+        LDAPConnection con = new LDAPConnection("pan-ldap.uoa.nesi.org.nz", 389);
+
+        SearchResult result = con.search("dc=uoa,dc=nesi,dc=org,dc=nz", SearchScope.SUB, "(&(objectClass=posixAccount)(gidNumber=5000))");
+
+        List<User> users = result.getSearchEntries().stream()
+                .map(entry -> createUser(entry))
+                .filter(u -> u.isPresent())
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        con.close();
+
+        return users;
+
+    }
+    @Autowired
+    private ThingControl tc;
 
     @Override
     public String execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
@@ -121,43 +120,43 @@ public class LdapImporter implements ThingAction {
         } catch (LDAPException e) {
             throw new ThingRuntimeException("Could not lookup ldap users");
         }
-        
-        for ( User u : users ) {
+
+        for (User u : users) {
 
             Person p = u.getPerson();
-            String nesi_username = (p.getFirst_name()+"_"+p.getLast_name()).toLowerCase();
+            String nesi_username = (p.getFirst_name() + "_" + p.getLast_name()).toLowerCase();
             Thing<Person> tp = null;
             try {
                 tp = tc.createThing(nesi_username, p);
             } catch (Exception te) {
-                System.out.println("Can't create thing for person "+p.nameToString()+": "+te.getLocalizedMessage());
+                System.out.println("Can't create thing for person " + p.nameToString() + ": " + te.getLocalizedMessage());
                 Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
-                if ( ! opt.isPresent() ) {
-                    throw new ThingRuntimeException("Could not find person for key: "+nesi_username);
+                if (!opt.isPresent()) {
+                    throw new ThingRuntimeException("Could not find person for key: " + nesi_username);
                 }
                 tp = opt.get();
             }
 
-            for ( String key : u.getUsernames().keySet() ) {
-                for ( String un : u.getUsernames().get(key) ) {
+            for (String key : u.getUsernames().keySet()) {
+                for (String un : u.getUsernames().get(key)) {
                     try {
                         Username username = new Username(un);
                         List<Thing<Username>> obs = tc.getChildrenForType(tp, Username.class, false);
                         Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(Observable.just(tp), username);
 
-                        if ( ! childMatches.isEmpty().toBlockingObservable().single() ) {
-                            System.out.println("Username already in db: "+un);
+                        if (!childMatches.isEmpty().toBlockingObservable().single()) {
+                            System.out.println("Username already in db: " + un);
                             continue;
                         }
 
                         Thing<?> tu = tc.createThing(key, username);
                         tc.addChildThing(tp, tu);
                     } catch (Exception e) {
-                        throw new ThingRuntimeException("Could not import: "+un, e);
+                        throw new ThingRuntimeException("Could not import: " + un, e);
                     }
                 }
             }
-            System.out.println("All imported: "+tp.getKey());
+            System.out.println("All imported: " + tp.getKey());
 
         }
 

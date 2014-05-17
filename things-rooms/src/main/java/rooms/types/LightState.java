@@ -20,40 +20,40 @@ public class LightState implements Serializable {
     private Integer brightness = null;
     @Range(min = 0, max = 255)
     private Integer color = null;
+    private Boolean on = null;
     @Range(min = 0, max = 10)
     private Integer warmth = null;
-    private Boolean on = null;
-
-    public Boolean isOn() {
-        return on;
-    }
-
-    public void setOn(Boolean on) {
-        this.on = on;
-    }
-
-    public Integer getWarmth() {
-        return warmth;
-    }
-
-    public void setWarmth(Integer warmth) {
-        this.warmth = warmth;
-    }
 
     public Integer getBrightness() {
         return brightness;
-    }
-
-    public void setBrightness(Integer brightness) {
-        this.brightness = brightness;
     }
 
     public Integer getColor() {
         return color;
     }
 
+    public Integer getWarmth() {
+        return warmth;
+    }
+
+    public Boolean isOn() {
+        return on;
+    }
+
+    public void setBrightness(Integer brightness) {
+        this.brightness = brightness;
+    }
+
     public void setColor(Integer color) {
         this.color = color;
+    }
+
+    public void setOn(Boolean on) {
+        this.on = on;
+    }
+
+    public void setWarmth(Integer warmth) {
+        this.warmth = warmth;
     }
 
     @Override

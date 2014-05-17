@@ -21,20 +21,19 @@ import javax.inject.Inject;
  */
 public class LightStateReader extends AbstractThingReader implements ThingReader {
 
-    private ThingControl tc;
     private LightUtil lightUtil;
+    private ThingControl tc;
 
     public LightStateReader() {
     }
 
-    @Inject
-    public void setLightUtil(LightUtil lightUtil) {
-        this.lightUtil = lightUtil;
-    }
-
-    @Inject
-    public void setThingControl(ThingControl tc) {
-        this.tc = tc;
+    private LightState createState(String lightName) {
+        LightWhiteV2 l = lightUtil.getLights().get(lightName);
+        LightState ls = new LightState();
+        ls.setBrightness(l.getBrightness());
+        ls.setOn(l.isOn());
+        ls.setWarmth(l.getWarmth());
+        return ls;
     }
 
     @Override
@@ -48,7 +47,7 @@ public class LightStateReader extends AbstractThingReader implements ThingReader
         LightState ls = createState(light.getKey());
 
         Thing<LightState> lightState = new Thing();
-        lightState.setId("light:"+light.getId());
+        lightState.setId("light:" + light.getId());
         lightState.setThingType(typeRegistry.getType(LightState.class));
         lightState.setValueIsLink(false);
         lightState.setValue(ls);
@@ -56,19 +55,20 @@ public class LightStateReader extends AbstractThingReader implements ThingReader
         return lightState;
     }
 
-    private LightState createState(String lightName) {
-        LightWhiteV2 l = lightUtil.getLights().get(lightName);
-        LightState ls = new LightState();
-        ls.setBrightness(l.getBrightness());
-        ls.setOn(l.isOn());
-        ls.setWarmth(l.getWarmth());
-        return ls;
-    }
-
     @Override
     public <V> V readValue(Thing<V> light) {
 
         return (V) createState(light.getKey());
 
+    }
+
+    @Inject
+    public void setLightUtil(LightUtil lightUtil) {
+        this.lightUtil = lightUtil;
+    }
+
+    @Inject
+    public void setThingControl(ThingControl tc) {
+        this.tc = tc;
     }
 }

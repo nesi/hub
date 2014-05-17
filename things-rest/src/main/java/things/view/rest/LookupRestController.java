@@ -12,7 +12,7 @@ import things.thing.ThingUtils;
 @RestController
 @RequestMapping(value = "/find")
 public class LookupRestController {
-    
+
     @Autowired
     private ThingControl thingControl;
 

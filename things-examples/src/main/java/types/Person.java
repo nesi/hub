@@ -18,25 +18,14 @@ import java.util.Objects;
 @Value(typeName = "person")
 public class Person {
 
-    private String id;
-
-    @NotEmpty
-    private String firstName;
-    @NotEmpty
-    private String lastName;
-
     @Email
     private String email;
-
+    @NotEmpty
+    private String firstName;
+    private String id;
     private Boolean isActive = false;
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+    @NotEmpty
+    private String lastName;
 
     public Person(String firstName, String lastName, String email) {
         this.firstName = firstName;
@@ -47,31 +36,6 @@ public class Person {
     public Person() {
 
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
 
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -86,8 +50,40 @@ public class Person {
         }
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
     public int hashCode() {
         return Objects.hash(getFirstName(), getLastName());
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override

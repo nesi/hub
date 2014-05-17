@@ -11,7 +11,7 @@ dependencies {
     compile project(':things-mongo')
     compile project(':things-rest')
 
-    compile ("com.google.inject:guice:4.0-beta")
+    compile("com.google.inject:guice:4.0-beta")
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

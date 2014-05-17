@@ -40,5 +40,5 @@ public class XstreamModule extends AbstractModule {
         tw.addWriter("address/*", xstreamConnector);
         return tw;
     }
-    
+
 }

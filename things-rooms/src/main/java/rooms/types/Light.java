@@ -33,12 +33,12 @@ public class Light {
         return group;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
     public String getType() {
         return type;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public void setType(String type) {

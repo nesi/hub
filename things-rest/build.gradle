@@ -1,8 +1,8 @@
 buildscript {
-	    repositories {
-    		         maven { url "http://repo.spring.io/libs-snapshot" }
-			 }
-	dependencies {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+    }
+    dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
     }
 }
@@ -21,11 +21,11 @@ def springBootVersion = '1.0.2.RELEASE'
 dependencies {
 
     compile project(':things-core')
-    compile("org.springframework.boot:spring-boot-starter-web:"+springBootVersion) {
+    compile("org.springframework.boot:spring-boot-starter-web:" + springBootVersion) {
         exclude module: "spring-boot-starter-tomcat"
     }
-    compile ("org.springframework.boot:spring-boot-starter-jetty:"+springBootVersion)
-    compile ("org.springframework.boot:spring-boot-starter-logging:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
     compile("org.springframework:spring-tx")
 
@@ -34,7 +34,7 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-jsonSchema:2.3.3")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.3.1")
 
-    compile ("fm.void.jetm:jetm:1.2.3")
-    compile ("fm.void.jetm:jetm-optional:1.2.3")
+    compile("fm.void.jetm:jetm:1.2.3")
+    compile("fm.void.jetm:jetm-optional:1.2.3")
 
 }

@@ -24,7 +24,7 @@ public class ThingSerializer extends JsonSerializer<Thing> {
     @Override
     public void serialize(Thing thing, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
-        if ( ! Strings.isNullOrEmpty(thing.getId()) ) {
+        if (!Strings.isNullOrEmpty(thing.getId())) {
             jgen.writeStringField("id", thing.getId());
         }
         jgen.writeStringField("key", thing.getKey());

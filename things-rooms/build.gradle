@@ -1,8 +1,8 @@
 buildscript {
-	    repositories {
-    		         maven { url "http://repo.spring.io/libs-snapshot" }
-			 }
-	dependencies {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+    }
+    dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
     }
 }
@@ -31,16 +31,16 @@ dependencies {
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
 
-    compile("org.springframework.boot:spring-boot-starter-parent:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
 
-    compile("org.springframework.boot:spring-boot-starter-web:"+springBootVersion) {
+    compile("org.springframework.boot:spring-boot-starter-web:" + springBootVersion) {
         exclude module: "spring-boot-starter-tomcat"
     }
 
-    compile ("org.springframework.boot:spring-boot-starter-jetty:"+springBootVersion)
-    compile ("org.springframework.boot:spring-boot-starter-logging:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
-    compile ("org.springframework.boot:spring-boot-starter-data-mongodb:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 

@@ -17,16 +17,16 @@ import java.nio.file.Paths;
 
 /**
  * Project: hub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 12/03/14
  * Time: 10:56 AM
  */
 public class Application {
-    
 
-	public static void main(String[] args) throws Exception {
-        
+
+    public static void main(String[] args) throws Exception {
+
 //        AbstractApplicationContext context = new AnnotationConfigApplicationContext(TestMongoConfig.class);
 
 //        MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
@@ -64,7 +64,7 @@ public class Application {
             tc.addChildThing(pt, at);
 
             Object id = pt.getId();
-            System.out.println("ID: "+id);
+            System.out.println("ID: " + id);
 
             Role role1 = new Role("role1");
             Thing<Role> r1t = tc.createThing("group_1", role1);
@@ -132,9 +132,7 @@ public class Application {
 
 //        SpringApplication.run(TestMongoConfig.class, args);
 
-	}
-
-
+    }
 
 
 }

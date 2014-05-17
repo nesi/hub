@@ -19,10 +19,20 @@ public class UserReader extends AbstractThingReader implements ThingReader {
     private ThingControl tc;
     private UserUtils userUtils;
 
+    @Override
+    public Observable<? extends Thing<?>> findAllThings() {
+        return tc.observeThingsForType(Person.class, true).map(p -> userUtils.createUser(p));
+    }
 
-    @Inject
-    public void setUserUtils(UserUtils userUtils) {
-        this.userUtils = userUtils;
+    @Override
+    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                                       final String key) {
+        return tc.observeThingsMatchingTypeAndKey(typeRegistry.getType(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>) p));
+    }
+
+    @Override
+    public <V> V readValue(Thing<V> thing) {
+        throw new ThingRuntimeException("User will always store value inline");
     }
 
     @Inject
@@ -30,21 +40,10 @@ public class UserReader extends AbstractThingReader implements ThingReader {
         this.tc = tc;
     }
 
-    @Override
-    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
-                                                           final String key) {
-        return tc.observeThingsMatchingTypeAndKey(typeRegistry.getType(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>) p));
+    @Inject
+    public void setUserUtils(UserUtils userUtils) {
+        this.userUtils = userUtils;
     }
 
-    @Override
-    public Observable<? extends Thing<?>> findAllThings() {
-        return tc.observeThingsForType(Person.class, true).map(p -> userUtils.createUser(p));
-    }
-
-    @Override
-    public <V> V readValue(Thing<V> thing) {
-        throw new ThingRuntimeException("User will always store value inline");
-    }
-    
 
 }

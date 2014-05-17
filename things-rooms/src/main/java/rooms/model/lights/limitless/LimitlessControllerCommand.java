@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Project: rooms
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 9:24 PM

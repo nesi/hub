@@ -2,7 +2,7 @@ package rooms.model.lights;
 
 /**
  * Project: rooms
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 1:36 PM

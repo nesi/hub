@@ -21,11 +21,6 @@ public class ClearMongoDatabase implements ThingAction {
     public ClearMongoDatabase() {
     }
 
-    @Autowired
-    public void setMongoTemplate(MongoTemplate mo) {
-        this.mo = mo;
-    }
-
     @Override
     public String execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
         mo.dropCollection(Person.class);
@@ -34,5 +29,10 @@ public class ClearMongoDatabase implements ThingAction {
         mo.dropCollection(Role.class);
 
         return null;
+    }
+
+    @Autowired
+    public void setMongoTemplate(MongoTemplate mo) {
+        this.mo = mo;
     }
 }

@@ -13,13 +13,19 @@ import rx.Observable;
  */
 public interface ThingReader {
 
-    abstract Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher);
-    abstract Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher);
-    abstract Observable<? extends Thing<?>> findThingsForType(String type);
-    abstract Observable<? extends Thing<?>> findThingsForKey(String key);
-    abstract Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key);
+    abstract Observable<? extends Thing<?>> findAllThings();
+
     abstract Observable<? extends Thing<?>> findThingForId(String id);
-    abstract Observable<? extends Thing<?>> getChildrenForId(String id);
+
+    abstract Observable<? extends Thing<?>> findThingsForKey(String key);
+
+    abstract Observable<? extends Thing<?>> findThingsForType(String type);
+
+    abstract Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key);
+
+    abstract <V> Observable<Thing<V>> findThingsForValue(V value);
+
+    abstract <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value);
 
 //    default Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher) {
 //        return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
@@ -53,8 +59,11 @@ public interface ThingReader {
 //        return getChildrenMatchingTypeAndKey(things, "*", key);
 //    }
 
-    abstract Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
+    abstract Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher);
 
+    abstract <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value);
+
+    abstract Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher);
 
     /**
      * Returns an {@link rx.Observable} of all Things what match the provided type and key.
@@ -76,17 +85,13 @@ public interface ThingReader {
      * @return a stream of Things that match the provided type and key
      */
     abstract Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
-                                                           final String key);
+                                                                         final String key);
 
-    abstract Observable<? extends Thing<?>> findAllThings();
+    abstract Observable<? extends Thing<?>> getChildrenForId(String id);
+
+    abstract <V> Observable<Thing<V>> getChildrenForValue(Observable<? extends Thing<?>> thing, V value);
+
+    abstract Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
 
     abstract <V> V readValue(Thing<V> thing);
-
-    abstract  <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value);
-
-    abstract  <V> Observable<Thing<V>> findThingsForValue(V value);
-
-    abstract  <V> Observable<Thing<V>> getChildrenForValue(Observable<? extends Thing<?>> thing, V value);
-
-    abstract  <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value);
 }

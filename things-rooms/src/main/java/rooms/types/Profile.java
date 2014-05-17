@@ -23,15 +23,15 @@ public class Profile {
     public Profile() {
     }
 
+    public void addLight(String name, Light l2) {
+        getLights().put(name, l2);
+    }
+
     public Map<String, Light> getLights() {
         return lights;
     }
 
     public void setLights(Map<String, Light> lights) {
         this.lights = lights;
-    }
-
-    public void addLight(String name, Light l2) {
-        getLights().put(name, l2);
     }
 }

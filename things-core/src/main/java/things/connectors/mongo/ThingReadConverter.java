@@ -5,7 +5,7 @@ package things.connectors.mongo;
  * <p>
  * Written by: Markus Binsteiner Date: 4/04/14 Time: 10:46 AM
  */
-public class ThingReadConverter  {
+public class ThingReadConverter {
 //    @Override
 //    public Thing convert(DBObject source) {
 //

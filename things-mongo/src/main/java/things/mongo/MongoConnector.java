@@ -33,45 +33,72 @@ import java.util.Optional;
 public class MongoConnector extends AbstractThingReader implements ThingReader, ThingWriter {
 
 
-
     private static final Logger myLogger = LoggerFactory
-			.getLogger(MongoConnector.class);
+            .getLogger(MongoConnector.class);
 
-	private MongoTemplate mongoTemplate;
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
         this.mongoTemplate = mongoTemplate;
     }
 
+    private Object extractId(MongoPersistentProperty id, Object value) {
+
+        try {
+            Field idField = id.getField();
+            String idValue = (String) idField.get(value);
+            return idValue;
+        } catch (IllegalAccessException e) {
+            throw new TypeRuntimeException("Can't extract id from type " + typeRegistry.getType(value), typeRegistry.getType(value), e);
+        } catch (ClassCastException cce) {
+            throw new TypeRuntimeException("Can't extract id for type " + typeRegistry.getType(value) + ": id is not of String type", typeRegistry.getType(value));
+        }
+    }
+
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
         List<Thing> things = mongoTemplate.findAll(Thing.class);
-		return Observable.from(things).map(t -> (Thing<?>)t);
+        return Observable.from(things).map(t -> (Thing<?>) t);
     }
-    
+
     @Override
     public Observable<? extends Thing<?>> findThingForId(String id) {
 
-		if (id == null) {
-			throw new IllegalArgumentException("Id can't be null");
-		}
+        if (id == null) {
+            throw new IllegalArgumentException("Id can't be null");
+        }
 
-		Query q = new Query();
-		try {
-			q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-		} catch (IllegalArgumentException iae) {
-			throw new NoSuchThingException(id);
-		}
+        Query q = new Query();
+        try {
+            q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+        } catch (IllegalArgumentException iae) {
+            throw new NoSuchThingException(id);
+        }
 
-		Thing thing = mongoTemplate.findOne(q, Thing.class);
+        Thing thing = mongoTemplate.findOne(q, Thing.class);
 
-		if (thing == null) {
-			throw new NoSuchThingException(id);
-		}
+        if (thing == null) {
+            throw new NoSuchThingException(id);
+        }
 
-		return Observable.just((Thing<?>)thing);
-	}
+        return Observable.just((Thing<?>) thing);
+    }
+
+    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                                       final String key) {
+
+        Query q = new Query();
+        String regexType = MatcherUtils.convertGlobToRegex(type);
+        String regexKey = MatcherUtils.convertGlobToRegex(key);
+
+        q.addCriteria(Criteria.where("thingType").regex(regexType).and("key").regex(regexKey));
+
+        List<Thing> things = mongoTemplate.find(q, Thing.class);
+
+        return Observable.from(things).map(t -> (Thing<?>) t);
+
+    }
 
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Thing<?> thing, String typeMatcher, String keyMatcher) {
         Query q = new Query();
@@ -81,7 +108,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
 
         List<Thing> things = mongoTemplate.find(q, Thing.class);
-        return Observable.from(things).map(t -> (Thing<?>)t);
+        return Observable.from(things).map(t -> (Thing<?>) t);
     }
 
     @Override
@@ -90,52 +117,11 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         return things.flatMap(t -> getChildrenMatchingTypeAndKey(t, typeMatcher, keyMatcher));
     }
 
-    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
-                                                           final String key) {
-
-        Query q = new Query();
-        String regexType = MatcherUtils.convertGlobToRegex(type);
-        String regexKey = MatcherUtils.convertGlobToRegex(key);
-        
-        q.addCriteria(Criteria.where("thingType").regex(regexType).and("key").regex(regexKey));
-
-        List<Thing> things = mongoTemplate.find(q, Thing.class);
-
-        return Observable.from(things).map(t -> (Thing<?>)t);
-
-    }
-
-
-    @Override
-    public <V> V readValue(Thing<V> t) {
-
-        boolean stringConverter = typeRegistry.convertsFromString(t.getThingType());
-        if ( stringConverter ) {
-            return (V) typeRegistry.convertFromString(t.getThingType(), (String) t.getValue());
-        }
-
-
-        Query q = new Query();
-        q.addCriteria(Criteria.where("_id").is(new ObjectId((String)t.getValue())));
-//
-        Class typeClass = typeRegistry.getTypeClass(t.getThingType());
-        if (hasUsableId(typeClass)) {
-            Object v = mongoTemplate.findOne(q, typeClass);
-            return (V) v;
-        } else {
-            Object v = mongoTemplate.findOne(q, IdWrapper.class, t.getThingType());
-            return (V) ((IdWrapper)v).getValue();
-
-        }
-    }
-
-    @Override
-    public <V> Thing<V> saveThing(Thing<V> t) {
-        myLogger.debug("Saving thing: "+t.toString());
-        // mongo gives it an id if necessary
-        mongoTemplate.save(t);
-        myLogger.debug("Saved: "+t.toString());
-        return t;
+    private MongoPersistentProperty getIdField(Class valueClass) {
+        MongoPersistentEntity<?> mongoPersistentEntity = mongoTemplate.getConverter()
+                .getMappingContext().getPersistentEntity(valueClass);
+        MongoPersistentProperty id = mongoPersistentEntity.getIdProperty();
+        return id;
     }
 
     private boolean hasUsableId(Class valueClass) {
@@ -146,36 +132,49 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         }
     }
 
-    private MongoPersistentProperty getIdField(Class valueClass) {
-        MongoPersistentEntity<?> mongoPersistentEntity = mongoTemplate.getConverter()
-                .getMappingContext().getPersistentEntity(valueClass);
-        MongoPersistentProperty id = mongoPersistentEntity.getIdProperty();
-        return id;
-    }
+    @Override
+    public <V> V readValue(Thing<V> t) {
 
-    private Object extractId(MongoPersistentProperty id, Object value) {
+        boolean stringConverter = typeRegistry.convertsFromString(t.getThingType());
+        if (stringConverter) {
+            return (V) typeRegistry.convertFromString(t.getThingType(), (String) t.getValue());
+        }
 
-        try {
-            Field idField = id.getField();
-            String idValue = (String) idField.get(value);
-            return idValue;
-        } catch (IllegalAccessException e) {
-            throw new TypeRuntimeException("Can't extract id from type "+ typeRegistry.getType(value), typeRegistry.getType(value), e);
-        } catch (ClassCastException cce) {
-            throw new TypeRuntimeException("Can't extract id for type "+ typeRegistry.getType(value)+": id is not of String type", typeRegistry.getType(value));
+
+        Query q = new Query();
+        q.addCriteria(Criteria.where("_id").is(new ObjectId((String) t.getValue())));
+//
+        Class typeClass = typeRegistry.getTypeClass(t.getThingType());
+        if (hasUsableId(typeClass)) {
+            Object v = mongoTemplate.findOne(q, typeClass);
+            return (V) v;
+        } else {
+            Object v = mongoTemplate.findOne(q, IdWrapper.class, t.getThingType());
+            return (V) ((IdWrapper) v).getValue();
+
         }
     }
 
+    @Override
+    public <V> Thing<V> saveThing(Thing<V> t) {
+
+        myLogger.debug("Saving thing: " + t.toString());
+        // mongo gives it an id if necessary
+        mongoTemplate.save(t);
+        myLogger.debug("Saved: " + t.toString());
+        return t;
+    }
+
     public Object saveValue(Optional valueId, Object value) {
-        myLogger.debug("Saving value: "+value);
+        myLogger.debug("Saving value: " + value);
 
         Object vId = null;
         Optional<String> stringValue = typeRegistry.convertToString(value);
-        if ( stringValue.isPresent() ) {
+        if (stringValue.isPresent()) {
             vId = value;
         } else {
             MongoPersistentProperty idField = getIdField(value.getClass());
-            if ( idField == null ) {
+            if (idField == null) {
                 IdWrapper wrapper = new IdWrapper(value);
                 mongoTemplate.save(wrapper, typeRegistry.getType(value));
                 vId = wrapper.getId();

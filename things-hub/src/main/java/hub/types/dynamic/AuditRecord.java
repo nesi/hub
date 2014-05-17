@@ -18,11 +18,11 @@ public class AuditRecord implements Serializable {
     public AuditRecord() {
     }
 
-    public Map<String, BigDecimal> getCoreHours() {
-        return coreHours;
-    }
-
     public void addJob(String name, BigDecimal corehours) {
         this.coreHours.put(name, corehours);
+    }
+
+    public Map<String, BigDecimal> getCoreHours() {
+        return coreHours;
     }
 }

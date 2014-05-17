@@ -1,8 +1,8 @@
 buildscript {
-	    repositories {
-    		         maven { url "http://repo.spring.io/libs-snapshot" }
-			 }
-	dependencies {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+    }
+    dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
     }
 }
@@ -21,6 +21,6 @@ def springBootVersion = '1.0.2.RELEASE'
 dependencies {
 
     compile project(':things-core')
-    compile ("org.springframework.boot:spring-boot-starter-data-mongodb:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
 
 }

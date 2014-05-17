@@ -21,12 +21,6 @@ public class Actions {
     private MongoTemplate mongoTemplate;
 
     @Bean
-    public LdapImporter ldapImporter() throws Exception {
-        LdapImporter ldapImporter = new LdapImporter();
-        return ldapImporter;
-    }
-
-    @Bean
     public ClearMongoDatabase clearMongoDatabase() {
         return new ClearMongoDatabase();
     }
@@ -36,7 +30,13 @@ public class Actions {
         ImportRoleAndGroupAction i = new ImportRoleAndGroupAction();
         return i;
     }
-    
+
+    @Bean
+    public LdapImporter ldapImporter() throws Exception {
+        LdapImporter ldapImporter = new LdapImporter();
+        return ldapImporter;
+    }
+
     @Bean
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();

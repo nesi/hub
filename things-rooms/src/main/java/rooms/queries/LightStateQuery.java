@@ -19,12 +19,6 @@ public class LightStateQuery {
 
 //    private LightUtil lightUtil;
 
-    public List<Thing<LightState>> query(List<Thing> things, Map<String, String> queryParams) throws QueryException {
-
-        List<Thing<LightState>> states = things.stream().map(t -> getState(t)).collect(Collectors.toList());
-        return states;
-    }
-
     private Thing<LightState> getState(Thing light) {
 
 //        LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
@@ -35,5 +29,11 @@ public class LightStateQuery {
 
 //        Thing t = new Thing(light.getKey(), ls);
         return null;
+    }
+
+    public List<Thing<LightState>> query(List<Thing> things, Map<String, String> queryParams) throws QueryException {
+
+        List<Thing<LightState>> states = things.stream().map(t -> getState(t)).collect(Collectors.toList());
+        return states;
     }
 }

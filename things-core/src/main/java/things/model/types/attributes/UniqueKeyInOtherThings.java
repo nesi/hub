@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Project: researchHub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 24/01/14
  * Time: 11:17 AM

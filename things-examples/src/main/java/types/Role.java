@@ -28,13 +28,13 @@ public class Role implements SimpleValue<String> {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     @Override
     public String getValue() {
         return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

@@ -28,10 +28,6 @@ public class ThingReaders {
 
     }
 
-    public Set<ThingReader> getAll() {
-        return Sets.newHashSet(thingReaders.values());
-    }
-    
     public List<ThingReader> get(String queryType, String queryKey) {
 
         String match_key = queryType + "/" + queryKey;
@@ -54,22 +50,27 @@ public class ThingReaders {
         return connectors;
     }
 
+    public Set<ThingReader> getAll() {
+        return Sets.newHashSet(thingReaders.values());
+    }
+
+    public List<ThingReader> getThingReadersMatchingKey(String queryKey) {
+        return get("*", queryKey);
+    }
+
+    public List<ThingReader> getThingReadersMatchingType(String queryType) {
+        return get(queryType, "*");
+    }
+
     public ThingReader getUnique(String queryType, String queryKey) {
         List<ThingReader> c = get(queryType, queryKey);
-        if ( c.size() == 0 ) {
-            throw new TypeRuntimeException("No connector configured for type '"+queryType+"' and key '"+queryKey+"'", queryType);
-        } else if ( c.size() > 1 ) {
-            throw new TypeRuntimeException("More than one connector configured for type '"+queryType+"' and key '"+queryKey+"'", queryType);
+        if (c.size() == 0) {
+            throw new TypeRuntimeException("No connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
+        } else if (c.size() > 1) {
+            throw new TypeRuntimeException("More than one connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
         }
 
         return c.get(0);
-    }
-
-        public List<ThingReader> getThingReadersMatchingType(String queryType) {
-        return get(queryType, "*");
-    }
-    public List<ThingReader> getThingReadersMatchingKey(String queryKey) {
-        return get("*", queryKey);
     }
 
     public ThingReader getUnique(Thing child) {

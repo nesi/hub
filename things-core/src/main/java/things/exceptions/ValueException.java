@@ -2,7 +2,7 @@ package things.exceptions;
 
 /**
  * Project: hub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 14/03/14
  * Time: 2:23 PM

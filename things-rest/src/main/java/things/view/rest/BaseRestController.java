@@ -22,18 +22,18 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/")
 public class BaseRestController {
-    
+
     @Autowired
     private ThingControl thingControl;
 
     @Autowired
     private ThingUtils thingUtils;
-    
-    
+
+
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Thing createThing(@RequestBody Thing thing) throws ThingException, ValueException {
 
-        if ( ! Strings.isNullOrEmpty(thing.getId()) ) {
+        if (!Strings.isNullOrEmpty(thing.getId())) {
             throw new ThingException(thing, "Thing to create can't have an id set.");
         }
 
@@ -48,7 +48,7 @@ public class BaseRestController {
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public List<Thing> getAllThings() {
 
-        List<Thing> things =  thingControl.findAllThings();
+        List<Thing> things = thingControl.findAllThings();
         return things;
     }
 
@@ -57,8 +57,8 @@ public class BaseRestController {
     public Map<String, Map<String, String>> getAllTypes() {
         return thingUtils.getRegisteredTypeProperties();
     }
-    
-    
+
+
 //    @Transactional(readOnly = true)
 //    @RequestMapping(value = "/query/{queryName}", method = RequestMethod.POST)
 //    public List<Thing> queryForThings(@PathVariable("queryName") String queryName, @RequestParam(required = false) Map<String, String> queryParameters) throws QueryException, QueryException {

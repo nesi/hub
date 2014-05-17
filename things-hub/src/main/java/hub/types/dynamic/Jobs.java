@@ -1,10 +1,10 @@
 package hub.types.dynamic;
 
+import things.model.types.Value;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-
-import things.model.types.Value;
 
 /**
  * Project: things
@@ -15,10 +15,10 @@ import things.model.types.Value;
  */
 @Value(typeName = "jobs")
 public class Jobs implements Serializable {
-    
-    
-    private Instant timestamp;
+
+
     private List<JobStatus> jobs;
+    private Instant timestamp;
 
     public Jobs(List<JobStatus> jobs) {
         this.jobs = jobs;
@@ -29,15 +29,15 @@ public class Jobs implements Serializable {
         return jobs;
     }
 
-    public void setJobs(List<JobStatus> jobs) {
-        this.jobs = jobs;
-    }
-
     public Instant getTimestamp() {
         return timestamp;
     }
 
     public void setDate(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setJobs(List<JobStatus> jobs) {
+        this.jobs = jobs;
     }
 }

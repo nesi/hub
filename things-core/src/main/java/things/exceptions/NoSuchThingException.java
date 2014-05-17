@@ -9,12 +9,12 @@ package things.exceptions;
  */
 public class NoSuchThingException extends RuntimeException {
 
+    private final Object id;
     private final String key;
     private final String type;
-    private final Object id;
 
     public NoSuchThingException(Object id) {
-        super("Can't find Thing for id: "+id);
+        super("Can't find Thing for id: " + id);
         this.key = null;
         this.type = null;
         this.id = id;
@@ -28,10 +28,14 @@ public class NoSuchThingException extends RuntimeException {
     }
 
     public NoSuchThingException(String type, String key) {
-        super("Can't find thing for type '"+type+"' and key '"+key+"'");
+        super("Can't find thing for type '" + type + "' and key '" + key + "'");
         this.type = type;
         this.key = key;
         this.id = null;
+    }
+
+    public Object getId() {
+        return id;
     }
 
     public String getKey() {
@@ -40,9 +44,5 @@ public class NoSuchThingException extends RuntimeException {
 
     public String getType() {
         return type;
-    }
-
-    public Object getId() {
-        return id;
     }
 }

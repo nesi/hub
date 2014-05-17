@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/get/every")
 public class ThingsRestController {
-    
+
     @Autowired
     private ThingControl thingControl;
 

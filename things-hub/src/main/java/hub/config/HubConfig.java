@@ -57,13 +57,26 @@ public class HubConfig extends MongoConfig {
     }
 
     @Bean
-    public UserUtils userUtils() {
-        return new UserUtils();
+    public ObjectMapper objectMapper() {
+        ThingsObjectMapper tom = new ThingsObjectMapper();
+        return tom;
     }
 
     @Bean
-    public UserReader userReader() {
-        return new UserReader();
+    public EmbeddedServletContainerFactory servletContainer() {
+        return new JettyEmbeddedServletContainerFactory();
+    }
+
+    @Bean
+    public ThingControl thingControl() throws Exception {
+        ThingControl tc = new ThingControl();
+        return tc;
+    }
+
+    @Bean
+    public ThingQueries thingQueries() {
+        ThingQueries tq = new ThingQueries();
+        return tq;
     }
 
     @Bean
@@ -89,11 +102,14 @@ public class HubConfig extends MongoConfig {
         return tw;
     }
 
+    @Bean
+    public UserReader userReader() {
+        return new UserReader();
+    }
 
     @Bean
-    public ThingQueries thingQueries() {
-        ThingQueries tq = new ThingQueries();
-        return tq;
+    public UserUtils userUtils() {
+        return new UserUtils();
     }
 
     @Bean(name = "valueValidator")
@@ -102,23 +118,5 @@ public class HubConfig extends MongoConfig {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         return validator;
-    }
-
-
-    @Bean
-    public ThingControl thingControl() throws Exception {
-        ThingControl tc = new ThingControl();
-        return tc;
-    }
-    
-    @Bean
-    public ObjectMapper objectMapper() {
-        ThingsObjectMapper tom = new ThingsObjectMapper();
-        return tom;
-    }
-
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        return new JettyEmbeddedServletContainerFactory();
     }
 }

@@ -33,7 +33,7 @@ public final class PopluateOperator<T> implements Observable.Operator<T, T> {
 
             @Override
             public void onNext(T t) {
-                    subscriber.onNext(populate(t));
+                subscriber.onNext(populate(t));
 
             }
         };
@@ -41,6 +41,6 @@ public final class PopluateOperator<T> implements Observable.Operator<T, T> {
 
     public T populate(T thing) {
         Thing<? super Thing> t = (Thing<? super Thing>) thing;
-        return (T)tc.ensurePopulatedValue(t);
+        return (T) tc.ensurePopulatedValue(t);
     }
 }

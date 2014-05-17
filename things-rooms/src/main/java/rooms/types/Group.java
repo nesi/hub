@@ -2,7 +2,7 @@ package rooms.types;
 
 /**
  * Project: hub
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 1:35 PM

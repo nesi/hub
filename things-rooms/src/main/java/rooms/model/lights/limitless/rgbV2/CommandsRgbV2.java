@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * All possible commands for whiteV2 LimitlessLED lamps.
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 29/05/13
  * Time: 10:29 PM
@@ -27,15 +27,9 @@ public enum CommandsRgbV2 implements LimitlessControllerCommand {
     SET_COLOUR(Cmd.SET_COLOUR, 32);
 
 // ------------------------------ FIELDS ------------------------------
-
-    private static final byte START = (byte) 32;
-    private static final byte NO_CONF = (byte) 0;
     private static final byte END = (byte) 85;
-
-    public final byte byte_to_send;
-    public final Cmd cmd;
-
-// -------------------------- STATIC METHODS --------------------------
+    private static final byte NO_CONF = (byte) 0;
+    private static final byte START = (byte) 32;
 
     public static CommandsRgbV2 lookup(Cmd cmd) {
         for (CommandsRgbV2 commandsRGB : CommandsRgbV2.values()) {
@@ -45,6 +39,17 @@ public enum CommandsRgbV2 implements LimitlessControllerCommand {
         }
         throw new RuntimeException("Can't find group/cmd combination.");
     }
+    public final byte byte_to_send;
+
+// -------------------------- STATIC METHODS --------------------------
+    public final Cmd cmd;
+
+    private CommandsRgbV2(Cmd cmd, int byte_to_send) {
+        this.cmd = cmd;
+        this.byte_to_send = (byte) byte_to_send;
+    }
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
     public List<byte[]> getCommand(Map<String, String> options) {
 
@@ -64,13 +69,6 @@ public enum CommandsRgbV2 implements LimitlessControllerCommand {
         List<byte[]> result = Lists.newArrayList();
         result.add(sendData);
         return result;
-    }
-
-// --------------------------- CONSTRUCTORS ---------------------------
-
-    private CommandsRgbV2(Cmd cmd, int byte_to_send) {
-        this.cmd = cmd;
-        this.byte_to_send = (byte) byte_to_send;
     }
 }
 

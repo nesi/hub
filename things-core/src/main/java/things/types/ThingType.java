@@ -15,20 +15,55 @@ import java.util.Set;
  */
 public class ThingType<V> {
 
-    private final String type;
-    private final Class typeClass;
-
+    private Set<String> allowedParentTypes = Sets.newHashSet();
+    private SingleStringConverter<V> converter;
+    private boolean needsParent = false;
     private boolean needsUniqueKey = false;
     private boolean needsUniqueKeyAsChild = false;
     private boolean needsUniqueValue = false;
-    private boolean needsParent = false;
-    private Set<String> allowedParentTypes = Sets.newHashSet();
-
-    private SingleStringConverter<V> converter;
+    private final String type;
+    private final Class typeClass;
 
     public ThingType(String type, Class typeClass) {
         this.type = type;
         this.typeClass = typeClass;
+    }
+
+    public Optional<V> convertFromString(String valueString) {
+        if (converter != null) {
+            return Optional.of(converter.convertFromString(valueString));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<String> convertToString(V value) {
+        if (converter != null) {
+            return Optional.of(converter.convertToString(value));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public boolean convertsFromString() {
+        return converter != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ThingType) {
+            return Objects.equals(getType(), ((ThingType) o).getType());
+        } else {
+            return false;
+        }
+    }
+
+    public Set<String> getAllowedParentTypes() {
+        return allowedParentTypes;
+    }
+
+    private SingleStringConverter<V> getConverter() {
+        return converter;
     }
 
     public String getType() {
@@ -39,85 +74,48 @@ public class ThingType<V> {
         return typeClass;
     }
 
-    public boolean isNeedsUniqueKey() {
-        return needsUniqueKey;
-    }
-
-    public void setNeedsUniqueKey(boolean needsUniqueKey) {
-        this.needsUniqueKey = needsUniqueKey;
-    }
-
-    public boolean isNeedsUniqueKeyAsChild() {
-        return needsUniqueKeyAsChild;
-    }
-
-    public void setNeedsUniqueKeyAsChild(boolean needsUniqueKeyAsChild) {
-        this.needsUniqueKeyAsChild = needsUniqueKeyAsChild;
-    }
-
-    public boolean isNeedsUniqueValue() {
-        return needsUniqueValue;
-    }
-
-    public void setNeedsUniqueValue(boolean needsUniqueValue) {
-        this.needsUniqueValue = needsUniqueValue;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getType());
     }
 
     public boolean isNeedsParent() {
         return needsParent;
     }
 
-    public void setNeedsParent(boolean needsParent) {
-        this.needsParent = needsParent;
+    public boolean isNeedsUniqueKey() {
+        return needsUniqueKey;
     }
 
-    public Set<String> getAllowedParentTypes() {
-        return allowedParentTypes;
+    public boolean isNeedsUniqueKeyAsChild() {
+        return needsUniqueKeyAsChild;
+    }
+
+    public boolean isNeedsUniqueValue() {
+        return needsUniqueValue;
     }
 
     public void setAllowedParentTypes(Set<String> allowedParentTypes) {
         this.allowedParentTypes = allowedParentTypes;
     }
 
-    private SingleStringConverter<V> getConverter() {
-        return converter;
-    }
-
     public void setConverter(SingleStringConverter<V> converter) {
         this.converter = converter;
     }
 
-    public Optional<String> convertToString(V value) {
-        if ( converter != null ) {
-            return Optional.of(converter.convertToString(value));
-        } else {
-            return Optional.empty();
-        }
+    public void setNeedsParent(boolean needsParent) {
+        this.needsParent = needsParent;
     }
 
-    public Optional<V> convertFromString(String valueString) {
-        if ( converter != null ) {
-            return Optional.of(converter.convertFromString(valueString));
-        } else {
-            return Optional.empty();
-        }
+    public void setNeedsUniqueKey(boolean needsUniqueKey) {
+        this.needsUniqueKey = needsUniqueKey;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if ( o instanceof ThingType ) {
-            return Objects.equals(getType(), ((ThingType) o).getType());
-        } else {
-            return false;
-        }
+    public void setNeedsUniqueKeyAsChild(boolean needsUniqueKeyAsChild) {
+        this.needsUniqueKeyAsChild = needsUniqueKeyAsChild;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getType());
-    }
-
-    public boolean convertsFromString() {
-        return converter != null;
+    public void setNeedsUniqueValue(boolean needsUniqueValue) {
+        this.needsUniqueValue = needsUniqueValue;
     }
 }

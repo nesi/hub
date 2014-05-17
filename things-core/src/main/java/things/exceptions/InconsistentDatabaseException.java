@@ -11,9 +11,9 @@ import java.util.List;
  * Written by: Markus Binsteiner Date: 31/03/14 Time: 4:40 PM
  */
 public class InconsistentDatabaseException extends RuntimeException {
-    
+
     private final List<Thing> things;
-    
+
     public InconsistentDatabaseException(String msg) {
         super(msg);
         this.things = Lists.newArrayList();

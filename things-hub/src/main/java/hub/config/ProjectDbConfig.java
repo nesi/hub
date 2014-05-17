@@ -24,14 +24,40 @@ import javax.sql.DataSource;
  */
 @Configuration
 public class ProjectDbConfig {
-    
-    
+
+
     @Autowired
     private Environment env;
 
 
     // =============================================================================
     // Pan audit connector
+
+    @Bean
+    public DefaultConfiguration projectDbConfiguration() {
+        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
+
+        jooqConfiguration.set(projectDbConnectionProvider());
+        jooqConfiguration.set(new DefaultExecuteListenerProvider(
+                projectDbJooqToSpringExceptionTransformer()
+        ));
+
+        String sqlDialectName = env.getRequiredProperty("projectDB.jooq.sql.dialect");
+        SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
+        jooqConfiguration.set(dialect);
+
+        return jooqConfiguration;
+    }
+
+    @Bean
+    public DataSourceConnectionProvider projectDbConnectionProvider() {
+        return new DataSourceConnectionProvider(projectDbTransactionAwareDataSource());
+    }
+
+    @Bean(name = "projectDbContext")
+    public DefaultDSLContext projectDbContext() {
+        return new DefaultDSLContext(projectDbConfiguration());
+    }
 
     @Bean(destroyMethod = "close", name = "projectDbDataSource")
     public DataSource projectDbDataSource() {
@@ -43,6 +69,11 @@ public class ProjectDbConfig {
         dataSource.setPassword(env.getRequiredProperty("projectDB.db.password"));
 
         return dataSource;
+    }
+
+    @Bean
+    public JOOQToSpringExceptionTransformer projectDbJooqToSpringExceptionTransformer() {
+        return new JOOQToSpringExceptionTransformer();
     }
 
     @Bean
@@ -58,36 +89,5 @@ public class ProjectDbConfig {
     @Bean
     public DataSourceTransactionManager projectDbTransactionManager() {
         return new DataSourceTransactionManager(projectDbLazyConnectionDataSource());
-    }
-
-    @Bean
-    public DataSourceConnectionProvider projectDbConnectionProvider() {
-        return new DataSourceConnectionProvider(projectDbTransactionAwareDataSource());
-    }
-
-    @Bean
-    public JOOQToSpringExceptionTransformer projectDbJooqToSpringExceptionTransformer() {
-        return new JOOQToSpringExceptionTransformer();
-    }
-
-    @Bean
-    public DefaultConfiguration projectDbConfiguration() {
-        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-
-        jooqConfiguration.set(projectDbConnectionProvider());
-        jooqConfiguration.set(new DefaultExecuteListenerProvider(
-            projectDbJooqToSpringExceptionTransformer()
-        ));
-
-        String sqlDialectName = env.getRequiredProperty("projectDB.jooq.sql.dialect");
-        SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
-        jooqConfiguration.set(dialect);
-
-        return jooqConfiguration;
-    }
-
-    @Bean(name = "projectDbContext")
-    public DefaultDSLContext projectDbContext() {
-        return new DefaultDSLContext(projectDbConfiguration());
     }
 }

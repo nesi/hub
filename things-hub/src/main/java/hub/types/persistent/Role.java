@@ -16,7 +16,7 @@ import java.util.Objects;
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "role")
 @UniqueValueForKey(unique = true)
-public class Role  {
+public class Role {
 
     @NotEmpty
     private String role;
@@ -32,12 +32,12 @@ public class Role  {
         return role;
     }
 
-    public void setRole(String value) {
-        this.role = value;
-    }
-
     public int hashCode() {
         return Objects.hashCode(getRole());
+    }
+
+    public void setRole(String value) {
+        this.role = value;
     }
 
     @Override

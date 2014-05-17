@@ -2,15 +2,15 @@ package rooms.model.lights.limitless.whiteV2;
 
 import com.google.common.collect.Lists;
 import rooms.model.lights.Cmd;
-import rooms.types.Group;
 import rooms.model.lights.limitless.LimitlessControllerCommand;
+import rooms.types.Group;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * All possible commands for whiteV2 LimitlessLED lamps.
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 29/05/13
  * Time: 10:29 PM
@@ -43,32 +43,29 @@ public enum CommandsWhiteV2 implements LimitlessControllerCommand {
     FULL_GROUP_4(GROUP_4_ON, Cmd.FULL, Group.GROUP_4, 178);
 
 // ------------------------------ FIELDS ------------------------------
-
-    private static final byte NO_CONF = (byte) 0;
     private static final byte END = (byte) 85;
-
-    public final byte byte_to_send;
-    public final Cmd cmd;
-    public final Group group;
-    public final CommandsWhiteV2 before;
-
-// -------------------------- STATIC METHODS --------------------------
-
+    private static final byte NO_CONF = (byte) 0;
 
     public static CommandsWhiteV2 lookup(Group group, Cmd cmd) {
-        for ( CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values() ) {
-            if ( commandsWhite.group == group && commandsWhite.cmd == cmd) {
+        for (CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values()) {
+            if (commandsWhite.group == group && commandsWhite.cmd == cmd) {
                 return commandsWhite;
             }
         }
 
-        for ( CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values() ) {
-            if ( commandsWhite.cmd == cmd) {
+        for (CommandsWhiteV2 commandsWhite : CommandsWhiteV2.values()) {
+            if (commandsWhite.cmd == cmd) {
                 return commandsWhite;
             }
         }
         throw new RuntimeException("Can't find group/cmd combination.");
     }
+    public final CommandsWhiteV2 before;
+    public final byte byte_to_send;
+    public final Cmd cmd;
+
+// -------------------------- STATIC METHODS --------------------------
+    public final Group group;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -85,6 +82,10 @@ public enum CommandsWhiteV2 implements LimitlessControllerCommand {
 
 // -------------------------- OTHER METHODS --------------------------
 
+    public List<byte[]> getCommand(Map<String, String> options) {
+        return getCommandSequence();
+    }
+
     private List<byte[]> getCommandSequence() {
 
         List<byte[]> result = Lists.newArrayList();
@@ -97,10 +98,6 @@ public enum CommandsWhiteV2 implements LimitlessControllerCommand {
         result.add(sendData);
 
         return result;
-    }
-
-    public List<byte[]> getCommand(Map<String, String> options) {
-        return getCommandSequence();
     }
 }
 

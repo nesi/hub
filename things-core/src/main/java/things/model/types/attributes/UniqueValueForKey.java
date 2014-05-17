@@ -7,11 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * Determines whether all values of this type need to be unique.
- *
+ * <p>
  * Be careful using this annotation, since performance can degrade when persisting this objects,
  * due to checks that need to be executed before storing. Using it for {@link things.model.SingleStringValue}s
  * should be ok though.
- *
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 24/01/14
  * Time: 11:17 AM

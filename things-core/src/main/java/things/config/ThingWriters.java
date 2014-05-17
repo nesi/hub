@@ -25,7 +25,7 @@ public class ThingWriters {
         thingWriters.put(matcher, reader);
 
     }
-    
+
     public List<ThingWriter> get(String queryType, String queryKey) {
 
         String match_key = queryType + "/" + queryKey;
@@ -50,10 +50,10 @@ public class ThingWriters {
 
     public ThingWriter getUnique(String queryType, String queryKey) {
         List<ThingWriter> c = get(queryType, queryKey);
-        if ( c.size() == 0 ) {
-            throw new TypeRuntimeException("No connector configured for type '"+queryType+"' and key '"+queryKey+"'", queryType);
-        } else if ( c.size() > 1 ) {
-            throw new TypeRuntimeException("More than one connector configured for type '"+queryType+"' and key '"+queryKey+"'", queryType);
+        if (c.size() == 0) {
+            throw new TypeRuntimeException("No connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
+        } else if (c.size() > 1) {
+            throw new TypeRuntimeException("More than one connector configured for type '" + queryType + "' and key '" + queryKey + "'", queryType);
         }
 
         return c.get(0);

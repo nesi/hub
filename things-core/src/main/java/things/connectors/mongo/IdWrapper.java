@@ -29,12 +29,12 @@ public class IdWrapper {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public Object getValue() {
         return value;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setValue(Object value) {

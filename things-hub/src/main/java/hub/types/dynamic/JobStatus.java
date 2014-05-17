@@ -1,12 +1,11 @@
 package hub.types.dynamic;
 
-import java.io.Serializable;
-import java.util.Set;
-
-import things.model.types.Value;
-
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
+import things.model.types.Value;
+
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Project: things
@@ -46,82 +45,79 @@ public class JobStatus implements Comparable<JobStatus>, Serializable {
         unknown("");
 
         public static STATE get(String abrev) {
-            for ( STATE state : STATE.values() ) {
-                if ( state.abrevs.contains(abrev) ) {
+            for (STATE state : STATE.values()) {
+                if (state.abrevs.contains(abrev)) {
                     return state;
                 }
             }
             return unknown;
         }
 
-        
+
         private Set<String> abrevs = Sets.newHashSet();
+
         STATE(String abrevs) {
             this.abrevs = Sets.newHashSet(abrevs.split(","));
         }
     }
-
+    private String dispatchDate;
+    private String host;
     private String jobid;
     private String jobname;
     private STATE jobstatus;
-
     private String queueDate;
-    private String dispatchDate;
-
     private String username;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    private String host;
 
     public int compareTo(JobStatus other) {
 
-            return ComparisonChain.start().compare(getUsername(), other.getUsername())
-                    .compare(getJobname(), other.getJobname())
-                    .compare(getJobid(), other.getJobid()).result();
+        return ComparisonChain.start().compare(getUsername(), other.getUsername())
+                .compare(getJobname(), other.getJobname())
+                .compare(getJobid(), other.getJobid()).result();
 
-    }
-
-    public String getJobid() {
-        return jobid;
-    }
-
-    public void setJobid(String jobid) {
-        this.jobid = jobid;
-    }
-
-    public String getQueueDate() {
-        return queueDate;
-    }
-
-    public void setQueueDate(String queueDate) {
-        this.queueDate = queueDate;
     }
 
     public String getDispatchDate() {
         return dispatchDate;
     }
 
-    public void setDispatchDate(String dispatchDate) {
-        this.dispatchDate = dispatchDate;
-    }
-
     public String getHost() {
         return host;
+    }
+
+    public String getJobid() {
+        return jobid;
+    }
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public STATE getJobstatus() {
+        return jobstatus;
+    }
+
+    public String getQueueDate() {
+        return queueDate;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setDispatchDate(String dispatchDate) {
+        this.dispatchDate = dispatchDate;
     }
 
     public void setHost(String host) {
         this.host = host;
     }
 
-    public STATE getJobstatus() {
-        return jobstatus;
+    public void setJobid(String jobid) {
+        this.jobid = jobid;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
     }
 
     public void setJobstatus(STATE jobstatus) {
@@ -132,11 +128,11 @@ public class JobStatus implements Comparable<JobStatus>, Serializable {
         this.jobstatus = STATE.get(jobstatus);
     }
 
-    public String getJobname() {
-        return jobname;
+    public void setQueueDate(String queueDate) {
+        this.queueDate = queueDate;
     }
 
-    public void setJobname(String jobname) {
-        this.jobname = jobname;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

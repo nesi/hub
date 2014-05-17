@@ -30,15 +30,38 @@ import javax.validation.ValidatorFactory;
 @ComponentScan({"things.thing", "things.view.rest"})
 public class ThingsConfig extends MongoConfig {
 
+    @Bean
+    public MongoConnector defaultConnector() throws Exception {
+        MongoConnector mc = new MongoConnector(mongoTemplate());
+        return mc;
+    }
+
     @Override
     protected String getDatabaseName() {
         return "things-rest-test";
     }
 
     @Bean
-    public MongoConnector defaultConnector() throws Exception {
-        MongoConnector mc = new MongoConnector(mongoTemplate());
-        return mc;
+    public EmbeddedServletContainerFactory servletContainer() {
+        return new JettyEmbeddedServletContainerFactory();
+    }
+
+    @Bean
+    ThingActions thingActions() throws Exception {
+        ThingActions ta = new ThingActions();
+        return ta;
+    }
+
+    @Bean
+    public ThingControl thingControl() throws Exception {
+        ThingControl tc = new ThingControl();
+        return tc;
+    }
+
+    @Bean
+    public ThingQueries thingQueries() {
+        ThingQueries tq = new ThingQueries();
+        return tq;
     }
 
     @Bean
@@ -63,35 +86,11 @@ public class ThingsConfig extends MongoConfig {
         return tw;
     }
 
-    @Bean
-    public ThingQueries thingQueries() {
-        ThingQueries tq = new ThingQueries();
-        return tq;
-    }
-
-    @Bean
-    ThingActions thingActions() throws Exception {
-        ThingActions ta = new ThingActions();
-        return ta;
-    }
-
     @Bean(name = "valueValidator")
     public Validator validator() {
         ValidatorFactory factory =
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         return validator;
-    }
-
-
-    @Bean
-    public ThingControl thingControl() throws Exception {
-        ThingControl tc = new ThingControl();
-        return tc;
-    }
-
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        return new JettyEmbeddedServletContainerFactory();
     }
 }

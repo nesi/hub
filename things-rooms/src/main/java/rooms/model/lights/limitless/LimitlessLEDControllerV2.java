@@ -20,7 +20,7 @@ import java.util.Queue;
 
 /**
  * Project: rooms
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 12:04 PM
@@ -28,13 +28,12 @@ import java.util.Queue;
 public class LimitlessLEDControllerV2 {
 // ------------------------------ FIELDS ------------------------------
 
-    private static final Logger myLogger = LoggerFactory.getLogger(LimitlessLEDControllerV2.class);
-
-    private final static int WAIT_TIME = 100;
     private final static int COMMAND_WAIT_TIME = 400;
-
     private static final int DEFAULT_PORT = 50000;
-
+    private final static int WAIT_TIME = 100;
+    private static final Logger myLogger = LoggerFactory.getLogger(LimitlessLEDControllerV2.class);
+    final private InetAddress bridgeAddr;
+    private final List<Group> groups = Lists.newArrayList(Group.GROUP_1, Group.GROUP_2, Group.GROUP_3, Group.GROUP_4, Group.GROUP_ALL, Group.GROUP_COLOUR);
     private final Thread sendCommandDaemonThread = new Thread() {
         public void run() {
             Iterator<Group> groupIterator = Iterators.cycle(groups);
@@ -45,7 +44,6 @@ public class LimitlessLEDControllerV2 {
                 Group group = groupIterator.next();
 
 
-
                 Queue<LimitlessCommand> queue = queues.get(group);
 
                 LimitlessCommand cmd = queue.poll();
@@ -54,7 +52,7 @@ public class LimitlessLEDControllerV2 {
                     myLogger.debug("Executing command for group {}", group);
 
                     try {
-                        if (( group != Group.GROUP_COLOUR
+                        if ((group != Group.GROUP_COLOUR
                                 || lastGroup == null)
                                 && group != lastGroup
                                 && !cmd.equals(Cmd.ON)
@@ -62,7 +60,7 @@ public class LimitlessLEDControllerV2 {
                             // change to group
                             CommandsWhiteV2 temp = CommandsWhiteV2.lookup(group, Cmd.ON);
                             List<byte[]> tempSeq = temp.getCommand(null);
-                            for ( byte[] t : tempSeq ) {
+                            for (byte[] t : tempSeq) {
                                 send(t);
                                 try {
                                     Thread.sleep(WAIT_TIME);
@@ -78,9 +76,9 @@ public class LimitlessLEDControllerV2 {
                             repeat = Integer.parseInt(cmd.getOptions().get("repeat"));
                         } catch (Exception e) {
                         }
-                        for (int j=0; j<repeat; j++) {
+                        for (int j = 0; j < repeat; j++) {
                             List<byte[]> seq = cmd.getCommand().getCommand(cmd.getOptions());
-                            for ( byte[] c : seq ) {
+                            for (byte[] c : seq) {
                                 send(c);
                                 try {
                                     Thread.sleep(WAIT_TIME);
@@ -103,17 +101,10 @@ public class LimitlessLEDControllerV2 {
             }
         }
     };
-
-    private final List<Group> groups = Lists.newArrayList(Group.GROUP_1, Group.GROUP_2, Group.GROUP_3, Group.GROUP_4, Group.GROUP_ALL, Group.GROUP_COLOUR);
-
-    private final Map<Group, Queue<LimitlessCommand>> queues = Maps.newLinkedHashMap();
-
     final private String hostname;
-    final private int port;
-
-    final private InetAddress bridgeAddr;
-
     private Group lastGroup;
+    final private int port;
+    private final Map<Group, Queue<LimitlessCommand>> queues = Maps.newLinkedHashMap();
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -147,11 +138,33 @@ public class LimitlessLEDControllerV2 {
         return hostname;
     }
 
+    public InetAddress getIp() {
+        return bridgeAddr;
+    }
+
+// -------------------------- OTHER METHODS --------------------------
+
     public int getPort() {
         return port;
     }
 
-// -------------------------- OTHER METHODS --------------------------
+    public void queue(Group group, LimitlessControllerCommand cmd) {
+        queue(group, cmd, (Map) null);
+    }
+
+    public synchronized void queue(Group group, LimitlessControllerCommand cmd, Integer times) {
+
+        Map<String, String> options = Maps.newHashMap();
+        options.put("repeat", times.toString());
+
+        queue(group, cmd, options);
+    }
+
+    private synchronized void queue(Group group, LimitlessControllerCommand cmd, Map<String, String> options) {
+
+        LimitlessCommand command = new LimitlessCommand(cmd, group, options);
+        queues.get(group).add(command);
+    }
 
     private synchronized void send(byte[] sendData) {
         DatagramSocket clientSocket = null;
@@ -170,10 +183,6 @@ public class LimitlessLEDControllerV2 {
         }
     }
 
-    public InetAddress getIp() {
-        return bridgeAddr;
-    }
-
     public void sendRGB(Cmd cmd) {
         sendRGB(cmd, 1);
     }
@@ -188,10 +197,6 @@ public class LimitlessLEDControllerV2 {
         queue(Group.GROUP_COLOUR, command, options);
     }
 
-    public void queue(Group group, LimitlessControllerCommand cmd) {
-        queue(group, cmd, (Map)null);
-    }
-
     public void sendWhite(Group group, Cmd cmd, Integer times) {
         CommandsWhiteV2 command = CommandsWhiteV2.lookup(group, cmd);
         queue(group, command, times);
@@ -199,19 +204,5 @@ public class LimitlessLEDControllerV2 {
 
     public void sendWhite(Group group, Cmd cmd) {
         sendWhite(group, cmd, 1);
-    }
-
-    public synchronized void queue(Group group, LimitlessControllerCommand cmd, Integer times) {
-
-        Map<String, String> options = Maps.newHashMap();
-        options.put("repeat", times.toString());
-
-        queue(group, cmd, options);
-    }
-
-    private synchronized void queue(Group group, LimitlessControllerCommand cmd, Map<String, String> options) {
-
-        LimitlessCommand command = new LimitlessCommand(cmd, group, options);
-        queues.get(group).add(command);
     }
 }

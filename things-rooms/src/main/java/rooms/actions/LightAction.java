@@ -19,21 +19,11 @@ import java.util.Map;
  */
 public class LightAction implements ThingAction {
 
-    private ThingControl tc;
     private LightUtil lightUtil;
+    private ThingControl tc;
 
     public LightAction() {
 
-    }
-
-    @Inject
-    public void setLightUtil(LightUtil lu) {
-        this.lightUtil = lu;
-    }
-
-    @Inject
-    public void setThingControl(ThingControl tc) {
-        this.tc = tc;
     }
 
     @Override
@@ -59,7 +49,15 @@ public class LightAction implements ThingAction {
         return null;
     }
 
+    @Inject
+    public void setLightUtil(LightUtil lu) {
+        this.lightUtil = lu;
+    }
 
+    @Inject
+    public void setThingControl(ThingControl tc) {
+        this.tc = tc;
+    }
 
     private void toggleLight(String lightname) {
         LightWhiteV2 l = lightUtil.getLights().get(lightname);

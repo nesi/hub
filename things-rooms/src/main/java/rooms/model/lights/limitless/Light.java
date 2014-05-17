@@ -4,35 +4,34 @@ import java.util.Map;
 
 /**
  * Project: rooms
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 11:40 PM
  */
 public interface Light {
 
+    void decreaseBrightness(int steps);
+
+    void decreaseWarmth(int steps);
+
     String getName();
 
-     void setBrightness(int absBrightness);
+    void increaseBrightness(int steps);
 
-     void increaseBrightness(int steps);
-
-     void decreaseBrightness(int steps);
-
-     void setColor(int color);
-
-     void setWarmth(int absWarmth);
-
-     void increaseWarmth(int steps);
-
-     void decreaseWarmth(int steps);
-
-     void setOn(Boolean on);
+    void increaseWarmth(int steps);
 
     Boolean isOn();
 
     void set(Map<String, String> properties);
 
+    void setBrightness(int absBrightness);
+
+    void setColor(int color);
+
+    void setOn(Boolean on);
+
+    void setWarmth(int absWarmth);
 
 
 }

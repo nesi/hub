@@ -25,14 +25,35 @@ import javax.sql.DataSource;
  */
 @Configuration
 public class PanAuditConfig {
-    
-    
+
+
     @Autowired
     private Environment env;
 
 
     // =============================================================================
     // Pan audit connector
+
+    @Bean
+    public DefaultConfiguration panAuditConfiguration() {
+        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
+
+        jooqConfiguration.set(panAuditconnectionProvider());
+        jooqConfiguration.set(new DefaultExecuteListenerProvider(
+                panAuditjooqToSpringExceptionTransformer()
+        ));
+
+        String sqlDialectName = env.getRequiredProperty("pan.jooq.sql.dialect");
+        SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
+        jooqConfiguration.set(dialect);
+
+        return jooqConfiguration;
+    }
+
+    @Bean(name = "panAuditContext")
+    public DefaultDSLContext panAuditContext() {
+        return new DefaultDSLContext(panAuditConfiguration());
+    }
 
     @Bean(destroyMethod = "close", name = "panAuditDataSource")
     public DataSource panAuditDataSource() {
@@ -70,26 +91,5 @@ public class PanAuditConfig {
     @Bean
     public JOOQToSpringExceptionTransformer panAuditjooqToSpringExceptionTransformer() {
         return new JOOQToSpringExceptionTransformer();
-    }
-
-    @Bean
-    public DefaultConfiguration panAuditConfiguration() {
-        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-
-        jooqConfiguration.set(panAuditconnectionProvider());
-        jooqConfiguration.set(new DefaultExecuteListenerProvider(
-            panAuditjooqToSpringExceptionTransformer()
-        ));
-
-        String sqlDialectName = env.getRequiredProperty("pan.jooq.sql.dialect");
-        SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
-        jooqConfiguration.set(dialect);
-
-        return jooqConfiguration;
-    }
-
-    @Bean(name = "panAuditContext")
-    public DefaultDSLContext panAuditContext() {
-        return new DefaultDSLContext(panAuditConfiguration());
     }
 }

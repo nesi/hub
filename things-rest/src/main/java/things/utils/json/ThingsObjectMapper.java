@@ -16,7 +16,7 @@ import javax.inject.Inject;
 public class ThingsObjectMapper extends ObjectMapper {
 
     private ThingControl tc;
-    
+
     public ThingsObjectMapper() {
         registerModule(new GuavaModule());
         registerModule(new ThingModule(this, tc));
@@ -24,12 +24,12 @@ public class ThingsObjectMapper extends ObjectMapper {
         registerModule(new AfterburnerModule());
     }
 
+    public ThingControl getThingControl() {
+        return tc;
+    }
+
     @Inject
     public void setThingControl(ThingControl tc) {
         this.tc = tc;
-    }
-
-    public ThingControl getThingControl() {
-        return tc;
     }
 }

@@ -20,7 +20,7 @@ public class ThingActions {
         thingActions.put(matcher, action);
 
     }
-    
+
     public ThingAction get(String actionName) {
 
         return thingActions.get(actionName);

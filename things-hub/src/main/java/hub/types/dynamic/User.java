@@ -15,21 +15,20 @@ import java.io.Serializable;
 @Value(typeName = "user")
 public class User implements Serializable {
 
-//    private String uniqueId;
+    //    private String uniqueId;
     private Person person;
+    private Multimap<String, String> roles = ArrayListMultimap.create();
     private Multimap<String, String> usernames = ArrayListMultimap.create();
 
-    public Multimap<String, String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Multimap<String, String> roles) {
-        this.roles = roles;
-    }
-
-    private Multimap<String, String> roles = ArrayListMultimap.create();
-
     public User() {
+    }
+
+    public void addRole(String key, String role) {
+        this.roles.put(key, role);
+    }
+
+    public void addUsername(String key, String id) {
+        this.usernames.put(key, id);
     }
 
     public Person getPerson() {
@@ -44,24 +43,24 @@ public class User implements Serializable {
 //        this.uniqueId = uniqueId;
 //    }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public Multimap<String, String> getRoles() {
+        return roles;
     }
 
     public Multimap<String, String> getUsernames() {
         return usernames;
     }
 
-    public void setUsernames(Multimap<String, String> usernames) {
-        this.usernames = usernames;
-    }
-    
-    public void addUsername(String key, String id) {
-        this.usernames.put(key, id);
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
-    public void addRole(String key, String role) {
-        this.roles.put(key, role);
+    public void setRoles(Multimap<String, String> roles) {
+        this.roles = roles;
+    }
+
+    public void setUsernames(Multimap<String, String> usernames) {
+        this.usernames = usernames;
     }
 
     @Override

@@ -1,8 +1,8 @@
 buildscript {
-	    repositories {
-    		         maven { url "http://repo.spring.io/libs-snapshot" }
-			 }
-	dependencies {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+    }
+    dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
         classpath("com.github.ben-manes:gradle-jooq-plugin:+")
         classpath("mysql:mysql-connector-java:5.1.30")
@@ -43,9 +43,9 @@ dependencies {
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
 
-    compile("org.springframework.boot:spring-boot-starter-parent:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
 
-    compile("org.springframework.boot:spring-boot-starter-web:"+springBootVersion) {
+    compile("org.springframework.boot:spring-boot-starter-web:" + springBootVersion) {
         exclude module: "spring-boot-starter-tomcat"
     }
 
@@ -60,12 +60,12 @@ dependencies {
 
     compile("com.jcraft:jsch:0.1.51")
 
-    compile ("org.springframework.boot:spring-boot-starter-jetty:"+springBootVersion)
-    compile ("org.springframework.boot:spring-boot-starter-logging:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
-    compile ("org.springframework.boot:spring-boot-starter-data-mongodb:"+springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
 
-    compile ("org.codehaus.groovy:groovy-all:2.3.0")
+    compile("org.codehaus.groovy:groovy-all:2.3.0")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("org.hamcrest:hamcrest-core:1.3")

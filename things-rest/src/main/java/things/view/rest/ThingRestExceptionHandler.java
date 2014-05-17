@@ -24,11 +24,22 @@ public class ThingRestExceptionHandler {
 
     private static final Logger myLogger = LoggerFactory.getLogger(ThingRestExceptionHandler.class);
 
+    @ExceptionHandler(Error.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorInfo error(final HttpServletRequest req,
+                           final Error ex) {
+
+        myLogger.debug("Exception: " + ex.getLocalizedMessage(), ex);
+
+        return new ErrorInfo(req.getRequestURL().toString(), ex);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-	public ErrorInfo exception(final HttpServletRequest req,
-                            final Exception ex) {
+    public ErrorInfo exception(final HttpServletRequest req,
+                               final Exception ex) {
 
         myLogger.debug("Exception: " + ex.getLocalizedMessage(), ex);
 
@@ -38,21 +49,10 @@ public class ThingRestExceptionHandler {
     @ExceptionHandler(NoSuchThingException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-	public ErrorInfo noSuchThingException(final HttpServletRequest req,
-                            final NoSuchThingException ex) {
+    public ErrorInfo noSuchThingException(final HttpServletRequest req,
+                                          final NoSuchThingException ex) {
 
         myLogger.debug("NoSuchEntityException: " + ex.getLocalizedMessage(), ex);
-
-        return new ErrorInfo(req.getRequestURL().toString(), ex);
-    }
-
-    @ExceptionHandler(Error.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-	public ErrorInfo error(final HttpServletRequest req,
-                            final Error ex) {
-
-        myLogger.debug("Exception: " + ex.getLocalizedMessage(), ex);
 
         return new ErrorInfo(req.getRequestURL().toString(), ex);
     }

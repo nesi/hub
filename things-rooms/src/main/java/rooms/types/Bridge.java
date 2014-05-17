@@ -10,7 +10,7 @@ import things.model.types.Value;
  * Time: 12:06 AM
  */
 @Value(typeName = "bridge")
-public class Bridge  {
+public class Bridge {
 
     public static final int DEFAULT_PORT = 8899;
 
@@ -35,20 +35,20 @@ public class Bridge  {
         return host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
     public String getVersion() {
         return version;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public void setVersion(String version) {

@@ -9,7 +9,6 @@ import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingReader;
 import things.thing.ThingWriter;
-import things.types.TypeRegistry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,9 +27,9 @@ import java.util.UUID;
  */
 public class XstreamConnector extends AbstractThingReader implements ThingReader, ThingWriter {
 
-    private final XStream xstream = new XStream();
     private final File thingsFolder;
     private final File valuesFolder;
+    private final XStream xstream = new XStream();
 
     @Inject
     public XstreamConnector(@Named("thingsFolder") File thingsFolder, @Named("valuesFolder") File valuesFolder) {
@@ -42,6 +41,45 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
         xstream.processAnnotations(Thing.class);
     }
 
+    private Thing<?> assembleThing(Path path) {
+        return assembleThing(path.toFile());
+    }
+
+    private Thing<?> assembleThing(File file) {
+        Thing t = (Thing) xstream.fromXML(file);
+        return t;
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> findAllThings() {
+
+        Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
+            new Thread(() -> {
+                try {
+                    Files.walk(Paths.get(thingsFolder.toURI()))
+                            .filter((path) -> path.toString().endsWith(".thing"))
+                            .map(path -> assembleThing(path))
+                            .forEach(t -> subscriber.onNext(t));
+
+                    subscriber.onCompleted();
+
+                } catch (IOException e) {
+                    throw new ThingRuntimeException("Could not read thing files.", e);
+                }
+            }).start();
+        });
+
+        return obs;
+    }
+
+    private Path getPath(String type, String key, String id) {
+        Path path = FileSystems.getDefault().getPath(thingsFolder.getAbsolutePath(), type, key + "_id_" + id + ".thing");
+        return path;
+    }
+
+    private Path getPath(Thing t) {
+        return getPath(t.getThingType(), t.getKey(), t.getId());
+    }
 
     private File getTypeFolder(String type) {
         File typeFolder = new File(valuesFolder, type);
@@ -53,16 +91,25 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
         String type = typeRegistry.getType(value);
         File folder = getTypeFolder(type);
 
-        return new File(folder, id+".value");
+        return new File(folder, id + ".value");
+    }
+
+    public <V> V readValue(Thing<V> t) {
+        String type = t.getThingType();
+        Object valueId = t.getValue();
+        File typeFolder = getTypeFolder(type);
+        File file = new File(typeFolder, valueId + ".value");
+        V v = (V) xstream.fromXML(file);
+        return v;
     }
 
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {
 
-        if ( Strings.isNullOrEmpty(t.getId()) ) {
+        if (Strings.isNullOrEmpty(t.getId())) {
             t.setId(UUID.randomUUID().toString());
         }
-        
+
         File thingFile = getPath(t).toFile();
         thingFile.getParentFile().mkdirs();
         FileWriter writer = null;
@@ -76,14 +123,13 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
         return t;
     }
 
-
     public Object saveValue(Optional valueId, Object value) {
 
         FileWriter writer = null;
 
         Object vId = null;
 
-        if ( valueId.isPresent() ) {
+        if (valueId.isPresent()) {
             vId = valueId.get();
         } else {
             vId = UUID.randomUUID().toString();
@@ -99,55 +145,5 @@ public class XstreamConnector extends AbstractThingReader implements ThingReader
         xstream.toXML(value, writer);
 
         return vId;
-    }
-
-    private Path getPath(String type, String key, String id) {
-        Path path = FileSystems.getDefault().getPath(thingsFolder.getAbsolutePath(), type, key + "_id_" + id + ".thing");
-        return path;
-    }
-
-    private Path getPath(Thing t) {
-        return getPath(t.getThingType(), t.getKey(), t.getId());
-    }
-
-    @Override
-    public Observable<? extends Thing<?>> findAllThings() {
-
-        Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
-            new Thread( () -> {
-                try {
-                    Files.walk(Paths.get(thingsFolder.toURI()))
-                            .filter((path) -> path.toString().endsWith(".thing"))
-                            .map(path -> assembleThing(path))
-                            .forEach(t -> subscriber.onNext(t));
-
-                    subscriber.onCompleted();
-
-                } catch (IOException e) {
-                    throw new ThingRuntimeException("Could not read thing files.", e);
-                }
-            } ).start();
-        });
-
-        return obs;
-    }
-
-    public <V> V readValue(Thing<V> t) {
-        String type = t.getThingType();
-        Object valueId = t.getValue();
-        File typeFolder = getTypeFolder(type);
-        File file = new File(typeFolder, valueId+".value");
-        V v = (V) xstream.fromXML(file);
-        return v;
-    }
-
-
-    private Thing<?> assembleThing(Path path) {
-        return assembleThing(path.toFile());
-    }
-
-    private Thing<?> assembleThing(File file) {
-        Thing t = (Thing) xstream.fromXML(file);
-        return t;
     }
 }

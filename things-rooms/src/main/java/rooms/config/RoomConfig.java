@@ -38,15 +38,21 @@ import javax.validation.ValidatorFactory;
 @ComponentScan({"things.thing", "things.view.rest"})
 public class RoomConfig extends MongoConfig {
 
+    @Bean
+    public MongoConnector defaultConnector() throws Exception {
+        MongoConnector mc = new MongoConnector(mongoTemplate());
+        return mc;
+    }
+
     @Override
     protected String getDatabaseName() {
         return "rooms";
     }
 
     @Bean
-    public MongoConnector defaultConnector() throws Exception {
-        MongoConnector mc = new MongoConnector(mongoTemplate());
-        return mc;
+    public LightAction lightAction() throws Exception {
+        LightAction lc = new LightAction();
+        return lc;
     }
 
     @Bean
@@ -55,12 +61,42 @@ public class RoomConfig extends MongoConfig {
     }
 
     @Bean
-    public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
-        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
-            tr.addType(tt);
-        }
-        return tr;
+    public LightUtil lightUtil() throws Exception {
+        return new LightUtil();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ThingsObjectMapper tom = new ThingsObjectMapper();
+        return tom;
+    }
+
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+        return new JettyEmbeddedServletContainerFactory();
+    }
+
+    @Bean
+    ThingActions thingActions() throws Exception {
+        ThingActions ta = new ThingActions();
+        ta.addAction("set_light", lightAction());
+        ta.addAction("toggle", lightAction());
+        ta.addAction("turn_on", lightAction());
+        ta.addAction("turn_off", lightAction());
+        ta.addAction("set", lightAction());
+        return ta;
+    }
+
+    @Bean
+    public ThingControl thingControl() throws Exception {
+        ThingControl tc = new ThingControl();
+        return tc;
+    }
+
+    @Bean
+    public ThingQueries thingQueries() {
+        ThingQueries tq = new ThingQueries();
+        return tq;
     }
 
     @Bean
@@ -87,31 +123,12 @@ public class RoomConfig extends MongoConfig {
     }
 
     @Bean
-    public ThingQueries thingQueries() {
-        ThingQueries tq = new ThingQueries();
-        return tq;
-    }
-
-    @Bean
-    public LightUtil lightUtil() throws Exception {
-        return new LightUtil();
-    }
-
-    @Bean
-    public LightAction lightAction() throws Exception {
-        LightAction lc = new LightAction();
-        return lc;
-    }
-
-    @Bean
-    ThingActions thingActions() throws Exception {
-        ThingActions ta = new ThingActions();
-        ta.addAction("set_light", lightAction());
-        ta.addAction("toggle", lightAction());
-        ta.addAction("turn_on", lightAction());
-        ta.addAction("turn_off", lightAction());
-        ta.addAction("set", lightAction());
-        return ta;
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for (ThingType tt : AnnotationTypeFactory.getAllTypes()) {
+            tr.addType(tt);
+        }
+        return tr;
     }
 
     @Bean(name = "valueValidator")
@@ -120,23 +137,5 @@ public class RoomConfig extends MongoConfig {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         return validator;
-    }
-
-
-    @Bean
-    public ThingControl thingControl() throws Exception {
-        ThingControl tc = new ThingControl();
-        return tc;
-    }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        ThingsObjectMapper tom = new ThingsObjectMapper();
-        return tom;
-    }
-
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        return new JettyEmbeddedServletContainerFactory();
     }
 }

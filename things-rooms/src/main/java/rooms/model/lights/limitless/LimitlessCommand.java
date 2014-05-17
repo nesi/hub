@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * Project: rooms
- * <p/>
+ * <p>
  * Written by: Markus Binsteiner
  * Date: 6/02/14
  * Time: 9:41 PM
@@ -30,38 +30,38 @@ public class LimitlessCommand {
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public LimitlessControllerCommand getCommand() {
-        return command;
+    public void addOption(String key, String value) {
+        getOptions().put(key, value);
     }
 
-    public void setCommand(LimitlessControllerCommand command) {
-        this.command = command;
+    public LimitlessControllerCommand getCommand() {
+        return command;
     }
 
     public Group getGroup() {
         return group;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
     public Map<String, String> getOptions() {
         return options;
     }
 
-    public void setOptions(Map<String, String> options) {
-        this.options = options;
+    public void removeOption(String key) {
+        getOptions().remove(key);
+    }
+
+    public void setCommand(LimitlessControllerCommand command) {
+        this.command = command;
     }
 
 // -------------------------- OTHER METHODS --------------------------
 
-    public void addOption(String key, String value) {
-        getOptions().put(key, value);
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
-    public void removeOption(String key) {
-        getOptions().remove(key);
+    public void setOptions(Map<String, String> options) {
+        this.options = options;
     }
 
     @Override
