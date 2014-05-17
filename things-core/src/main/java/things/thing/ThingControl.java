@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import things.exceptions.ThingException;
-import things.exceptions.ThingRuntimeException;
 import things.exceptions.ValueException;
 
 import javax.inject.Singleton;
@@ -21,7 +20,7 @@ import java.util.Optional;
  * Time: 8:21 PM
  */
 @Singleton
-public class ThingControl extends ThingControlMinimal {
+public class ThingControl extends ThingControlReactive {
 
 
     private static final Logger myLogger = LoggerFactory.getLogger(ThingControl.class);
@@ -53,9 +52,7 @@ public class ThingControl extends ThingControlMinimal {
         return obs.toBlockingObservable().single();
     }
 
-    public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<? extends Thing<?>> things) {
-        return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> convertToTyped(type, t));
-    }
+
 
     /**
      * Checks whether a thing with the specified type and key exists.
@@ -79,15 +76,7 @@ public class ThingControl extends ThingControlMinimal {
         return thingForTypeAndKeyExists(typeRegistry.getType(type), key);
     }
 
-    public <V> Observable<Thing<V>> observeThingsForType(Class<V> typeClass, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
-        return result.map(t -> convertToTyped(typeClass, t));
-    }
 
-    public Observable<? extends Thing<?>> observeThingsForType(String type, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(type, "*", populateValues);
-        return result;
-    }
 
     public <V> List<Thing<V>> findThingsForType(Class<V> typeClass) {
         return Lists.newArrayList(observeThingsForType(typeClass, true).toBlockingObservable().toIterable());
@@ -97,15 +86,7 @@ public class ThingControl extends ThingControlMinimal {
         return Lists.newArrayList(observeThingsForType(type, true).toBlockingObservable().toIterable());
     }
 
-    public <V> Observable<Thing<V>> observeChildrenForType(Thing<?> thing, Class<V> typeClass, boolean populateValues) {
-        return observeChildrenForType(Observable.just(thing), typeClass, populateValues);
-    }
 
-    public <V> Observable<Thing<V>> observeChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
-
-        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, typeRegistry.getType(typeClass), "*", populateValues);
-        return result.map(t -> convertToTyped(typeClass, t));
-    }
 
     public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
         return Lists.newArrayList(observeChildrenForType(things, typeClass, populateValues).toBlockingObservable().toIterable());
@@ -115,32 +96,13 @@ public class ThingControl extends ThingControlMinimal {
         return Lists.newArrayList(observeChildrenForType(Observable.just(thing), typeClass, populateValues).toBlockingObservable().toIterable());
     }
 
-    public Observable<? extends Thing<?>> observeChildsMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
 
-        Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, type, "*", populateValues);
-        return result;
-    }
-
-    public <V> Observable<Thing<V>> observeUniqueThingMatchingKeyAndValue(String key, V value) {
-        return observeThingsMatchingKeyAndValue(key, value).single();
-    }
 
     public List<Thing> getChildsMatchingType(Observable<? extends Thing<?>> things, String type) {
         return Lists.newArrayList(observeChildsMatchingType(things, type, true).toBlockingObservable().toIterable());
     }
 
-    public Observable<? extends Thing<?>> observeAllThings(boolean populateValues) {
-        List<Observable<? extends Thing<?>>> all = Lists.newArrayList();
-        for (ThingReader r : thingReaders.getAll()) {
-            all.add(r.findAllThings());
-        }
 
-        Observable<? extends Thing<?>> obs = Observable.merge(all);
-        if ( populateValues ) {
-            return obs.lift(POPULATE_THINGS);
-        }
-        return obs;
-    }
 
     public List<Thing> findAllThings() {
         return Lists.newArrayList(observeAllThings(true).toBlockingObservable().toIterable());
@@ -155,17 +117,6 @@ public class ThingControl extends ThingControlMinimal {
         }
     }
 
-    public <V> Observable<Thing<V>> observeUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean populateValue) {
-        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(typeRegistry.getType(type), key, populateValue).single();
-
-        try {
-            return obs.map(t -> convertToTyped(type, t)).single();
-        } catch (IllegalArgumentException iae) {
-            throw new ThingRuntimeException("Too many results for type '" +type+"' and key '"+key+"'");
-        }
-
-
-    }
 
     public <V> Optional<Thing<V>> findUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean popluateValue) {
         Observable<Thing<V>> obs = observeUniqueThingMatchingTypeAndKey(type, key, popluateValue);
@@ -188,10 +139,7 @@ public class ThingControl extends ThingControlMinimal {
         }
     }
 
-    public Observable<? extends Thing<?>> observeThingsMatchingType(String type, boolean populateValues) {
-        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, "*", populateValues);
-        return obs;
-    }
+
 
     public List<Thing> findThingsMatchingType(String type) {
         return Lists.newArrayList(observeThingsMatchingType(type, true).toBlockingObservable().toIterable());
@@ -201,30 +149,8 @@ public class ThingControl extends ThingControlMinimal {
         return Lists.newArrayList(observeThingsMatchingTypeAndKey(typeMatch, keyMatch, true).toBlockingObservable().toIterable());
     }
 
-    public static String extractReaderName(String id) {
-        int i = id.indexOf("/");
-        return id.substring(0, i);
-    }
-
-    public static String extractId(String id) {
-        int i = id.indexOf("/");
-        return id.substring(i+1);
-    }
-
-    public Observable<? extends Thing<?>> observeChilds(Observable<? extends Thing<?>> things, boolean populate) {
-
-        return things.flatMap(t -> observeChilds(t, populate));
-    }
 
 
-
-    public Observable<? extends Thing<?>> observeChildrenMatchingTypeAndKey(Thing<?> t, String typeMatch, String keyMatch, boolean populated) {
-        return observeChildrenMatchingTypeAndKey(Observable.just(t), typeMatch, keyMatch, populated);
-    }
-
-    public Observable<? extends Thing<?>> observeChildrenMatchingTypeAndKey(List<? extends Thing<?>> t, String typeMatch, String keyMatch, boolean populated) {
-        return observeChildrenMatchingTypeAndKey(Observable.from(t), typeMatch, keyMatch, populated);
-    }
 
     public List<? extends Thing<?>> getChildsMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatch, String keyMatch) {
         return Lists.newArrayList(observeChildrenMatchingTypeAndKey(things, typeMatch, keyMatch, true).toBlockingObservable().toIterable());
