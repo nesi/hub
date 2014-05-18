@@ -1,6 +1,7 @@
 package things.thing;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -11,10 +12,7 @@ import things.config.ThingActions;
 import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
-import things.exceptions.ActionException;
-import things.exceptions.ThingException;
-import things.exceptions.ThingRuntimeException;
-import things.exceptions.TypeRuntimeException;
+import things.exceptions.*;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
@@ -57,19 +55,26 @@ public class ThingControlMinimal {
         return w.addChild(parent, child);
     }
 
-    protected <V> Thing<V> convertToTyped(Class<V> type, Thing untyped) {
-        try {
-            return (Thing<V>) untyped;
-        } catch (ClassCastException cce) {
-            throw new TypeRuntimeException("Can't convert to type", type.getClass().toString());
-        }
+    protected <V> Thing<V> populateAndConvertToTyped(Class<V> type, Thing untyped) {
+
+            untyped = ensurePopulatedValue(untyped);
+            Thing<V> temp = (Thing<V>) untyped;
+            // make sure the value is of the right type;
+            Class expectedTypeClass = typeRegistry.getTypeClass(temp.getThingType());
+
+            if ( ! temp.getValue().getClass().equals(type) ) {
+                throw new TypeRuntimeException("Can't convert to type: "+temp.getThingType(), temp.getThingType());
+            }
+
+            return temp;
+
     }
 
     protected <V> Thing<V> ensurePopulatedValue(Thing<V> thing) {
-        if ( thing.getValueIsLink() ) {
+        if ( thing.getValueIsPopulated() ) {
             V value = getValue(thing);
             thing.setValue(value);
-            thing.setValueIsLink(false);
+            thing.setValueIsPopulated(false);
         }
         return thing;
     }
@@ -117,7 +122,7 @@ public class ThingControlMinimal {
     }
 
     public <V> V getValue(Thing<V> thing) {
-        if ( !thing.getValueIsLink() ) {
+        if ( !thing.getValueIsPopulated() ) {
             return (V) thing.getValue();
         }
         ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
@@ -175,8 +180,8 @@ public class ThingControlMinimal {
 
     public Observable<? extends Thing<?>> observeChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> t, String typeMatch, String keyMatch, boolean populated) {
 
-        List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
-        List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
+        List<Observable<? extends Thing<?>>> observables = Lists.newLinkedList();
+        Set<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
         if ( "*".equals(typeMatch) ) {
             if ( "*".equals(keyMatch) ) {
                 return observeChildren(t, populated);
@@ -344,8 +349,14 @@ public class ThingControlMinimal {
 
     public Observable<? extends Thing<?>> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {
 
-        List<Observable<? extends Thing<?>>> all = Lists.newArrayList();
-        List<ThingReader> readers = thingReaders.get(typeMatch, keyMatch);
+        List<Observable<? extends Thing<?>>> all = Lists.newLinkedList();
+        Set<ThingReader> readers;
+        try {
+            readers = thingReaders.get(typeMatch, keyMatch);
+        } catch (TypeRuntimeException tre) {
+            myLogger.debug("No connector found for type '{}' and key '{}", typeMatch, keyMatch, tre);
+            return Observable.empty();
+        }
         if ( "*".equals(typeMatch) ) {
             if ( "*".equals(keyMatch) ) {
                 for ( ThingReader r : readers ) {
@@ -397,8 +408,18 @@ public class ThingControlMinimal {
         return obs;
     }
 
-    public <V> Thing<V> saveThing(Thing<V> thing) {
+    public <V> Thing<V> saveThing(Thing<V> thing) throws ThingException {
+
+        if ( MatcherUtils.isGlob(thing.getThingType()) ) {
+            throw new ThingException(thing, "Type can't be glob");
+        }
+        if ( MatcherUtils.isGlob(thing.getKey()) ) {
+            throw new ThingException(thing, "Key can't be glob");
+        }
         Thing<V> t = thingWriters.getUnique(thing.getThingType(), thing.getKey()).saveThing(thing);
+        if ( Strings.isNullOrEmpty(t.getId()) ) {
+            throw new ThingWriterRuntimeException("Thing id can't be empty after save");
+        }
         return t;
     }
 

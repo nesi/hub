@@ -31,7 +31,7 @@ public class ThingRestController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{type}/{key}")
     public Thing getUniqueThingForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key) throws ThingException, NoSuchThingException {
-        Optional<? extends Thing<?>> thing = thingControl.findUniqueThingMatchingTypeAndKey(type, key, true);
+        Optional<Thing> thing = thingControl.findUniqueThingMatchingTypeAndKey(type, key, true);
 
         if ( !thing.isPresent() ) {
             throw new NoSuchThingException(type, key);

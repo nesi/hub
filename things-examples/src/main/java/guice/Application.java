@@ -89,7 +89,7 @@ public class Application {
 
             childs2.toBlockingObservable().forEach(t -> System.out.println(t));
             System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-            tc.getChilds(pt).stream().forEach((t) -> System.out.println(t));
+            tc.getChildren(pt).stream().forEach((t) -> System.out.println(t));
 
         } catch (Exception e) {
             e.printStackTrace();

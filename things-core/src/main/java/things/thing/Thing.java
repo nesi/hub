@@ -22,7 +22,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     private Set<String> parents = Sets.newHashSet();
     private String thingType;
     protected V value;
-    private Boolean valueIsLink = false;
+    private Boolean valueIsPopulated = false;
 
     /**
      * Default constructor, don't use in normal circumstances.
@@ -115,8 +115,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
         return value;
     }
 
-    public Boolean getValueIsLink() {
-        return valueIsLink;
+    public Boolean getValueIsPopulated() {
+        return valueIsPopulated;
     }
 
     @Override
@@ -187,8 +187,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
         }
     }
 
-    public void setValueIsLink(Boolean valueIsLink) {
-        this.valueIsLink = valueIsLink;
+    public void setValueIsPopulated(Boolean valueIsPopulated) {
+        this.valueIsPopulated = valueIsPopulated;
     }
 
 //    /**

@@ -49,7 +49,7 @@ public class LightStateReader extends AbstractThingReader implements ThingReader
         Thing<LightState> lightState = new Thing();
         lightState.setId("light:" + light.getId());
         lightState.setThingType(typeRegistry.getType(LightState.class));
-        lightState.setValueIsLink(false);
+        lightState.setValueIsPopulated(false);
         lightState.setValue(ls);
         lightState.setKey(light.getKey());
         return lightState;

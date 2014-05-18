@@ -42,47 +42,47 @@ public class ThingsRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{type}/{key}/others")
-    public List<? extends Thing<?>> getChildrenForThing(@PathVariable("type") String type, @PathVariable("key") String key) {
+    public List<Thing> getChildrenForThing(@PathVariable("type") String type, @PathVariable("key") String key) {
 
         Observable<? extends Thing<?>> t = thingControl.observeThingsMatchingTypeAndKey(type, key, false);
-        List<? extends Thing<?>> things = thingControl.getChildren(t);
+        List<Thing> things = thingControl.getChildren(t);
         return things;
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{queryType}/of/every/{type}/{key}")
-    public List<? extends Thing<?>> getChildrenOfTypeForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType) {
+    public List<Thing> getChildrenOfTypeForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType) {
 
         return getChildrenOfTypeForTypeAndKey(type, key, queryType, "*");
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{queryType}/for/{queryKey}/of/every/{type}/{key}")
-    public List<? extends Thing<?>> getChildrenOfTypeForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType, @PathVariable("queryKey") String queryKey) {
+    public List<Thing> getChildrenOfTypeForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType, @PathVariable("queryKey") String queryKey) {
 
         Observable<? extends Thing<?>> t = thingControl.observeThingsMatchingTypeAndKey(type, key, false);
-        List<? extends Thing<?>> things = thingControl.getChildsMatchingTypeAndKey(t, queryType, queryKey);
+        List<Thing> things = thingControl.getChildrenMatchingTypeAndKey(t, queryType, queryKey);
 
         return things;
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{queryType}/of/{type}/{key}")
-    public List<? extends Thing<?>> getChildrenOfTypeForUniqueTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType) throws ThingException {
+    public List<Thing> getChildrenOfTypeForUniqueTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType) throws ThingException {
 
         Observable<? extends Thing<?>> t = thingControl.observeUniqueThingMatchingTypeAndKey(type, key, false);
 
-        List<? extends Thing<?>> things = thingControl.getChildsMatchingTypeAndKey(t, queryType, "*");
+        List<Thing> things = thingControl.getChildrenMatchingTypeAndKey(t, queryType, "*");
         return things;
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{queryType}/{queryKey}/of/{type}/{key}")
-    public List<? extends Thing<?>> getChildrenOfTypeForUniqueTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType, @PathVariable("queryKey") String queryKey) throws ThingException {
+    public List<Thing> getChildrenOfTypeForUniqueTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("queryType") String queryType, @PathVariable("queryKey") String queryKey) throws ThingException {
 
         Observable<? extends Thing<?>> t = thingControl.observeUniqueThingMatchingTypeAndKey(type, key, false);
 
-        List<? extends Thing<?>> things = thingControl.getChildsMatchingTypeAndKey(t, queryType, queryKey);
+        List<Thing> things = thingControl.getChildrenMatchingTypeAndKey(t, queryType, queryKey);
         return things;
     }
 }

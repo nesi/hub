@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import rx.Observable;
-import things.connectors.mongo.IdWrapper;
+import things.connectors.IdWrapper;
 import things.exceptions.NoSuchThingException;
 import things.exceptions.TypeRuntimeException;
 import things.thing.AbstractThingReader;
@@ -65,6 +65,16 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     @Override
     public Observable<? extends Thing<?>> findThingForId(String id) {
 
+        Optional<Thing<?>> thing = findThingForIdQuery(id);
+
+        if (thing.isPresent()) {
+            return Observable.just(thing.get());
+        } else {
+            throw new NoSuchThingException(id);
+        }
+    }
+
+    private Optional<Thing<?>> findThingForIdQuery(String id) {
         if ( id == null ) {
             throw new IllegalArgumentException("Id can't be null");
         }
@@ -79,10 +89,9 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         Thing thing = mongoTemplate.findOne(q, Thing.class);
 
         if ( thing == null ) {
-            throw new NoSuchThingException(id);
+            return Optional.empty();
         }
-
-        return Observable.just((Thing<?>) thing);
+        return Optional.of(thing);
     }
 
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
@@ -163,6 +172,25 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         mongoTemplate.save(t);
         myLogger.debug("Saved: " + t.toString());
         return t;
+    }
+
+    @Override
+    public boolean deleteThing(String id, Optional<String> type, Optional<String> key) {
+
+        Optional<Thing<?>> thing = findThingForIdQuery(id);
+
+        if ( ! thing.isPresent() ) {
+             return false;
+        } else {
+            Query q = new Query();
+            try {
+                q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+            } catch (IllegalArgumentException iae) {
+                throw new NoSuchThingException(id);
+            }
+            mongoTemplate.remove(thing.get());
+            return true;
+        }
     }
 
     public Object saveValue(Optional valueId, Object value) {

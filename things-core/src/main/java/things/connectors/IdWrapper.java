@@ -1,4 +1,4 @@
-package things.connectors.mongo;
+package things.connectors;
 
 
 /**

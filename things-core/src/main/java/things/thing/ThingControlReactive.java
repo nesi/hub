@@ -26,7 +26,7 @@ public class ThingControlReactive extends ThingControlMinimal {
     }
 
     public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<? extends Thing<?>> things) {
-        return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> convertToTyped(type, t));
+        return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> populateAndConvertToTyped(type, t));
     }
 
     public List<? extends Thing<?>> findParents(Thing<?> t) {
@@ -56,10 +56,12 @@ public class ThingControlReactive extends ThingControlMinimal {
     public <V> Observable<Thing<V>> observeChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
 
         Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, typeRegistry.getType(typeClass), "*", populateValues);
-        return result.map(t -> convertToTyped(typeClass, t));
+        return result.map(t -> populateAndConvertToTyped(typeClass, t));
     }
 
     public Observable<? extends Thing<?>> observeChildrenForType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
+
+
 
         if ( MatcherUtils.isGlob(type) ) {
             throw new ThingRuntimeException("Type can't be glob for this query: " + type);
@@ -73,6 +75,16 @@ public class ThingControlReactive extends ThingControlMinimal {
 
         Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, "*", key, populateValues);
         return result;
+    }
+
+    public Observable<? extends Thing<?>> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
+        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
+
+        if ( populateValue ) {
+            return obs.lift(POPULATE_THINGS);
+        } else {
+            return obs;
+        }
     }
 
     public Observable<? extends Thing<?>> observeChildrenMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
@@ -104,20 +116,25 @@ public class ThingControlReactive extends ThingControlMinimal {
     }
 
     public <V> Observable<Thing<V>> observeThingsForType(Class<V> typeClass, boolean populateValues) {
-        Observable<? extends Thing<?>> result = observeThingsForTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
-        return result.map(t -> convertToTyped(typeClass, t));
+
+        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(typeRegistry.getType(typeClass), "*", populateValues);
+        return result.map(t -> populateAndConvertToTyped(typeClass, t));
     }
 
     public Observable<? extends Thing<?>> observeThingsForType(String type, boolean populateValues) {
 
-        Observable<? extends Thing<?>> result = observeThingsForTypeAndKey(type, "*", populateValues);
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query: "+type);
+        }
+
+        Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(type, "*", populateValues);
         return result;
     }
 
     public <V> Observable<Thing<V>> observeThingsForTypeAndKey(Class<V> typeClass, String key, boolean populate) {
 
         return observeThingsForTypeAndKey(typeRegistry.getType(typeClass), key, populate)
-                .map(t -> convertToTyped(typeClass, t));
+                .map(t -> populateAndConvertToTyped(typeClass, t));
 
     }
 
@@ -134,7 +151,7 @@ public class ThingControlReactive extends ThingControlMinimal {
         Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(typeRegistry.getType(type), key, populateValue).single();
 
         try {
-            return obs.map(t -> convertToTyped(type, t)).single();
+            return obs.map(t -> populateAndConvertToTyped(type, t)).single();
         } catch (IllegalArgumentException iae) {
             throw new ThingRuntimeException("Too many results for type '" + type + "' and key '" + key + "'");
         }

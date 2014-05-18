@@ -120,14 +120,16 @@ public class MatcherUtils {
      */
     public static boolean keyMatcheskey(String key, String key2) {
 
+        //TODO proper unit test for this, can't do it at the moment, my head hurts
+
         String key1_type = key.split("/")[0];
         String key1_key = key.split("/")[1];
 
         String key2_type = key2.split("/")[0];
         String key2_key = key2.split("/")[1];
 
-        boolean type_match = wildCardMatch(key1_type, key2_type);
-        boolean key_match = wildCardMatch(key1_key, key2_key);
+        boolean type_match = wildCardMatch(key1_type, key2_type) || wildCardMatch(key2_type, key1_type);
+        boolean key_match = wildCardMatch(key1_key, key2_key) || wildCardMatch(key2_key, key1_key);
 
         return type_match && key_match;
 
@@ -138,6 +140,7 @@ public class MatcherUtils {
 //	}
 
     public static boolean wildCardMatch(String text, String pattern) {
+
         pattern = convertGlobToRegex(pattern);
 
         return text.matches(pattern);

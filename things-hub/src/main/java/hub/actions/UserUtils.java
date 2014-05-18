@@ -94,7 +94,7 @@ public class UserUtils {
 //
 //        Thing<User> tu = new Thing<User>();
 //        tu.setUsername(user);
-//        tu.setValueIsLink(false);
+//        tu.setValueIsPopulated(false);
 //        tu.setId("person:"+person.getId());
 //        tu.setKey(person.getKey());
 //        tu.setThingType(TypeRegistry.getType(User.class));
@@ -118,7 +118,7 @@ public class UserUtils {
 
         Thing<User> tu = new Thing<User>();
         tu.setValue(user);
-        tu.setValueIsLink(false);
+        tu.setValueIsPopulated(false);
         tu.setId("person:" + person.getId());
         tu.setKey(person.getKey());
         tu.setThingType(tr.getType(User.class));
