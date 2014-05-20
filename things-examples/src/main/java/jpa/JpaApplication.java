@@ -1,28 +1,13 @@
 package jpa;
 
-import com.mongodb.Mongo;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import rx.Observable;
-import things.config.ThingReaders;
-import things.config.ThingWriters;
-import things.jpa.JpaConnector;
-import things.jpa.ThingRepository;
-import things.mongo.MongoConnector;
 import things.thing.Thing;
 import things.thing.ThingControl;
-import things.types.AnnotationTypeFactory;
-import things.types.ThingType;
-import things.types.TypeRegistry;
 import types.Address;
 import types.Person;
 import types.Role;
-
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import java.util.List;
 
 /**
  * Project: things-to-build

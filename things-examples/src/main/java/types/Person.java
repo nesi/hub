@@ -23,15 +23,14 @@ import java.util.Objects;
 @Entity
 public class Person {
 
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
-
     @Email
     private String email;
     @NotEmpty
     private String firstName;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
     private Boolean isActive = false;
     @NotEmpty
     private String lastName;

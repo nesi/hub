@@ -1,12 +1,10 @@
 package things.view.rest;
 
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingUtils;
@@ -23,20 +21,10 @@ public class ValueRestController {
 
     @Autowired
     private ThingControl thingControl;
-
-    @Autowired
-    private TypeRegistry typeRegistry;
-
     @Autowired
     private ThingUtils thingUtils;
-
-    @Transactional(readOnly = true)
-    @RequestMapping(value = "/every/{type}/matching/{value}")
-    public List<Thing> getThingsOfTypeMatchingValue(@PathVariable("type") String type, @PathVariable("value") String stringValue) {
-
-        List<Thing> result = thingControl.findThingsMatchingKeyAndValueConvertedFromString(type, "*", stringValue);
-        return result;
-    }
+    @Autowired
+    private TypeRegistry typeRegistry;
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/every/{type}/{key}/matching/{value}")
@@ -46,6 +34,13 @@ public class ValueRestController {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/every/{type}/matching/{value}")
+    public List<Thing> getThingsOfTypeMatchingValue(@PathVariable("type") String type, @PathVariable("value") String stringValue) {
+
+        List<Thing> result = thingControl.findThingsMatchingKeyAndValueConvertedFromString(type, "*", stringValue);
+        return result;
+    }
 
 
 }

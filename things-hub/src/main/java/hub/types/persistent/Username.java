@@ -20,7 +20,7 @@ import java.util.Objects;
 @UniqueKeyInOtherThings(unique = false)
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "username")
-@StringConverter( value = UsernameStringConverter.class)
+@StringConverter(value = UsernameStringConverter.class)
 public class Username {
 
     @NotEmpty

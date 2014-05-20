@@ -38,8 +38,8 @@ public class Keys {
         public static final org.jooq.ForeignKey<projectdb.tables.records.ProjectPropertiesRecord, projectdb.tables.records.FacilityRecord> PROJECT_PROPERTIES_IBFK_3 = createForeignKey(projectdb.Keys.KEY_FACILITY_PRIMARY, projectdb.tables.ProjectProperties.PROJECT_PROPERTIES, projectdb.tables.ProjectProperties.PROJECT_PROPERTIES.FACILITYID);
         public static final org.jooq.ForeignKey<projectdb.tables.records.ResearcherProjectRecord, projectdb.tables.records.ResearcherRecord> RESEARCHER_PROJECT_IBFK_1 = createForeignKey(projectdb.Keys.KEY_RESEARCHER_PRIMARY, projectdb.tables.ResearcherProject.RESEARCHER_PROJECT, projectdb.tables.ResearcherProject.RESEARCHER_PROJECT.RESEARCHERID);
         public static final org.jooq.ForeignKey<projectdb.tables.records.ResearcherProjectRecord, projectdb.tables.records.ProjectRecord> RESEARCHER_PROJECT_IBFK_2 = createForeignKey(projectdb.Keys.KEY_PROJECT_PRIMARY, projectdb.tables.ResearcherProject.RESEARCHER_PROJECT, projectdb.tables.ResearcherProject.RESEARCHER_PROJECT.PROJECTID);
-        public static final org.jooq.ForeignKey<projectdb.tables.records.ResearcherPropertiesRecord, projectdb.tables.records.ResearcherRecord> RESEARCHER_PROPERTIES_IBFK_2 = createForeignKey(projectdb.Keys.KEY_RESEARCHER_PRIMARY, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES.RESEARCHERID);
         public static final org.jooq.ForeignKey<projectdb.tables.records.ResearcherPropertiesRecord, projectdb.tables.records.SiteRecord> RESEARCHER_PROPERTIES_IBFK_1 = createForeignKey(projectdb.Keys.KEY_SITE_PRIMARY, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES.SITEID);
+        public static final org.jooq.ForeignKey<projectdb.tables.records.ResearcherPropertiesRecord, projectdb.tables.records.ResearcherRecord> RESEARCHER_PROPERTIES_IBFK_2 = createForeignKey(projectdb.Keys.KEY_RESEARCHER_PRIMARY, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES, projectdb.tables.ResearcherProperties.RESEARCHER_PROPERTIES.RESEARCHERID);
         public static final org.jooq.ForeignKey<projectdb.tables.records.ResearchoutputRecord, projectdb.tables.records.ProjectRecord> RESEARCHOUTPUT_IBFK_1 = createForeignKey(projectdb.Keys.KEY_PROJECT_PRIMARY, projectdb.tables.Researchoutput.RESEARCHOUTPUT, projectdb.tables.Researchoutput.RESEARCHOUTPUT.PROJECTID);
     }
 
@@ -90,32 +90,20 @@ public class Keys {
         public static final org.jooq.UniqueKey<projectdb.tables.records.ResearchoutputRecord> KEY_RESEARCHOUTPUT_PRIMARY = createUniqueKey(projectdb.tables.Researchoutput.RESEARCHOUTPUT, projectdb.tables.Researchoutput.RESEARCHOUTPUT.ID);
         public static final org.jooq.UniqueKey<projectdb.tables.records.SiteRecord> KEY_SITE_PRIMARY = createUniqueKey(projectdb.tables.Site.SITE, projectdb.tables.Site.SITE.ID);
     }
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviseractionRecord, projectdb.tables.records.ProjectRecord> ADVISERACTION_IBFK_1 = ForeignKeys0.ADVISERACTION_IBFK_1;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviserProjectRecord, projectdb.tables.records.AdviserRecord> ADVISER_PROJECT_IBFK_1 = ForeignKeys0.ADVISER_PROJECT_IBFK_1;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviserProjectRecord, projectdb.tables.records.ProjectRecord> ADVISER_PROJECT_IBFK_2 = ForeignKeys0.ADVISER_PROJECT_IBFK_2;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectRecord> ATTACHMENT_IBFK_1 = ForeignKeys0.ATTACHMENT_IBFK_1;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectfollowupRecord> ATTACHMENT_IBFK_2 = ForeignKeys0.ATTACHMENT_IBFK_2;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectreviewRecord> ATTACHMENT_IBFK_3 = ForeignKeys0.ATTACHMENT_IBFK_3;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.AdviseractionRecord> ATTACHMENT_IBFK_4 = ForeignKeys0.ATTACHMENT_IBFK_4;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.DepartmentRecord, projectdb.tables.records.InstitutionRecord> DEPARTMENT_IBFK1 = ForeignKeys0.DEPARTMENT_IBFK1;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.DepartmentRecord, projectdb.tables.records.DivisionRecord> DEPARTMENT_IBFK2 = ForeignKeys0.DEPARTMENT_IBFK2;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.DivisionRecord, projectdb.tables.records.InstitutionRecord> DIVISION_IBFK1 = ForeignKeys0.DIVISION_IBFK1;
-    public static final org.jooq.ForeignKey<projectdb.tables.records.FacilityRecord, projectdb.tables.records.SiteRecord> FACILITY_IBFK_1 = ForeignKeys0.FACILITY_IBFK_1;
-    public static final org.jooq.Identity<projectdb.tables.records.AdviserRecord, Integer> IDENTITY_ADVISER = Identities0.IDENTITY_ADVISER;
-    public static final org.jooq.Identity<projectdb.tables.records.AdviseractionRecord, Integer> IDENTITY_ADVISERACTION = Identities0.IDENTITY_ADVISERACTION;
-    public static final org.jooq.Identity<projectdb.tables.records.AdviserPropertiesRecord, Integer> IDENTITY_ADVISER_PROPERTIES = Identities0.IDENTITY_ADVISER_PROPERTIES;
-    public static final org.jooq.Identity<projectdb.tables.records.AttachmentRecord, Integer> IDENTITY_ATTACHMENT = Identities0.IDENTITY_ATTACHMENT;
-
+    public static final org.jooq.Identity<projectdb.tables.records.AdviserRecord, Integer> IDENTITY_ADVISER = Identities0.IDENTITY_ADVISER;    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviseractionRecord, projectdb.tables.records.ProjectRecord> ADVISERACTION_IBFK_1 = ForeignKeys0.ADVISERACTION_IBFK_1;
+    public static final org.jooq.Identity<projectdb.tables.records.AdviseractionRecord, Integer> IDENTITY_ADVISERACTION = Identities0.IDENTITY_ADVISERACTION;    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviserProjectRecord, projectdb.tables.records.AdviserRecord> ADVISER_PROJECT_IBFK_1 = ForeignKeys0.ADVISER_PROJECT_IBFK_1;
+    public static final org.jooq.Identity<projectdb.tables.records.AdviserPropertiesRecord, Integer> IDENTITY_ADVISER_PROPERTIES = Identities0.IDENTITY_ADVISER_PROPERTIES;    public static final org.jooq.ForeignKey<projectdb.tables.records.AdviserProjectRecord, projectdb.tables.records.ProjectRecord> ADVISER_PROJECT_IBFK_2 = ForeignKeys0.ADVISER_PROJECT_IBFK_2;
+    public static final org.jooq.Identity<projectdb.tables.records.AttachmentRecord, Integer> IDENTITY_ATTACHMENT = Identities0.IDENTITY_ATTACHMENT;    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectRecord> ATTACHMENT_IBFK_1 = ForeignKeys0.ATTACHMENT_IBFK_1;
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
-    public static final org.jooq.Identity<projectdb.tables.records.ChangelogRecord, Integer> IDENTITY_CHANGELOG = Identities0.IDENTITY_CHANGELOG;
-    public static final org.jooq.Identity<projectdb.tables.records.DepartmentRecord, Integer> IDENTITY_DEPARTMENT = Identities0.IDENTITY_DEPARTMENT;
-    public static final org.jooq.Identity<projectdb.tables.records.DivisionRecord, Integer> IDENTITY_DIVISION = Identities0.IDENTITY_DIVISION;
-    public static final org.jooq.Identity<projectdb.tables.records.InstitutionRecord, Integer> IDENTITY_INSTITUTION = Identities0.IDENTITY_INSTITUTION;
-    public static final org.jooq.Identity<projectdb.tables.records.ProjectRecord, Integer> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
-    public static final org.jooq.Identity<projectdb.tables.records.ProjectfollowupRecord, Integer> IDENTITY_PROJECTFOLLOWUP = Identities0.IDENTITY_PROJECTFOLLOWUP;
-    public static final org.jooq.Identity<projectdb.tables.records.ProjectreviewRecord, Integer> IDENTITY_PROJECTREVIEW = Identities0.IDENTITY_PROJECTREVIEW;
+    public static final org.jooq.Identity<projectdb.tables.records.ChangelogRecord, Integer> IDENTITY_CHANGELOG = Identities0.IDENTITY_CHANGELOG;    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectfollowupRecord> ATTACHMENT_IBFK_2 = ForeignKeys0.ATTACHMENT_IBFK_2;
+    public static final org.jooq.Identity<projectdb.tables.records.DepartmentRecord, Integer> IDENTITY_DEPARTMENT = Identities0.IDENTITY_DEPARTMENT;    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.ProjectreviewRecord> ATTACHMENT_IBFK_3 = ForeignKeys0.ATTACHMENT_IBFK_3;
+    public static final org.jooq.Identity<projectdb.tables.records.DivisionRecord, Integer> IDENTITY_DIVISION = Identities0.IDENTITY_DIVISION;    public static final org.jooq.ForeignKey<projectdb.tables.records.AttachmentRecord, projectdb.tables.records.AdviseractionRecord> ATTACHMENT_IBFK_4 = ForeignKeys0.ATTACHMENT_IBFK_4;
+    public static final org.jooq.Identity<projectdb.tables.records.InstitutionRecord, Integer> IDENTITY_INSTITUTION = Identities0.IDENTITY_INSTITUTION;    public static final org.jooq.ForeignKey<projectdb.tables.records.DepartmentRecord, projectdb.tables.records.InstitutionRecord> DEPARTMENT_IBFK1 = ForeignKeys0.DEPARTMENT_IBFK1;
+    public static final org.jooq.Identity<projectdb.tables.records.ProjectRecord, Integer> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;    public static final org.jooq.ForeignKey<projectdb.tables.records.DepartmentRecord, projectdb.tables.records.DivisionRecord> DEPARTMENT_IBFK2 = ForeignKeys0.DEPARTMENT_IBFK2;
+    public static final org.jooq.Identity<projectdb.tables.records.ProjectfollowupRecord, Integer> IDENTITY_PROJECTFOLLOWUP = Identities0.IDENTITY_PROJECTFOLLOWUP;    public static final org.jooq.ForeignKey<projectdb.tables.records.DivisionRecord, projectdb.tables.records.InstitutionRecord> DIVISION_IBFK1 = ForeignKeys0.DIVISION_IBFK1;
+    public static final org.jooq.Identity<projectdb.tables.records.ProjectreviewRecord, Integer> IDENTITY_PROJECTREVIEW = Identities0.IDENTITY_PROJECTREVIEW;    public static final org.jooq.ForeignKey<projectdb.tables.records.FacilityRecord, projectdb.tables.records.SiteRecord> FACILITY_IBFK_1 = ForeignKeys0.FACILITY_IBFK_1;
     public static final org.jooq.Identity<projectdb.tables.records.ProjectKpiRecord, Integer> IDENTITY_PROJECT_KPI = Identities0.IDENTITY_PROJECT_KPI;
     public static final org.jooq.Identity<projectdb.tables.records.ProjectPropertiesRecord, Integer> IDENTITY_PROJECT_PROPERTIES = Identities0.IDENTITY_PROJECT_PROPERTIES;
     public static final org.jooq.Identity<projectdb.tables.records.ProjectStatusRecord, Integer> IDENTITY_PROJECT_STATUS = Identities0.IDENTITY_PROJECT_STATUS;
@@ -133,7 +121,6 @@ public class Keys {
     public static final org.jooq.UniqueKey<projectdb.tables.records.FacilityRecord> KEY_FACILITY_PRIMARY = UniqueKeys0.KEY_FACILITY_PRIMARY;
     public static final org.jooq.UniqueKey<projectdb.tables.records.InstitutionRecord> KEY_INSTITUTION_PRIMARY = UniqueKeys0.KEY_INSTITUTION_PRIMARY;
     public static final org.jooq.UniqueKey<projectdb.tables.records.KpicodeRecord> KEY_KPICODE_PRIMARY = UniqueKeys0.KEY_KPICODE_PRIMARY;
-
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
@@ -151,6 +138,17 @@ public class Keys {
     public static final org.jooq.UniqueKey<projectdb.tables.records.ResearcherStatusRecord> KEY_RESEARCHER_STATUS_PRIMARY = UniqueKeys0.KEY_RESEARCHER_STATUS_PRIMARY;
     public static final org.jooq.UniqueKey<projectdb.tables.records.ResearchoutputRecord> KEY_RESEARCHOUTPUT_PRIMARY = UniqueKeys0.KEY_RESEARCHOUTPUT_PRIMARY;
     public static final org.jooq.UniqueKey<projectdb.tables.records.SiteRecord> KEY_SITE_PRIMARY = UniqueKeys0.KEY_SITE_PRIMARY;
+
+
+
+
+
+
+
+
+
+
+
     public static final org.jooq.ForeignKey<projectdb.tables.records.ProjectfollowupRecord, projectdb.tables.records.ProjectRecord> PROJECTFOLLOWUP_IBFK_1 = ForeignKeys0.PROJECTFOLLOWUP_IBFK_1;
     public static final org.jooq.ForeignKey<projectdb.tables.records.ProjectreviewRecord, projectdb.tables.records.ProjectRecord> PROJECTREVIEW_IBFK_1 = ForeignKeys0.PROJECTREVIEW_IBFK_1;
     public static final org.jooq.ForeignKey<projectdb.tables.records.ProjectFacilityRecord, projectdb.tables.records.ProjectRecord> PROJECT_FACILITY_IBFK_1 = ForeignKeys0.PROJECT_FACILITY_IBFK_1;

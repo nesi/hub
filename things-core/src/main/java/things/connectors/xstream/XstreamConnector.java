@@ -2,12 +2,14 @@ package things.connectors.xstream;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.XStream;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
-import things.thing.*;
+import things.thing.AbstractSimpleThingReader;
+import things.thing.Thing;
+import things.thing.ThingReader;
+import things.thing.ThingWriter;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,8 +21,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author: Markus Binsteiner
@@ -47,6 +51,44 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
     private Thing<?> assembleThing(File file) {
         Thing t = (Thing) xstream.fromXML(file);
         return t;
+    }
+
+    @Override
+    public boolean deleteThing(String id, Optional<String> thingType, Optional<String> key) {
+        List<File> typeSet = null;
+
+        if ( thingType.isPresent() ) {
+            typeSet = Lists.newArrayList(getTypeFolder(thingType.get()));
+        } else {
+            File[] folders = thingsFolder.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isDirectory();
+                }
+            });
+            typeSet = Arrays.asList(folders);
+        }
+
+        for ( File type : typeSet ) {
+            List<File> keySet = null;
+            if ( key.isPresent() ) {
+                keySet = Lists.newArrayList(new File(type, key.get()));
+            } else {
+                File[] files = thingsFolder.listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        return pathname.isFile() && pathname.getName().endsWith(".thing");
+                    }
+                });
+                keySet = Arrays.asList(files);
+            }
+            for ( File k : keySet ) {
+                if ( k.getName().contains(id) ) {
+                    return k.delete();
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -120,44 +162,6 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
         xstream.toXML(t, writer);
 
         return t;
-    }
-
-    @Override
-    public boolean deleteThing(String id, Optional<String> thingType, Optional<String> key) {
-        List<File> typeSet = null;
-
-        if (thingType.isPresent()) {
-            typeSet = Lists.newArrayList(getTypeFolder(thingType.get()));
-        } else {
-            File[] folders = thingsFolder.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory();
-                }
-            });
-            typeSet = Arrays.asList(folders);
-        }
-
-        for ( File type : typeSet ) {
-            List<File> keySet = null;
-            if ( key.isPresent() ) {
-                keySet = Lists.newArrayList(new File(type, key.get()));
-            } else {
-                File[] files = thingsFolder.listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isFile() && pathname.getName().endsWith(".thing");
-                    }
-                });
-                keySet = Arrays.asList(files);
-            }
-            for ( File k : keySet ){
-                if ( k.getName().contains(id)) {
-                    return k.delete();
-                }
-            }
-        }
-        return false;
     }
 
     public Object saveValue(Optional valueId, Object value) {

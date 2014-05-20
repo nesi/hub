@@ -1,7 +1,6 @@
 package things.thing;
 
 import rx.Observable;
-import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
@@ -21,9 +20,20 @@ abstract public class AbstractThingReader implements ThingReader {
 
     abstract public Observable<? extends Thing<?>> findThingForId(String id);
 
+    abstract public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                                                final String key);
+
+    abstract public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
+
     public Observable<? extends Thing<?>> findThingsForKey(String key) {
 
         return findThingsMatchingTypeAndKey("*", key);
+    }
+
+    public <V> Observable<Thing<V>> findThingsForKeyAndValue(String key, V value) {
+        Observable<? extends Thing<?>> obs = findThingsForTypeAndKey(typeRegistry.getType(value), key);
+        Observable<Thing<V>> result = findThingsForValue(obs, value);
+        return result;
     }
 
     public Observable<? extends Thing<?>> findThingsForType(String type) {
@@ -45,12 +55,6 @@ abstract public class AbstractThingReader implements ThingReader {
         return things.filter(t -> readValue(t).equals(value)).map(t -> (Thing<V>) t);
     }
 
-    public <V> Observable<Thing<V>> findThingsForKeyAndValue(String key, V value) {
-        Observable<? extends Thing<?>> obs = findThingsForTypeAndKey(typeRegistry.getType(value), key);
-        Observable<Thing<V>> result = findThingsForValue(obs, value);
-        return result;
-    }
-
     public Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher) {
         return findThingsMatchingTypeAndKey("*", keyMatcher);
     }
@@ -66,13 +70,10 @@ abstract public class AbstractThingReader implements ThingReader {
     }
 
     public <V> Observable<Thing<V>> findThingsMatchingTypeAndKey(final Class<V> type,
-                                                                       final String key) {
+                                                                 final String key) {
 
-        return findThingsMatchingTypeAndKey(typeRegistry.getType(type), key).map(t -> (Thing<V>)t);
+        return findThingsMatchingTypeAndKey(typeRegistry.getType(type), key).map(t -> (Thing<V>) t);
     }
-
-    abstract public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
-                                                                       final String key);
 
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
         Observable<? extends Thing<?>> obs = findAllThings();
@@ -120,8 +121,6 @@ abstract public class AbstractThingReader implements ThingReader {
     public Observable<? extends Thing<?>> getChildrenMatchingType(Observable<? extends Thing<?>> things, String typeMatcher) {
         return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
     }
-
-    abstract public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
 
     @Inject
     public void setTypeRegistry(TypeRegistry typeRegistry) {

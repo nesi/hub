@@ -62,43 +62,18 @@ import javax.validation.ValidatorFactory;
 @PropertySource(value = "file:/etc/hub/hub.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
 @ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.jetm"})
-@EnableJpaRepositories( basePackages = {"hub.jpa.repositories", "things.jpa"} )
+@EnableJpaRepositories(basePackages = {"hub.jpa.repositories", "things.jpa"})
 @EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
 public class HubConfigJpa {
 
     @Autowired
     private Environment env;
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        ThingsObjectMapper tom = new ThingsObjectMapper();
-        return tom;
-    }
+    @Bean(name = "thingDataSource")
+    public DataSource dataSource() {
 
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        return new JettyEmbeddedServletContainerFactory();
-    }
-
-    @Bean
-    public ThingControl thingControl() throws Exception {
-        ThingControl tc = new ThingControl();
-        return tc;
-    }
-
-    @Bean
-    public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
-        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
-            tr.addType(tt);
-        }
-        return tr;
-    }
-
-    @Bean
-    public JpaConnector jpaConnector() {
-        JpaConnector con = new JpaConnector();
-        return con;
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
     }
 
     @Bean
@@ -118,32 +93,31 @@ public class HubConfigJpa {
     }
 
     @Bean
-   public PlatformTransactionManager transactionManager(){
-      JpaTransactionManager transactionManager = new JpaTransactionManager();
-      transactionManager.setEntityManagerFactory(
-       entityManagerFactory() );
-      return transactionManager;
-   }
-
-    @Bean
-    @Inject
-    public ValueRepositories valueRepositories(TypeRegistry tr, PersonRepository pr) {
-
-        ValueRepositories vr = new ValueRepositories();
-        vr.addRepository(tr.getType(Person.class), pr);
-        return vr;
+    public HibernateExceptionTranslator hibernateExceptionTranslator() {
+        return new HibernateExceptionTranslator();
     }
 
     @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator(){
-      return new HibernateExceptionTranslator();
+    public JpaConnector jpaConnector() {
+        JpaConnector con = new JpaConnector();
+        return con;
     }
 
-    @Bean(name = "thingDataSource")
-    public DataSource dataSource() {
+    @Bean
+    public ObjectMapper objectMapper() {
+        ThingsObjectMapper tom = new ThingsObjectMapper();
+        return tom;
+    }
 
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+        return new JettyEmbeddedServletContainerFactory();
+    }
+
+    @Bean
+    public ThingControl thingControl() throws Exception {
+        ThingControl tc = new ThingControl();
+        return tc;
     }
 
     @Bean
@@ -170,6 +144,23 @@ public class HubConfigJpa {
     }
 
     @Bean
+    public PlatformTransactionManager transactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(
+                entityManagerFactory());
+        return transactionManager;
+    }
+
+    @Bean
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
+    }
+
+    @Bean
     public UserReader userReader() {
         return new UserReader();
     }
@@ -185,5 +176,14 @@ public class HubConfigJpa {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         return validator;
+    }
+
+    @Bean
+    @Inject
+    public ValueRepositories valueRepositories(TypeRegistry tr, PersonRepository pr) {
+
+        ValueRepositories vr = new ValueRepositories();
+        vr.addRepository(tr.getType(Person.class), pr);
+        return vr;
     }
 }

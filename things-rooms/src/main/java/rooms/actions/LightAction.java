@@ -1,7 +1,6 @@
 package rooms.actions;
 
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
-import rooms.readers.LightStateReader;
 import rooms.types.Light;
 import rooms.types.LightState;
 import rx.Observable;
@@ -55,6 +54,12 @@ public class LightAction implements ThingAction {
         return result;
     }
 
+    private Thing<LightState> setLight(Thing<Light> light, Map<String, String> params) {
+        LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
+        l.set(params);
+        return lightUtil.createLightStateThing(light);
+    }
+
     @Inject
     public void setLightUtil(LightUtil lu) {
         this.lightUtil = lu;
@@ -65,21 +70,15 @@ public class LightAction implements ThingAction {
         this.tc = tc;
     }
 
-    private Thing<LightState> toggleLight(Thing<Light> light) {
-        LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
-        l.toggle();
-        return lightUtil.createLightStateThing(light);
-    }
-
-    private Thing<LightState> setLight(Thing<Light> light, Map<String, String> params) {
-        LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
-        l.set(params);
-        return lightUtil.createLightStateThing(light);
-    }
-
     private Thing<LightState> switchOnLight(Thing<Light> light, boolean on) {
         LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
         l.setOn(on);
+        return lightUtil.createLightStateThing(light);
+    }
+
+    private Thing<LightState> toggleLight(Thing<Light> light) {
+        LightWhiteV2 l = lightUtil.getLights().get(light.getKey());
+        l.toggle();
         return lightUtil.createLightStateThing(light);
     }
 

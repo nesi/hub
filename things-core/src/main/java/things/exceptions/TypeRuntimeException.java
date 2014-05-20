@@ -17,7 +17,6 @@ public class TypeRuntimeException extends RuntimeException {
     }
 
 
-
     public TypeRuntimeException(String msg, Class typeClass) {
         super(msg);
         this.typeClass = typeClass;

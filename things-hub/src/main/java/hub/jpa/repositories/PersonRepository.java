@@ -7,5 +7,5 @@ import things.jpa.ValueRepository;
 /**
  * Created by markus on 20/05/14.
  */
-public interface PersonRepository extends JpaRepository<Person, String>, ValueRepository<Person,String> {
+public interface PersonRepository extends JpaRepository<Person, String>, ValueRepository<Person, String> {
 }

@@ -3,7 +3,6 @@ package rooms.actions;
 import com.google.common.collect.Maps;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
-import rooms.readers.LightStateReader;
 import rooms.types.Bridge;
 import rooms.types.Light;
 import rooms.types.LightState;
@@ -29,7 +28,6 @@ public class LightUtil {
     private Map<String, LightWhiteV2> lights;
     private ThingControl tc;
     private TypeRegistry tr;
-
 
 
     public LightUtil() {
@@ -84,16 +82,15 @@ public class LightUtil {
         return lights;
     }
 
-
-    @Inject
-    public void setTypeRegistry(TypeRegistry tr) {
-        this.tr = tr;
-    }
-
     @Inject
     public void setThingControl(ThingControl tc) {
         this.tc = tc;
 //        new Thread(() -> getLights()).start();
+    }
+
+    @Inject
+    public void setTypeRegistry(TypeRegistry tr) {
+        this.tr = tr;
     }
 
 }

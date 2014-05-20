@@ -42,19 +42,14 @@ import javax.validation.ValidatorFactory;
 public class RoomConfig extends MongoConfig {
 
     @Bean
-    public MongoConnector defaultConnector() throws Exception {
-        MongoConnector mc = new MongoConnector(mongoTemplate());
-        return mc;
-    }
-
-    @Bean
     public ActionManager actionManager() {
         return new DefaultActionManager();
     }
 
     @Bean
-    public MetricRegistry metricRegistry() {
-        return new MetricRegistry();
+    public MongoConnector defaultConnector() throws Exception {
+        MongoConnector mc = new MongoConnector(mongoTemplate());
+        return mc;
     }
 
     @Override
@@ -76,6 +71,11 @@ public class RoomConfig extends MongoConfig {
     @Bean
     public LightUtil lightUtil() throws Exception {
         return new LightUtil();
+    }
+
+    @Bean
+    public MetricRegistry metricRegistry() {
+        return new MetricRegistry();
     }
 
     @Bean

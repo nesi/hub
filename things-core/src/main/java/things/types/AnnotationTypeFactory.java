@@ -49,6 +49,26 @@ public class AnnotationTypeFactory {
         return thingTypes;
     }
 
+    public static Optional<SingleStringConverter> getStringConverter(Class<?> typeClass) {
+
+        if ( typeClass == null ) {
+            throw new TypeRuntimeException("No typeClass provided");
+        }
+
+        StringConverter annotation = typeClass.getAnnotation(StringConverter.class);
+        if ( annotation == null || annotation.value() == null ) {
+            return Optional.empty();
+        } else {
+            Class<? extends SingleStringConverter<?>> converterClass = annotation.value();
+            try {
+                SingleStringConverter conv = converterClass.newInstance();
+                return Optional.of(conv);
+            } catch (Exception e) {
+                throw new TypeRuntimeException("Can't create stringconverter for class '" + typeClass.getName() + "'", typeClass, e);
+            }
+        }
+    }
+
     /**
      * Checks if a value of this type has restrictions as to which types it can
      * be added to.
@@ -119,26 +139,6 @@ public class AnnotationTypeFactory {
             return false;
         } else {
             return true;
-        }
-    }
-
-    public static  Optional<SingleStringConverter> getStringConverter(Class<?> typeClass) {
-
-        if ( typeClass == null ) {
-            throw new TypeRuntimeException("No typeClass provided");
-        }
-
-        StringConverter annotation = typeClass.getAnnotation(StringConverter.class);
-        if ( annotation == null || annotation.value() == null ) {
-            return Optional.empty();
-        } else {
-            Class<? extends SingleStringConverter<?>> converterClass = annotation.value();
-            try {
-                SingleStringConverter conv = converterClass.newInstance();
-                return Optional.of(conv);
-            } catch (Exception e) {
-                throw new TypeRuntimeException("Can't create stringconverter for class '"+typeClass.getName()+"'", typeClass, e);
-            }
         }
     }
 

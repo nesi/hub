@@ -1,14 +1,12 @@
 package things.config;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import things.exceptions.TypeRuntimeException;
 import things.thing.ThingWriter;
 import things.utils.MatcherUtils;
 
-import java.util.List;
 import java.util.Set;
 
 /**

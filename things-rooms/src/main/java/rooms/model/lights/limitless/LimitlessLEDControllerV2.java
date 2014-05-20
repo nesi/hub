@@ -32,14 +32,12 @@ public class LimitlessLEDControllerV2 {
     private static final int DEFAULT_PORT = 50000;
     private static final Logger myLogger = LoggerFactory.getLogger(LimitlessLEDControllerV2.class);
     final private InetAddress bridgeAddr;
-
-    private int waitTime =30;
-
-    public void setWaitTime(int waitTime) {
-        this.waitTime = waitTime;
-    }
-
     private final List<Group> groups = Lists.newArrayList(Group.GROUP_1, Group.GROUP_2, Group.GROUP_3, Group.GROUP_4, Group.GROUP_ALL, Group.GROUP_COLOUR);
+    final private String hostname;
+    private Group lastGroup;
+    final private int port;
+    private final Map<Group, Queue<LimitlessCommand>> queues = Maps.newLinkedHashMap();
+    private int waitTime = 30;
     private final Thread sendCommandDaemonThread = new Thread() {
         public void run() {
             Iterator<Group> groupIterator = Iterators.cycle(groups);
@@ -107,16 +105,11 @@ public class LimitlessLEDControllerV2 {
             }
         }
     };
-    final private String hostname;
-    private Group lastGroup;
-    final private int port;
-    private final Map<Group, Queue<LimitlessCommand>> queues = Maps.newLinkedHashMap();
-
-// --------------------------- CONSTRUCTORS ---------------------------
-
     public LimitlessLEDControllerV2(String hostname) {
         this(hostname, DEFAULT_PORT);
     }
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
     public LimitlessLEDControllerV2(String hostname, int port) {
         this.hostname = hostname;
@@ -138,21 +131,21 @@ public class LimitlessLEDControllerV2 {
         sendCommandDaemonThread.start();
     }
 
-// --------------------- GETTER / SETTER METHODS ---------------------
-
     public String getHostname() {
         return hostname;
     }
+
+// --------------------- GETTER / SETTER METHODS ---------------------
 
     public InetAddress getIp() {
         return bridgeAddr;
     }
 
-// -------------------------- OTHER METHODS --------------------------
-
     public int getPort() {
         return port;
     }
+
+// -------------------------- OTHER METHODS --------------------------
 
     public void queue(Group group, LimitlessControllerCommand cmd) {
         queue(group, cmd, (Map) null);
@@ -210,5 +203,9 @@ public class LimitlessLEDControllerV2 {
 
     public void sendWhite(Group group, Cmd cmd) {
         sendWhite(group, cmd, 1);
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
     }
 }

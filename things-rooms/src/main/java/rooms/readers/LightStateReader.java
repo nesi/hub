@@ -2,9 +2,11 @@ package rooms.readers;
 
 import rooms.actions.LightUtil;
 import rooms.types.Light;
-import rooms.types.LightState;
 import rx.Observable;
-import things.thing.*;
+import things.thing.AbstractSimpleThingReader;
+import things.thing.Thing;
+import things.thing.ThingControl;
+import things.thing.ThingReader;
 
 import javax.inject.Inject;
 
@@ -24,12 +26,10 @@ public class LightStateReader extends AbstractSimpleThingReader implements Thing
     }
 
 
-
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
         return tc.observeThingsForType(Light.class, false).map(l -> lightUtil.createLightStateThing(l));
     }
-
 
 
     @Override

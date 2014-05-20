@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 /**
  * Created by markus on 19/05/14.
  */
-@Retention( RetentionPolicy.RUNTIME)
-@Target( ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface StringConverter {
     public Class<? extends SingleStringConverter<?>> value();
 }

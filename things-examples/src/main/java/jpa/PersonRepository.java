@@ -1,12 +1,11 @@
 package jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import things.jpa.ValueRepository;
 import types.Person;
 
 /**
  * Created by markus on 20/05/14.
  */
-public interface PersonRepository extends JpaRepository<Person, String>, ValueRepository<Person,String> {
+public interface PersonRepository extends JpaRepository<Person, String>, ValueRepository<Person, String> {
 }

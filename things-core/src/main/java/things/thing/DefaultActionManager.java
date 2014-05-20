@@ -6,7 +6,6 @@ import things.config.ThingActions;
 import things.exceptions.ActionException;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Map;
 
 /**

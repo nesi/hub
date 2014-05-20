@@ -18,13 +18,12 @@ import javax.persistence.Id;
 @Entity
 public class Address {
 
+    private String city;
+    private String country;
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-
-    private String city;
-    private String country;
     private int nr;
     private String street;
 

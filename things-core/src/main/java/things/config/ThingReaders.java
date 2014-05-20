@@ -1,7 +1,6 @@
 package things.config;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import things.exceptions.TypeRuntimeException;
@@ -9,7 +8,6 @@ import things.thing.Thing;
 import things.thing.ThingReader;
 import things.utils.MatcherUtils;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,7 +24,7 @@ public class ThingReaders {
 
         int i = matcher.indexOf("/");
         if ( i <= 0 ) {
-            matcher = matcher+"/*";
+            matcher = matcher + "/*";
         }
 
         thingReaders.put(matcher, reader);

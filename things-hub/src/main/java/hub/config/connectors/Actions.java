@@ -15,7 +15,7 @@ import things.config.ThingActions;
  * @author: Markus Binsteiner
  */
 @Configuration
-@Import( HubConfigMongo.class)
+@Import(HubConfigMongo.class)
 public class Actions {
 
     @Autowired

@@ -43,6 +43,25 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         this.mongoTemplate = mongoTemplate;
     }
 
+    @Override
+    public boolean deleteThing(String id, Optional<String> type, Optional<String> key) {
+
+        Optional<Thing<?>> thing = findThingForIdQuery(id);
+
+        if ( !thing.isPresent() ) {
+            return false;
+        } else {
+            Query q = new Query();
+            try {
+                q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+            } catch (IllegalArgumentException iae) {
+                throw new NoSuchThingException(id);
+            }
+            mongoTemplate.remove(thing.get());
+            return true;
+        }
+    }
+
     private Object extractId(MongoPersistentProperty id, Object value) {
 
         try {
@@ -67,7 +86,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
         Optional<Thing<?>> thing = findThingForIdQuery(id);
 
-        if (thing.isPresent()) {
+        if ( thing.isPresent() ) {
             return Observable.just(thing.get());
         } else {
             throw new NoSuchThingException(id);
@@ -171,39 +190,20 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         return t;
     }
 
-    @Override
-    public boolean deleteThing(String id, Optional<String> type, Optional<String> key) {
-
-        Optional<Thing<?>> thing = findThingForIdQuery(id);
-
-        if ( ! thing.isPresent() ) {
-             return false;
-        } else {
-            Query q = new Query();
-            try {
-                q.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-            } catch (IllegalArgumentException iae) {
-                throw new NoSuchThingException(id);
-            }
-            mongoTemplate.remove(thing.get());
-            return true;
-        }
-    }
-
     public Object saveValue(Optional valueId, Object value) {
         myLogger.debug("Saving value: " + value);
 
         Object vId = null;
 
-            MongoPersistentProperty idField = getIdField(value.getClass());
-            if ( idField == null ) {
-                IdWrapper wrapper = new IdWrapper(value);
-                mongoTemplate.save(wrapper, typeRegistry.getType(value));
-                vId = wrapper.getId();
-            } else {
-                mongoTemplate.save(value, typeRegistry.getType(value));
-                vId = extractId(idField, value);
-            }
+        MongoPersistentProperty idField = getIdField(value.getClass());
+        if ( idField == null ) {
+            IdWrapper wrapper = new IdWrapper(value);
+            mongoTemplate.save(wrapper, typeRegistry.getType(value));
+            vId = wrapper.getId();
+        } else {
+            mongoTemplate.save(value, typeRegistry.getType(value));
+            vId = extractId(idField, value);
+        }
 
         return vId;
     }

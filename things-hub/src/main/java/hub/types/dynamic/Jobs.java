@@ -2,7 +2,6 @@ package hub.types.dynamic;
 
 import things.model.types.Value;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -18,9 +17,9 @@ public class Jobs {
 
 
     private List<JobStatus> jobs;
+    private String site;
     private Instant timestamp;
     private String username;
-    private String site;
 
     public Jobs(List<JobStatus> jobs, String username, String site) {
         this.jobs = jobs;
@@ -29,28 +28,20 @@ public class Jobs {
         this.site = site;
     }
 
-    public String getSite() {
-        return site;
-    }
-
-    public void setSite(String site) {
-        this.site = site;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public List<JobStatus> getJobs() {
         return jobs;
     }
 
+    public String getSite() {
+        return site;
+    }
+
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setDate(Instant timestamp) {
@@ -59,5 +50,13 @@ public class Jobs {
 
     public void setJobs(List<JobStatus> jobs) {
         this.jobs = jobs;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

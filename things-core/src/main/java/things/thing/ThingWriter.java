@@ -7,14 +7,14 @@ import java.util.Optional;
  */
 public interface ThingWriter {
 
+    abstract boolean deleteThing(String id, Optional<String> type, Optional<String> key);
+
     abstract <V> Thing<V> saveThing(Thing<V> t);
 
     default Thing<?> addChild(Thing<?> parent, Thing<?> child) {
         child.getParents().add(parent.getId());
         return saveThing(child);
     }
-
-    abstract boolean deleteThing(String id, Optional<String> type, Optional<String> key);
 
 //    abstract Object saveValue(Optional valueId, Object value);
 

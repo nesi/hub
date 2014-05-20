@@ -24,9 +24,8 @@ import java.util.Optional;
 public class ThingControl extends ThingControlReactive {
 
 
-    private static final Logger myLogger = LoggerFactory.getLogger(ThingControl.class);
-
     private static final Boolean POPULATED_BY_DEFAULT = true;
+    private static final Logger myLogger = LoggerFactory.getLogger(ThingControl.class);
 
     public ThingControl() {
         super();
@@ -65,8 +64,19 @@ public class ThingControl extends ThingControlReactive {
     public List<Thing> findAllThings() {
         return findAllThings(POPULATED_BY_DEFAULT);
     }
+
     public List<Thing> findAllThings(boolean populated) {
         return Lists.newArrayList(observeAllThings(populated).toBlockingObservable().toIterable());
+    }
+
+    public List<Thing> findParents(Thing<?> t) {
+        return findParents(Observable.just(t));
+    }
+
+    public List<Thing> findParents(Observable<? extends Thing<?>> things) {
+
+        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
+
     }
 
     public <V> List<Thing<V>> findThingsForType(Class<V> typeClass) {
@@ -103,6 +113,16 @@ public class ThingControl extends ThingControlReactive {
         return Lists.newArrayList(obs.toBlockingObservable().toIterable());
     }
 
+    public <V> List<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
+        Observable<Thing<V>> obs = observeThingsMatchingKeyAndValue(keyMatcher, value);
+        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+    }
+
+    public List<Thing> findThingsMatchingKeyAndValueConvertedFromString(String type, String keyMatcher, String stringValue) {
+        Observable<? extends Thing<?>> obs = observeThingsMatchingKeyAndValueConvertedFromString(type, keyMatcher, stringValue);
+        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+    }
+
     public List<Thing> findThingsMatchingType(String type) {
         return findThingsMatchingType(type, POPULATED_BY_DEFAULT);
     }
@@ -134,16 +154,6 @@ public class ThingControl extends ThingControlReactive {
         }
     }
 
-    public List<Thing> findThingsMatchingKeyAndValueConvertedFromString(String type, String keyMatcher, String stringValue) {
-        Observable<? extends Thing<?>> obs = observeThingsMatchingKeyAndValueConvertedFromString(type, keyMatcher, stringValue);
-        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
-    }
-
-    public <V> List<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
-        Observable<Thing<V>> obs = observeThingsMatchingKeyAndValue(keyMatcher, value);
-        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
-    }
-
     public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key) {
         return findUniqueThingMatchingTypeAndKey(type, key, POPULATED_BY_DEFAULT);
     }
@@ -158,22 +168,20 @@ public class ThingControl extends ThingControlReactive {
         }
     }
 
-    public List<Thing> findParents(Thing<?> t) {
-        return findParents(Observable.just(t));
-    }
-
-    public List<Thing> findParents(Observable<? extends Thing<?>> things) {
-
-        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
-
-    }
-
     public List<Thing> getChildren(Observable<? extends Thing<?>> things) {
         return getChildren(things, POPULATED_BY_DEFAULT);
     }
 
     public List<Thing> getChildren(Observable<? extends Thing<?>> things, boolean populated) {
         return Lists.newArrayList(observeChildren(things, populated).toBlockingObservable().toIterable());
+    }
+
+    public List<Thing> getChildren(Thing<?> t) {
+        return getChildren(t, POPULATED_BY_DEFAULT);
+    }
+
+    public List<Thing> getChildren(Thing<?> t, boolean populated) {
+        return Lists.newArrayList(observeChildren(t, populated).toBlockingObservable().toIterable());
     }
 
     public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass) {
@@ -190,14 +198,6 @@ public class ThingControl extends ThingControlReactive {
 
     public <V> List<Thing<V>> getChildrenForType(Thing<?> thing, Class<V> typeClass, boolean populateValues) {
         return Lists.newArrayList(observeChildrenForType(Observable.just(thing), typeClass, populateValues).toBlockingObservable().toIterable());
-    }
-
-    public List<Thing> getChildren(Thing<?> t) {
-        return getChildren(t, POPULATED_BY_DEFAULT);
-    }
-
-    public List<Thing> getChildren(Thing<?> t, boolean populated) {
-        return Lists.newArrayList(observeChildren(t, populated).toBlockingObservable().toIterable());
     }
 
     public List<Thing> getChildrenMatchingType(Thing<?> thing, String type) {
@@ -247,7 +247,6 @@ public class ThingControl extends ThingControlReactive {
     public List<Thing> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatch, String keyMatch, boolean populated) {
         return Lists.newArrayList(observeChildrenMatchingTypeAndKey(things, typeMatch, keyMatch, populated).toBlockingObservable().toIterable());
     }
-
 
 
     /**

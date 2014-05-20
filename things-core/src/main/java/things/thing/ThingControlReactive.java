@@ -1,6 +1,5 @@
 package things.thing;
 
-import com.google.common.collect.Lists;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
 import things.utils.MatcherUtils;
@@ -30,7 +29,6 @@ public class ThingControlReactive extends ThingControlMinimal {
     }
 
 
-
     public Observable<? extends Thing<?>> observeChildrenForKey(Observable<? extends Thing<?>> things, String key, boolean populateValues) {
 
         if ( MatcherUtils.isGlob(key) ) {
@@ -54,7 +52,6 @@ public class ThingControlReactive extends ThingControlMinimal {
     public Observable<? extends Thing<?>> observeChildrenForType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
 
 
-
         if ( MatcherUtils.isGlob(type) ) {
             throw new ThingRuntimeException("Type can't be glob for this query: " + type);
         }
@@ -67,16 +64,6 @@ public class ThingControlReactive extends ThingControlMinimal {
 
         Observable<? extends Thing<?>> result = observeChildrenMatchingTypeAndKey(things, "*", key, populateValues);
         return result;
-    }
-
-    public Observable<? extends Thing<?>> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
-        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
-
-        if ( populateValue ) {
-            return obs.lift(POPULATE_THINGS);
-        } else {
-            return obs;
-        }
     }
 
     public Observable<? extends Thing<?>> observeChildrenMatchingType(Observable<? extends Thing<?>> things, String type, boolean populateValues) {
@@ -116,7 +103,7 @@ public class ThingControlReactive extends ThingControlMinimal {
     public Observable<? extends Thing<?>> observeThingsForType(String type, boolean populateValues) {
 
         if ( MatcherUtils.isGlob(type) ) {
-            throw new ThingRuntimeException("Type can't be glob for this query: "+type);
+            throw new ThingRuntimeException("Type can't be glob for this query: " + type);
         }
 
         Observable<? extends Thing<?>> result = observeThingsMatchingTypeAndKey(type, "*", populateValues);
@@ -137,6 +124,16 @@ public class ThingControlReactive extends ThingControlMinimal {
 
     public <V> Observable<Thing<V>> observeUniqueThingMatchingKeyAndValue(String key, V value) {
         return observeThingsMatchingKeyAndValue(key, value).single();
+    }
+
+    public Observable<? extends Thing<?>> observeUniqueThingMatchingTypeAndKey(String type, String key, boolean populateValue) {
+        Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, key, false).single();
+
+        if ( populateValue ) {
+            return obs.lift(POPULATE_THINGS);
+        } else {
+            return obs;
+        }
     }
 
     public <V> Observable<Thing<V>> observeUniqueThingMatchingTypeAndKey(Class<V> type, String key, boolean populateValue) {

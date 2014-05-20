@@ -32,8 +32,8 @@ public class ExecuteRestController {
         this.thingUtils = tu;
     }
 
-    @Transactional(readOnly = false)
-    @RequestMapping(value = "/{actionName}/everything", method = RequestMethod.POST)
+    @Transactional( readOnly = false )
+    @RequestMapping( value = "/{actionName}/everything", method = RequestMethod.POST )
     public List<Thing> executeAllThings(@PathVariable("actionName") String action, @RequestParam Map<String, String> actionParams) throws ActionException {
 
         Observable<? extends Thing<?>> things = thingControl.observeAllThings(false);

@@ -22,13 +22,10 @@ public class ParentsRestController {
 
     @Autowired
     private ThingControl thingControl;
-
-    @Autowired
-    private TypeRegistry typeRegistry;
-
     @Autowired
     private ThingUtils thingUtils;
-
+    @Autowired
+    private TypeRegistry typeRegistry;
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/parents/of/every/{type}/{key}/matching/{value}")

@@ -1,6 +1,5 @@
 package things.thing;
 
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -37,28 +36,14 @@ public class ThingControlMinimal {
             .getLogger(ThingControl.class);
 
     protected final PopluateOperator POPULATE_THINGS;
-
-    protected MetricRegistry metrics;
-
-    @Inject
-    public void setMetrics(MetricRegistry metrics) {
-        this.metrics = metrics;
-    }
-
     private ActionManager actionManager;
-
-    @Inject
-    public void setActionManager(ActionManager am) {
-        this.actionManager = am;
-    }
-
+    protected MetricRegistry metrics;
     protected ThingActions thingActions = new ThingActions();
     protected ThingQueries thingQueries = new ThingQueries();
     protected ThingReaders thingReaders = new ThingReaders();
     protected ThingWriters thingWriters = new ThingWriters();
     protected TypeRegistry typeRegistry = new TypeRegistry();
     protected Validator validator = null;
-
     public ThingControlMinimal() {
         this.POPULATE_THINGS = new PopluateOperator(this);
     }
@@ -68,25 +53,9 @@ public class ThingControlMinimal {
         return w.addChild(parent, child);
     }
 
-    protected <V> Thing<V> populateAndConvertToTyped(Class<V> type, Thing untyped) {
-        POPULATE_THINGS.populate(untyped);
-
-        Thing<V> temp = (Thing<V>) untyped;
-        // make sure the value is of the right type;
-        Class expectedTypeClass = typeRegistry.getTypeClass(temp.getThingType());
-
-        if ( !temp.getValue().getClass().equals(type) ) {
-            throw new TypeRuntimeException("Can't convert to type: " + temp.getThingType(), temp.getThingType());
-        }
-
-        return temp;
-
-    }
-
-
     public Observable<? extends Thing<?>> executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
-        return actionManager.execute(actionName, things,  parameters);
+        return actionManager.execute(actionName, things, parameters);
 
     }
 
@@ -357,7 +326,6 @@ public class ThingControlMinimal {
         return observeThingsMatchingKeyAndValueConvertedFromString(typeRegistry.getTypeClass(type), keyMatcher, valueString);
     }
 
-
     public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValueConvertedFromString(Class<V> typeClass, String keyMatcher, String valueString) {
 
         String type = typeRegistry.getType(typeClass);
@@ -436,6 +404,21 @@ public class ThingControlMinimal {
         return obs;
     }
 
+    protected <V> Thing<V> populateAndConvertToTyped(Class<V> type, Thing untyped) {
+        POPULATE_THINGS.populate(untyped);
+
+        Thing<V> temp = (Thing<V>) untyped;
+        // make sure the value is of the right type;
+        Class expectedTypeClass = typeRegistry.getTypeClass(temp.getThingType());
+
+        if ( !temp.getValue().getClass().equals(type) ) {
+            throw new TypeRuntimeException("Can't convert to type: " + temp.getThingType(), temp.getThingType());
+        }
+
+        return temp;
+
+    }
+
     public <V> Thing<V> saveThing(Thing<V> thing) throws ThingException {
 
         if ( MatcherUtils.isGlob(thing.getThingType()) ) {
@@ -449,6 +432,16 @@ public class ThingControlMinimal {
             throw new ThingWriterRuntimeException("Thing id can't be empty after save");
         }
         return t;
+    }
+
+    @Inject
+    public void setActionManager(ActionManager am) {
+        this.actionManager = am;
+    }
+
+    @Inject
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 
     @Inject

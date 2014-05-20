@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rx.Observable;
 import things.exceptions.ThingException;
-import things.exceptions.TypeRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingUtils;
@@ -24,12 +23,10 @@ public class ThingsRestController {
 
     @Autowired
     private ThingControl thingControl;
-
-    @Autowired
-    private TypeRegistry typeRegistry;
-
     @Autowired
     private ThingUtils thingUtils;
+    @Autowired
+    private TypeRegistry typeRegistry;
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{type}")

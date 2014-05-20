@@ -16,8 +16,6 @@ import things.thing.Thing;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by markus on 19/05/14.
@@ -25,8 +23,8 @@ import java.util.List;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan( "things.thing" )
-@EnableJpaRepositories( basePackages = "things.jpa" )
+@ComponentScan("things.thing")
+@EnableJpaRepositories(basePackages = "things.jpa")
 public class Application {
 
     public static void main(String[] args) {
@@ -81,8 +79,14 @@ public class Application {
 //        System.out.println();
 
 
-
         context.close();
+    }
+
+    @Bean
+    public DataSource dataSource() {
+
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
     }
 
     @Bean
@@ -98,12 +102,5 @@ public class Application {
         factory.afterPropertiesSet();
 
         return factory.getObject();
-    }
-
-    @Bean
-    public DataSource dataSource() {
-
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
     }
 }

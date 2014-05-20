@@ -9,6 +9,12 @@ import things.utils.MatcherUtils;
  */
 public abstract class AbstractSimpleThingReader extends AbstractThingReader {
 
+    public Observable<? extends Thing<?>> findThingForId(String id) {
+
+        Observable<? extends Thing<?>> allThings = findAllThings();
+        return allThings.filter(t -> id.equals(t.getId()));
+    }
+
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                        final String key) {
 
@@ -28,12 +34,6 @@ public abstract class AbstractSimpleThingReader extends AbstractThingReader {
             );
         });
         return obs;
-    }
-
-    public Observable<? extends Thing<?>> findThingForId(String id) {
-
-        Observable<? extends Thing<?>> allThings = findAllThings();
-        return allThings.filter(t -> id.equals(t.getId()));
     }
 
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {

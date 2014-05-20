@@ -16,7 +16,7 @@ import java.util.Scanner;
  */
 public class LoadLeveler {
 
-        public static JobStatus createJobStatus(String line) {
+    public static JobStatus createJobStatus(String line) {
 
         String[] tokens = line.split("!");
 
@@ -43,8 +43,8 @@ public class LoadLeveler {
         List<JobStatus> result = Lists.newArrayList();
         try {
             String command = "llq -r %id %jn %dq %dd %h %o %st";
-            if ( ! Strings.isNullOrEmpty(username) ) {
-                command = command+" -u "+username;
+            if ( !Strings.isNullOrEmpty(username) ) {
+                command = command + " -u " + username;
             }
             ((ChannelExec) channel).setCommand(command);
             channel.setInputStream(null);
@@ -55,10 +55,10 @@ public class LoadLeveler {
             channel.connect();
             Scanner sc = new Scanner(in);
 
-            while (sc.hasNextLine()) {
+            while ( sc.hasNextLine() ) {
                 String line = sc.nextLine();
                 JobStatus js = createJobStatus(line);
-                if (js != null) {
+                if ( js != null ) {
                     result.add(js);
                 }
             }

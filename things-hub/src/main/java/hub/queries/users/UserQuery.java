@@ -21,17 +21,18 @@ public class UserQuery implements ThingQuery {
     @Autowired
     private ThingControl tc;
     @Autowired
-    private UserUtils userUtils;
-    @Autowired
     private TypeRegistry typeRegistry;
+    @Autowired
+    private UserUtils userUtils;
 
     @Override
     public Observable<? extends Thing<?>> execute(String queryName, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
-        switch(queryName) {
+        switch ( queryName ) {
             case "details":
                 return userUtils.convertToPerson(things).map(t -> userUtils.createUser(t));
-            default: throw new QueryRuntimeException("Can't find query with name: "+queryName);
+            default:
+                throw new QueryRuntimeException("Can't find query with name: " + queryName);
         }
 
     }

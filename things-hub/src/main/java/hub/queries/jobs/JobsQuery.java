@@ -29,20 +29,17 @@ import java.util.Set;
  */
 public class JobsQuery implements ThingQuery {
 
+    private final String host_name;
+    private final int host_port;
+    private JSch jsch = new JSch();
+    private final String site;
+    private final String ssh_username;
     @Autowired
     private ThingControl tc;
     @Autowired
-    private UserUtils utils;
-    @Autowired
     private TypeRegistry typeRegistry;
-
-    private JSch jsch = new JSch();
-
-    private final String site;
-
-    private final String host_name;
-    private final int host_port;
-    private final String ssh_username;
+    @Autowired
+    private UserUtils utils;
 
     public JobsQuery(String sitename, String ssh_username, String host, int port, String ssh_key_file, String known_hosts_file) {
 
@@ -81,41 +78,6 @@ public class JobsQuery implements ThingQuery {
         }
     }
 
-    @Override
-    public Set<String> getSupportedQueryNames() {
-        return ImmutableSet.<String>builder().add("jobs").build();
-    }
-
-    private Observable<Thing<Jobs>> getJobsForPerson(Thing<Person> person) {
-
-        return utils.convertToUsername(person).map(u -> getJobs(u)).map(j -> wrapJobs(person, j));
-
-    }
-
-    private Observable<Thing<Jobs>> lookupJobs(Thing username_or_person) {
-        if ( typeRegistry.equals(Person.class, username_or_person.getThingType()) ) {
-            return getJobsForPerson(username_or_person);
-        } else {
-            return getJobsForUsername(username_or_person);
-        }
-    }
-
-    private Observable<Thing<Jobs>> getJobsForUsername(Thing<Username> username) {
-
-        Thing<Person> p = utils.convertToPerson(username).toBlockingObservable().single();
-
-        Jobs jobs = getJobs(username);
-        return Observable.just(wrapJobs(p, jobs));
-
-    }
-
-    private Thing<Jobs> wrapJobs(Thing<Person> person, Jobs jobs) {
-        Thing<Jobs> t = new Thing();
-        t.setKey(person.getKey());
-        t.setValue(jobs);
-        return t;
-    }
-
     private Jobs getJobs(Thing<Username> username) {
 
         final List<JobStatus> result = Lists.newArrayList();
@@ -137,6 +99,41 @@ public class JobsQuery implements ThingQuery {
 
         Jobs jobs = new Jobs(result, username.getValue().getUsername(), site);
         return jobs;
+    }
+
+    private Observable<Thing<Jobs>> getJobsForPerson(Thing<Person> person) {
+
+        return utils.convertToUsername(person).map(u -> getJobs(u)).map(j -> wrapJobs(person, j));
+
+    }
+
+    private Observable<Thing<Jobs>> getJobsForUsername(Thing<Username> username) {
+
+        Thing<Person> p = utils.convertToPerson(username).toBlockingObservable().single();
+
+        Jobs jobs = getJobs(username);
+        return Observable.just(wrapJobs(p, jobs));
+
+    }
+
+    @Override
+    public Set<String> getSupportedQueryNames() {
+        return ImmutableSet.<String>builder().add("jobs").build();
+    }
+
+    private Observable<Thing<Jobs>> lookupJobs(Thing username_or_person) {
+        if ( typeRegistry.equals(Person.class, username_or_person.getThingType()) ) {
+            return getJobsForPerson(username_or_person);
+        } else {
+            return getJobsForUsername(username_or_person);
+        }
+    }
+
+    private Thing<Jobs> wrapJobs(Thing<Person> person, Jobs jobs) {
+        Thing<Jobs> t = new Thing();
+        t.setKey(person.getKey());
+        t.setValue(jobs);
+        return t;
     }
 
 

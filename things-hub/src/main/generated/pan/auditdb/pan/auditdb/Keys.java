@@ -36,30 +36,29 @@ public class Keys {
         public static final org.jooq.UniqueKey<pan.auditdb.tables.records.ProjectAllocationRecord> KEY_PROJECT_ALLOCATION_PRIMARY = createUniqueKey(pan.auditdb.tables.ProjectAllocation.PROJECT_ALLOCATION, pan.auditdb.tables.ProjectAllocation.PROJECT_ALLOCATION.PROJECT_ID);
         public static final org.jooq.UniqueKey<pan.auditdb.tables.records.UsermapRecord> KEY_USERMAP_PRIMARY = createUniqueKey(pan.auditdb.tables.Usermap.USERMAP, pan.auditdb.tables.Usermap.USERMAP.ID);
     }
-    public static final org.jooq.Identity<pan.auditdb.tables.records.AuditRecord, Long> IDENTITY_AUDIT = Identities0.IDENTITY_AUDIT;
-
-    // -------------------------------------------------------------------------
+    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AbbreviationsRecord> KEY_ABBREVIATIONS_PRIMARY = UniqueKeys0.KEY_ABBREVIATIONS_PRIMARY;    public static final org.jooq.Identity<pan.auditdb.tables.records.AuditRecord, Long> IDENTITY_AUDIT = Identities0.IDENTITY_AUDIT;
+    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AffiliationRecord> KEY_AFFILIATION_PRIMARY = UniqueKeys0.KEY_AFFILIATION_PRIMARY;    // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
     public static final org.jooq.Identity<pan.auditdb.tables.records.AuditNewRecord, Long> IDENTITY_AUDIT_NEW = Identities0.IDENTITY_AUDIT_NEW;
-    public static final org.jooq.Identity<pan.auditdb.tables.records.IncidentsRecord, Integer> IDENTITY_INCIDENTS = Identities0.IDENTITY_INCIDENTS;
-    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AbbreviationsRecord> KEY_ABBREVIATIONS_PRIMARY = UniqueKeys0.KEY_ABBREVIATIONS_PRIMARY;
-    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AffiliationRecord> KEY_AFFILIATION_PRIMARY = UniqueKeys0.KEY_AFFILIATION_PRIMARY;
-    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AuditRecord> KEY_AUDIT_JOBDID_UNIQUE = UniqueKeys0.KEY_AUDIT_JOBDID_UNIQUE;
+    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AuditRecord> KEY_AUDIT_JOBDID_UNIQUE = UniqueKeys0.KEY_AUDIT_JOBDID_UNIQUE;    public static final org.jooq.Identity<pan.auditdb.tables.records.IncidentsRecord, Integer> IDENTITY_INCIDENTS = Identities0.IDENTITY_INCIDENTS;
     public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AuditNewRecord> KEY_AUDIT_NEW_JOBDID_UNIQUE = UniqueKeys0.KEY_AUDIT_NEW_JOBDID_UNIQUE;
     public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AuditNewRecord> KEY_AUDIT_NEW_PRIMARY = UniqueKeys0.KEY_AUDIT_NEW_PRIMARY;
     public static final org.jooq.UniqueKey<pan.auditdb.tables.records.AuditRecord> KEY_AUDIT_PRIMARY = UniqueKeys0.KEY_AUDIT_PRIMARY;
     public static final org.jooq.UniqueKey<pan.auditdb.tables.records.IncidentsRecord> KEY_INCIDENTS_PRIMARY = UniqueKeys0.KEY_INCIDENTS_PRIMARY;
     public static final org.jooq.UniqueKey<pan.auditdb.tables.records.OrganisationRecord> KEY_ORGANISATION_PRIMARY = UniqueKeys0.KEY_ORGANISATION_PRIMARY;
+    // -------------------------------------------------------------------------
+    // [#1459] distribute members to avoid static initialisers > 64kb
+    // -------------------------------------------------------------------------
+    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.ProjectAllocationRecord> KEY_PROJECT_ALLOCATION_PRIMARY = UniqueKeys0.KEY_PROJECT_ALLOCATION_PRIMARY;
+    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.UsermapRecord> KEY_USERMAP_PRIMARY = UniqueKeys0.KEY_USERMAP_PRIMARY;
+
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
 
-    // -------------------------------------------------------------------------
-    // [#1459] distribute members to avoid static initialisers > 64kb
-    // -------------------------------------------------------------------------
-    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.ProjectAllocationRecord> KEY_PROJECT_ALLOCATION_PRIMARY = UniqueKeys0.KEY_PROJECT_ALLOCATION_PRIMARY;
-    public static final org.jooq.UniqueKey<pan.auditdb.tables.records.UsermapRecord> KEY_USERMAP_PRIMARY = UniqueKeys0.KEY_USERMAP_PRIMARY;
+
+
 }

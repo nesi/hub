@@ -25,7 +25,6 @@ import things.types.ThingType;
 import things.types.TypeRegistry;
 import types.Address;
 import types.Person;
-import types.Role;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -39,23 +38,42 @@ import javax.validation.ValidatorFactory;
  */
 @Configuration
 @EnableAutoConfiguration(exclude = {MongoAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoTemplateAutoConfiguration.class})
-@ComponentScan( {"things.thing"} )
-@EnableJpaRepositories( basePackages = {"jpa", "things.jpa"} )
+@ComponentScan({"things.thing"})
+@EnableJpaRepositories(basePackages = {"jpa", "things.jpa"})
 public class JpaConfig {
 
     @Bean
-    public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
-        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
-            tr.addType(tt);
-        }
-        return tr;
+    public DataSource dataSource() {
+
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
     }
 
     @Bean
     JpaConnector defaultConnector() {
         JpaConnector con = new JpaConnector();
         return con;
+    }
+
+    @Bean
+    public EntityManagerFactory entityManagerFactory() {
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("things.thing", "types");
+        factory.setDataSource(dataSource());
+        factory.setMappingResources("thing.hbm.xml");
+        factory.afterPropertiesSet();
+
+        return factory.getObject();
+    }
+
+    @Bean
+    public HibernateExceptionTranslator hibernateExceptionTranslator() {
+        return new HibernateExceptionTranslator();
     }
 
     @Bean
@@ -99,19 +117,20 @@ public class JpaConfig {
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactory() {
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
+    }
 
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(true);
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("things.thing", "types");
-        factory.setDataSource(dataSource());
-        factory.setMappingResources("thing.hbm.xml");
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
+    @Bean(name = "valueValidator")
+    public Validator validator() {
+        ValidatorFactory factory =
+                Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        return validator;
     }
 
     @Bean
@@ -121,25 +140,5 @@ public class JpaConfig {
         vr.addRepository(tr.getType(Person.class), pr);
         vr.addRepository(tr.getType(Address.class), ar);
         return vr;
-    }
-
-    @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator(){
-      return new HibernateExceptionTranslator();
-    }
-
-    @Bean
-    public DataSource dataSource() {
-
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
-    }
-
-    @Bean(name = "valueValidator")
-    public Validator validator() {
-        ValidatorFactory factory =
-                Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        return validator;
     }
 }

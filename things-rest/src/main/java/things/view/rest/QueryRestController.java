@@ -45,8 +45,36 @@ public class QueryRestController {
     }
 
     @Transactional(readOnly = true)
+    @RequestMapping(value = "/{query}/for/every/{type}/{key}/matching/{value}", method = RequestMethod.GET)
+    public List<Thing> queryLookupSingleThingWithKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
+        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key, value);
+
+        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
+        return Lists.newArrayList(result.toBlockingObservable().toIterable());
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/{query}/for/every/{type}/matching/{value}", method = RequestMethod.GET)
+    public List<Thing> queryLookupThing(@PathVariable("type") String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
+
+        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", value);
+
+        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
+        return Lists.newArrayList(result.toBlockingObservable().toIterable());
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/{query}/for/{type}/{key}/matching/{value}", method = RequestMethod.GET)
+    public List<Thing> queryLookupThingWithKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
+        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key, value).single();
+
+        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
+        return Lists.newArrayList(result.toBlockingObservable().toIterable());
+    }
+
+    @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/every/{type}/{key}")
-    public List<Thing> queryThingsOfTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams)  {
+    public List<Thing> queryThingsOfTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingTypeAndKey(type, key, false);
 
         Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
@@ -54,19 +82,8 @@ public class QueryRestController {
     }
 
     @Transactional(readOnly = true)
-    @RequestMapping(value = "{query}/for/{type}/{key}")
-    public List<Thing> queryUniqueThingWithTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String,String> allRequestParams)  {
-
-        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingTypeAndKey(type, key, false).single();
-
-        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, allRequestParams);
-        return Lists.newArrayList(result.toBlockingObservable().toIterable());
-
-    }
-
-    @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/{type}/matching/{value}", method = RequestMethod.GET)
-    public List<Thing> queryUniqueLookupThing(@PathVariable("type")String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams)  {
+    public List<Thing> queryUniqueLookupThing(@PathVariable("type") String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", value).single();
 
@@ -76,31 +93,14 @@ public class QueryRestController {
     }
 
     @Transactional(readOnly = true)
-    @RequestMapping(value = "/{query}/for/every/{type}/matching/{value}", method = RequestMethod.GET)
-    public List<Thing> queryLookupThing(@PathVariable("type")String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams)  {
+    @RequestMapping(value = "{query}/for/{type}/{key}")
+    public List<Thing> queryUniqueThingWithTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String, String> allRequestParams) {
 
-        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", value);
+        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingTypeAndKey(type, key, false).single();
 
-        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
+        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, allRequestParams);
         return Lists.newArrayList(result.toBlockingObservable().toIterable());
-    }
 
-    @Transactional(readOnly = true)
-    @RequestMapping(value = "/{query}/for/every/{type}/{key}/matching/{value}", method = RequestMethod.GET)
-    public List<Thing> queryLookupSingleThingWithKey(@PathVariable("type")String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
-        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key , value);
-
-        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
-        return Lists.newArrayList(result.toBlockingObservable().toIterable());
-    }
-
-    @Transactional(readOnly = true)
-    @RequestMapping(value = "/{query}/for/{type}/{key}/matching/{value}", method = RequestMethod.GET)
-    public List<Thing> queryLookupThingWithKey(@PathVariable("type")String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams)  {
-        Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key , value).single();
-
-        Observable<? extends Thing<?>> result = thingControl.executeQuery(query, things, queryParams);
-        return Lists.newArrayList(result.toBlockingObservable().toIterable());
     }
 
 

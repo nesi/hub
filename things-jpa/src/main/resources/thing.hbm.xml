@@ -3,17 +3,17 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="things.thing.Thing" table="things">
-		<id name="id" type="string" column="thing_id" unsaved-value="-1" access="field">
-			<generator class="uuid2" ></generator>
-		</id>
-		<property name="key" type="string" column="key" access="field" update="true" />
-        <property name="thingType" type="string" column="thingType" access="field" update="true" />
-        <property name="value" type="string" column="value_link" access="field" update="true" />
+    <class name="things.thing.Thing" table="things">
+        <id name="id" type="string" column="thing_id" unsaved-value="-1" access="field">
+            <generator class="uuid2"></generator>
+        </id>
+        <property name="key" type="string" column="key" access="field" update="true"/>
+        <property name="thingType" type="string" column="thingType" access="field" update="true"/>
+        <property name="value" type="string" column="value_link" access="field" update="true"/>
         <property name="valueIsPopulated" type="boolean" column="popluated" access="field" update="true"/>
         <set name="parents" table="parents" lazy="false">
-            <key column="child_id" ></key>
+            <key column="child_id"></key>
             <element column="parent" type="string"></element>
         </set>
-	</class>
+    </class>
 </hibernate-mapping>

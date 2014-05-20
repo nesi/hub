@@ -15,17 +15,17 @@ import java.util.Set;
  */
 public interface ThingAction {
 
-    default boolean runsInBackground() {
-        return false;
+    public Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters);
+
+    default boolean ensurePopulatedValues() {
+        return true;
     }
 
     default Set<Class> filterTypes() {
         return Sets.newHashSet();
     }
 
-    default boolean ensurePopulatedValues() {
-        return true;
+    default boolean runsInBackground() {
+        return false;
     }
-
-    public Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters);
 }

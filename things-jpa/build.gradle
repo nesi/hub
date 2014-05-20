@@ -23,8 +23,8 @@ def springBootVersion = '1.0.2.RELEASE'
 dependencies {
 
     compile project(":things-core")
-    compile ("org.springframework.boot:spring-boot-starter-data-jpa:"+springBootVersion)
-    compile ("com.h2database:h2")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:" + springBootVersion)
+    compile("com.h2database:h2")
 
     testCompile("junit:junit")
 

@@ -204,7 +204,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
         return roleMap;
     }
 
-    @Resource( name = "projectDbContext" )
+    @Resource(name = "projectDbContext")
     public void setJooq(DefaultDSLContext jooq) {
         this.jooq = jooq;
     }

@@ -1,7 +1,6 @@
 package things.jpa;
 
 import com.google.common.collect.Maps;
-import org.springframework.data.repository.CrudRepository;
 import things.exceptions.TypeRuntimeException;
 
 import java.util.Map;

@@ -1,7 +1,6 @@
 package hub;
 
 import hub.config.jpa.HubConfigJpa;
-import hub.config.mongo.HubConfigMongo;
 import org.springframework.boot.SpringApplication;
 
 /**

@@ -2,15 +2,10 @@ package types;
 
 
 import org.apache.bval.constraints.NotEmpty;
-import org.hibernate.annotations.GenericGenerator;
 import things.model.types.SimpleValue;
 import things.model.types.Value;
 import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * Project: things-to-build

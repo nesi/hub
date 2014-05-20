@@ -23,14 +23,6 @@ public class Bridge {
 
     }
 
-    public int getWaitTime() {
-        return waitTime;
-    }
-
-    public void setWaitTime(int waitTime) {
-        this.waitTime = waitTime;
-    }
-
     public Bridge(String host, int port) {
         this.host = host;
         this.port = port;
@@ -52,6 +44,10 @@ public class Bridge {
         return version;
     }
 
+    public int getWaitTime() {
+        return waitTime;
+    }
+
     public void setHost(String host) {
         this.host = host;
     }
@@ -62,5 +58,9 @@ public class Bridge {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
     }
 }

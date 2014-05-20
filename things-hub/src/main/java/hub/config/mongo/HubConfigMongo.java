@@ -2,9 +2,6 @@ package hub.config.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hub.actions.UserUtils;
-import hub.queries.users.PanAuditQuery;
-import hub.queries.users.UserQuery;
-import hub.queries.jobs.JobsQuery;
 import hub.readers.UserReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
 import things.config.mongo.MongoConfig;
@@ -33,7 +29,6 @@ import things.utils.json.ThingsObjectMapper;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.io.File;
 
 /**
  * Project: things
@@ -87,17 +82,6 @@ public class HubConfigMongo extends MongoConfig {
     }
 
     @Bean
-    public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
-        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
-            tr.addType(tt);
-        }
-        return tr;
-    }
-
-
-
-    @Bean
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();
@@ -118,6 +102,15 @@ public class HubConfigMongo extends MongoConfig {
         tw.addWriter("role/*", mongoConnector());
         tw.addWriter("username/*", mongoConnector());
         return tw;
+    }
+
+    @Bean
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
     }
 
     @Bean

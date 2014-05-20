@@ -10,7 +10,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import things.config.TestConfigInMemory;
 import things.connectors.inMemory.InMemoryConnector;
 import things.exceptions.TypeRuntimeException;
-import things.model.types.attributes.UniqueKey;
 import things.types.NoRestrictionsType;
 import things.types.TypeRegistry;
 import things.types.UniqueKeyType;
@@ -26,23 +25,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
         classes = {TestConfigInMemory.class} )
 public class ThingControlTest {
 
+    private int allThingsSize = 4;
     @Inject
     private InMemoryConnector connector;
     private NoRestrictionsType nrt1;
     private NoRestrictionsType nrt2;
     private Thing<NoRestrictionsType> t1;
     private Thing<NoRestrictionsType> t2;
-
-    private UniqueKeyType ukt1;
-    private UniqueKeyType ukt2;
     private Thing<UniqueKeyType> t3;
     private Thing<UniqueKeyType> t4;
-
-    private int allThingsSize = 4;
     @Inject
     private ThingControl thingControl;
     @Inject
     private TypeRegistry typeRegistry;
+    private UniqueKeyType ukt1;
+    private UniqueKeyType ukt2;
 
     @Before
     public void setUp() throws Exception {
@@ -89,7 +86,7 @@ public class ThingControlTest {
 
         List<Thing> allThings = thingControl.findThingsForType("noRestrictionsType");
         assertThat("List is not empty", allThings.size() > 0);
-        for (Thing t : allThings ) {
+        for ( Thing t : allThings ) {
             Thing<NoRestrictionsType> tt = thingControl.populateAndConvertToTyped(NoRestrictionsType.class, t);
             NoRestrictionsType nrt = tt.getValue();
             assertThat("Value is of the right class", nrt instanceof NoRestrictionsType);
@@ -97,12 +94,12 @@ public class ThingControlTest {
 
     }
 
-    @Test(expected = TypeRuntimeException.class)
+    @Test( expected = TypeRuntimeException.class )
     public void testConvertToTypedFail() throws Exception {
 
         List<Thing> allThings = thingControl.findThingsForType("noRestrictionsType");
         assertThat("List is not empty", allThings.size() > 0);
-        for (Thing t : allThings ) {
+        for ( Thing t : allThings ) {
             Thing<UniqueKeyType> tt = thingControl.populateAndConvertToTyped(UniqueKeyType.class, t);
             UniqueKeyType ukt = tt.getValue();
         }
@@ -177,9 +174,9 @@ public class ThingControlTest {
         List<Thing> things2 = thingControl.findThingsForTypeAndKey(typeRegistry.getType(UniqueKeyType.class), "ukt1");
 
         assertThat("NoRestrictionType thing 1 is present", things1.contains(t1));
-        assertThat("NoRestrictionType thing 2 is not present", ! things1.contains(t2));
+        assertThat("NoRestrictionType thing 2 is not present", !things1.contains(t2));
         assertThat("UniqueKeyType thing 1 is present", things2.contains(t3));
-        assertThat("UniqueKeyType thing 2 is not present", ! things2.contains(t4));
+        assertThat("UniqueKeyType thing 2 is not present", !things2.contains(t4));
     }
 
     @Test
@@ -232,7 +229,7 @@ public class ThingControlTest {
         assertThat("One result was returned", result.isPresent());
 
         result = thingControl.findUniqueThingMatchingTypeAndKey("noRestrictionsType", "*3");
-        assertThat("No result was returned", ! result.isPresent());
+        assertThat("No result was returned", !result.isPresent());
 
         result = thingControl.findUniqueThingMatchingTypeAndKey("*Type", "nrt1");
         assertThat("One result was returned", result.isPresent());
@@ -241,7 +238,7 @@ public class ThingControlTest {
         assertThat("One result was returned", result.isPresent());
 
         Optional<Thing<NoRestrictionsType>> resultTyped = thingControl.findUniqueThingMatchingTypeAndKey(NoRestrictionsType.class, "*3");
-        assertThat("One result was returned", ! resultTyped.isPresent());
+        assertThat("One result was returned", !resultTyped.isPresent());
 
         resultTyped = thingControl.findUniqueThingMatchingTypeAndKey(NoRestrictionsType.class, "*2");
         assertThat("One result was returned", resultTyped.isPresent());
@@ -276,7 +273,7 @@ public class ThingControlTest {
         thingControl.addChildThing(t1, t4);
 
         List<Thing> children = thingControl.getChildrenMatchingType(t1, "*niqu*");
-        assertThat("Parent has 2 children of type UniqueKeyType", children.size() ==2);
+        assertThat("Parent has 2 children of type UniqueKeyType", children.size() == 2);
         assertThat("Thing 3 is child of thing 1", children.contains(t3));
         assertThat("Thing 4 is child of thing 1", children.contains(t4));
     }
@@ -288,12 +285,12 @@ public class ThingControlTest {
         thingControl.addChildThing(t1, t4);
 
         List<Thing> children = thingControl.getChildrenMatchingTypeAndKey(t1, "*niqu*", "*");
-        assertThat("Parent has 2 children of type UniqueKeyType", children.size() ==2);
+        assertThat("Parent has 2 children of type UniqueKeyType", children.size() == 2);
         assertThat("Thing 3 is child of thing 1", children.contains(t3));
         assertThat("Thing 4 is child of thing 1", children.contains(t4));
 
         children = thingControl.getChildrenMatchingTypeAndKey(t1, "*", "*1");
-        assertThat("Parent has  child of type UniqueKeyType", children.size() ==1);
+        assertThat("Parent has  child of type UniqueKeyType", children.size() == 1);
         assertThat("Thing 3 is child of thing 1", children.contains(t3));
     }
 
@@ -309,9 +306,9 @@ public class ThingControlTest {
         boolean exists = thingControl.thingForTypeAndKeyExists("noRestrictionsType", "nrt2");
         assertThat("Thing exists", exists);
         exists = thingControl.thingForTypeAndKeyExists("noRestrictionsType", "nrt3");
-        assertThat("Thing does not exist", ! exists);
+        assertThat("Thing does not exist", !exists);
         exists = thingControl.thingForTypeAndKeyExists("noRestrictionsTypeXXX", "nrt2");
-        assertThat("Thing does not exist", ! exists);
+        assertThat("Thing does not exist", !exists);
     }
 
     @Test
@@ -324,6 +321,6 @@ public class ThingControlTest {
         boolean exists = thingControl.thingMatchingTypeAndKeyExists("*niq*", "ukt1");
         assertThat("Thing exists", exists);
         exists = thingControl.thingMatchingTypeAndKeyExists("*xxx*", "*");
-        assertThat("Thing does not exist", ! exists);
+        assertThat("Thing does not exist", !exists);
     }
 }
