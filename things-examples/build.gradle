@@ -9,9 +9,11 @@ version = '0.1'
 dependencies {
     compile project(':things-core')
     compile project(':things-mongo')
+    compile project(':things-jpa')
     compile project(':things-rest')
 
     compile("com.google.inject:guice:4.0-beta")
+//    compile("javassist:javassist:3.18.1-GA")
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

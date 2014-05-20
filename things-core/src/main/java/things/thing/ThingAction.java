@@ -12,5 +12,5 @@ import java.util.Map;
  * Time: 10:36 PM
  */
 public interface ThingAction {
-    public String execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters);
+    public Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters);
 }

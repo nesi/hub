@@ -1,4 +1,4 @@
-package hub.config;
+package hub.config.connectors;
 
 import com.jolbox.bonecp.BoneCPDataSource;
 import hub.utils.JOOQToSpringExceptionTransformer;

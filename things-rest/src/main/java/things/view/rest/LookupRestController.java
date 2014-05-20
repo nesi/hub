@@ -37,7 +37,7 @@ public class LookupRestController {
 //
 //    @Transactional(readOnly = true)
 //    @RequestMapping(value = "/parents/of/every/{type}/matching/{value}", method = RequestMethod.GET)
-//    public List<Thing> lookupParentsForLookupThingOfType(@PathVariable("type")String type, @PathVariable("value") String value) throws QueryException, ThingException {
+//    public List<Thing> lookupParentsForLookupThingOfType(@PathVariable("type")String type, @PathVariable("value") String value) throws QueryRuntimeException, ThingException {
 //
 //        List<Thing> things = lookupThing(type, value);
 //        List<Thing> result = thingControl.findThingsByOtherThing(things);
@@ -48,7 +48,7 @@ public class LookupRestController {
 //
 //    @Transactional(readOnly = true)
 //    @RequestMapping(value = "/parents/of/every/{type}/{key}/matching/{value}", method = RequestMethod.GET)
-//    public List<Thing> lookupParentsForLookupThingOfTypeWithKey(@PathVariable("type")String type, @PathVariable("key") String key, @PathVariable("value") String value) throws QueryException, ThingException {
+//    public List<Thing> lookupParentsForLookupThingOfTypeWithKey(@PathVariable("type")String type, @PathVariable("key") String key, @PathVariable("value") String value) throws QueryRuntimeException, ThingException {
 //
 //        List<Thing> things = lookupThingWithKey(type, key, value);
 //        List<Thing> result = thingControl.findThingsByOtherThing(things);

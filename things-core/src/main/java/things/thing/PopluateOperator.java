@@ -41,6 +41,7 @@ public final class PopluateOperator<T> implements Observable.Operator<T, T> {
 
     public T populate(T thing) {
         Thing<? super Thing> t = (Thing<? super Thing>) thing;
-        return (T) tc.ensurePopulatedValue(t);
+        tc.getValue(t);
+        return thing;
     }
 }

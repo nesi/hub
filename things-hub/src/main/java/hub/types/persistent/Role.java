@@ -2,6 +2,7 @@ package hub.types.persistent;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
+import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
 import things.model.types.attributes.UniqueKeyInOtherThings;
 import things.model.types.attributes.UniqueValueForKey;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "role")
 @UniqueValueForKey(unique = true)
+@StringConverter(value = RoleStringConverter.class)
 public class Role {
 
     @NotEmpty
@@ -26,6 +28,18 @@ public class Role {
     }
 
     public Role() {
+    }
+
+    public boolean equals(Object obj) {
+        if ( obj == this ) return true;
+        if ( obj == null ) return false;
+
+        if ( getClass().equals(obj.getClass()) ) {
+            final Role other = (Role) obj;
+            return Objects.equals(getRole(), other.getRole());
+        } else {
+            return false;
+        }
     }
 
     public String getRole() {

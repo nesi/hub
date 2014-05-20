@@ -29,15 +29,7 @@ public class ThingControlReactive extends ThingControlMinimal {
         return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> populateAndConvertToTyped(type, t));
     }
 
-    public List<? extends Thing<?>> findParents(Thing<?> t) {
-        return findParents(Observable.just(t));
-    }
 
-    public List<? extends Thing<?>> findParents(Observable<? extends Thing<?>> things) {
-
-        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
-
-    }
 
     public Observable<? extends Thing<?>> observeChildrenForKey(Observable<? extends Thing<?>> things, String key, boolean populateValues) {
 

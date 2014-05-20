@@ -1,8 +1,12 @@
-package hub.config;
+package hub.config.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hub.actions.UserUtils;
+import hub.queries.users.PanAuditQuery;
+import hub.queries.users.UserQuery;
+import hub.queries.jobs.JobsQuery;
 import hub.readers.UserReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -13,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import things.config.ThingQueries;
 import things.config.ThingReaders;
@@ -20,11 +25,15 @@ import things.config.ThingWriters;
 import things.config.mongo.MongoConfig;
 import things.mongo.MongoConnector;
 import things.thing.ThingControl;
+import things.types.AnnotationTypeFactory;
+import things.types.ThingType;
+import things.types.TypeRegistry;
 import things.utils.json.ThingsObjectMapper;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.io.File;
 
 /**
  * Project: things
@@ -41,9 +50,13 @@ import javax.validation.ValidatorFactory;
 @PropertySource("classpath:sshJobLister.properties")
 @PropertySource(value = "file:/etc/hub/hub.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
-@ComponentScan({"hub.config", "things.thing", "things.view.rest", "things.config.jetm"})
+@ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.jetm"})
 @EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
-public class HubConfig extends MongoConfig {
+public class HubConfigMongo extends MongoConfig {
+
+
+    @Autowired
+    private Environment env;
 
     @Override
     protected String getDatabaseName() {
@@ -74,10 +87,15 @@ public class HubConfig extends MongoConfig {
     }
 
     @Bean
-    public ThingQueries thingQueries() {
-        ThingQueries tq = new ThingQueries();
-        return tq;
+    public TypeRegistry typeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
     }
+
+
 
     @Bean
     public ThingReaders thingReaders() throws Exception {

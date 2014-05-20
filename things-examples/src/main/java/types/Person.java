@@ -2,9 +2,13 @@ package types;
 
 import org.apache.bval.constraints.Email;
 import org.apache.bval.constraints.NotEmpty;
+import org.hibernate.annotations.GenericGenerator;
 import things.model.types.Value;
 import things.model.types.attributes.UniqueKey;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -16,13 +20,18 @@ import java.util.Objects;
  */
 @UniqueKey(unique = true)
 @Value(typeName = "person")
+@Entity
 public class Person {
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
     @Email
     private String email;
     @NotEmpty
     private String firstName;
-    private String id;
     private Boolean isActive = false;
     @NotEmpty
     private String lastName;

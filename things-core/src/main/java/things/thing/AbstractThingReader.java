@@ -19,10 +19,7 @@ abstract public class AbstractThingReader implements ThingReader {
 
     protected TypeRegistry typeRegistry = null;
 
-    public Observable<? extends Thing<?>> findThingForId(String id) {
-        Observable<? extends Thing<?>> allThings = findAllThings();
-        return allThings.filter(t -> id.equals(t.getId())).single();
-    }
+    abstract public Observable<? extends Thing<?>> findThingForId(String id);
 
     public Observable<? extends Thing<?>> findThingsForKey(String key) {
 
@@ -48,13 +45,19 @@ abstract public class AbstractThingReader implements ThingReader {
         return things.filter(t -> readValue(t).equals(value)).map(t -> (Thing<V>) t);
     }
 
+    public <V> Observable<Thing<V>> findThingsForKeyAndValue(String key, V value) {
+        Observable<? extends Thing<?>> obs = findThingsForTypeAndKey(typeRegistry.getType(value), key);
+        Observable<Thing<V>> result = findThingsForValue(obs, value);
+        return result;
+    }
+
     public Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher) {
         return findThingsMatchingTypeAndKey("*", keyMatcher);
     }
 
     public <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
         Observable<? extends Thing<?>> obs = findThingsMatchingTypeAndKey(typeRegistry.getType(value), keyMatcher);
-        Observable<Thing<V>> result = findThingsForValue(obs, value).map(t -> (Thing<V>) t);
+        Observable<Thing<V>> result = findThingsForValue(obs, value);
         return result;
     }
 
@@ -62,26 +65,14 @@ abstract public class AbstractThingReader implements ThingReader {
         return findThingsMatchingTypeAndKey(typeMatcher, "*");
     }
 
-    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+    public <V> Observable<Thing<V>> findThingsMatchingTypeAndKey(final Class<V> type,
                                                                        final String key) {
 
-        Observable obs = Observable.create((Subscriber<? super Object> subscriber) -> {
-
-            findAllThings().subscribe(
-                    (thing) -> {
-                        if ( MatcherUtils.wildCardMatch(thing.getThingType(), type)
-                                && MatcherUtils.wildCardMatch(thing.getKey(), key) ) {
-                            subscriber.onNext(thing);
-                        }
-                    },
-                    (throwable) -> {
-                        subscriber.onError(throwable);
-                    },
-                    () -> subscriber.onCompleted()
-            );
-        });
-        return obs;
+        return findThingsMatchingTypeAndKey(typeRegistry.getType(type), key).map(t -> (Thing<V>)t);
     }
+
+    abstract public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                                       final String key);
 
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
         Observable<? extends Thing<?>> obs = findAllThings();
@@ -130,14 +121,7 @@ abstract public class AbstractThingReader implements ThingReader {
         return getChildrenMatchingTypeAndKey(things, typeMatcher, "*");
     }
 
-    public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
-
-        Observable result = things.flatMap(t -> getChildrenForId(t.getId()))
-                .filter(t -> MatcherUtils.wildCardMatch(t.getThingType(), typeMatcher)
-                        && MatcherUtils.wildCardMatch(t.getKey(), keyMatcher));
-
-        return result;
-    }
+    abstract public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
 
     @Inject
     public void setTypeRegistry(TypeRegistry typeRegistry) {

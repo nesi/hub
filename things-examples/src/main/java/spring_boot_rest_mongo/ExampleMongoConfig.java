@@ -28,7 +28,7 @@ import javax.validation.ValidatorFactory;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan({"things.thing", "things.view.rest"})
-public class ThingsConfig extends MongoConfig {
+public class ExampleMongoConfig extends MongoConfig {
 
     @Bean
     public MongoConnector defaultConnector() throws Exception {

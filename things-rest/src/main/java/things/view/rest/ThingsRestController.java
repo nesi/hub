@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rx.Observable;
 import things.exceptions.ThingException;
+import things.exceptions.TypeRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingUtils;
+import things.types.TypeRegistry;
 
 import java.util.List;
 
@@ -22,6 +24,9 @@ public class ThingsRestController {
 
     @Autowired
     private ThingControl thingControl;
+
+    @Autowired
+    private TypeRegistry typeRegistry;
 
     @Autowired
     private ThingUtils thingUtils;
@@ -41,7 +46,7 @@ public class ThingsRestController {
     }
 
     @Transactional(readOnly = true)
-    @RequestMapping(value = "/{type}/{key}/others")
+    @RequestMapping(value = "/child/of/{type}/{key}")
     public List<Thing> getChildrenForThing(@PathVariable("type") String type, @PathVariable("key") String key) {
 
         Observable<? extends Thing<?>> t = thingControl.observeThingsMatchingTypeAndKey(type, key, false);
@@ -85,4 +90,5 @@ public class ThingsRestController {
         List<Thing> things = thingControl.getChildrenMatchingTypeAndKey(t, queryType, queryKey);
         return things;
     }
+
 }

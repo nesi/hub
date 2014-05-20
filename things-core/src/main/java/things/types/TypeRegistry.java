@@ -35,6 +35,12 @@ public class TypeRegistry {
         typeClasses.put(type.getTypeClass(), type);
     }
 
+    public Optional<? extends Object> convertFromString(Class typeClass, String valueString) {
+        Preconditions.checkArgument(typeClass != null, "Type can't be null");
+        Preconditions.checkArgument(valueString != null, "Value string can't be null");
+        return getThingType(typeClass).convertFromString(valueString);
+    }
+
     public Optional<? extends Object> convertFromString(String type, String valueString) {
         Preconditions.checkArgument(type != null, "Type can't be null");
         Preconditions.checkArgument(valueString != null, "Value string can't be null");
@@ -50,6 +56,11 @@ public class TypeRegistry {
     public boolean convertsFromString(String thingType) {
         Preconditions.checkArgument(thingType != null, "Type can't be null");
         return getThingType(thingType).convertsFromString();
+    }
+
+    public boolean convertsFromString(Class typeClass) {
+        Preconditions.checkArgument(typeClass != null, "Type can't be null");
+        return getThingType(typeClass).convertsFromString();
     }
 
     public Boolean equals(Class typeClass, String thingType) {

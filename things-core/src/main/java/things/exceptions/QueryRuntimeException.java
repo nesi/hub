@@ -7,13 +7,13 @@ package things.exceptions;
  * Date: 9/04/14
  * Time: 1:52 PM
  */
-public class QueryException extends Exception {
+public class QueryRuntimeException extends RuntimeException {
 
-    public QueryException(String msg) {
+    public QueryRuntimeException(String msg) {
         super(msg);
     }
 
-    public QueryException(String msg, Exception e) {
+    public QueryRuntimeException(String msg, Exception e) {
         super(msg, e);
     }
 }

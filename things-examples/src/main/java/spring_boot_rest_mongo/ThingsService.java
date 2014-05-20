@@ -13,7 +13,7 @@ public class ThingsService {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(ThingsConfig.class);
+        SpringApplication.run(ExampleMongoConfig.class);
 
     }
 }

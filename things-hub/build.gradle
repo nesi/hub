@@ -20,7 +20,7 @@ apply plugin: 'spring-boot'
 def springBootVersion = '1.0.2.RELEASE'
 
 springBoot {
-    mainClass = "hub.HubService"
+    mainClass = "hub.HubServiceMongo"
 }
 
 sourceCompatibility = 1.8
@@ -40,6 +40,7 @@ dependencies {
 
     compile project(':things-core')
     compile project(':things-mongo')
+    compile project(':things-jpa')
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
 
@@ -51,6 +52,7 @@ dependencies {
 
     // for auditdb connection
     compile("org.springframework:spring-jdbc:" + springVersion)
+    compile("org.springframework:spring-tx:" + springVersion)
     compile("org.jooq:jooq:3.3.1")
     compile("com.jolbox:bonecp:0.8.0.RELEASE")
     compile("cglib:cglib:3.1")

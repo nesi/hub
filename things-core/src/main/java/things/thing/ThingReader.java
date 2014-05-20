@@ -27,6 +27,10 @@ public interface ThingReader {
 
     abstract <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value);
 
+    abstract <V> Observable<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value);
+
+    abstract <V> Observable<Thing<V>> findThingsForKeyAndValue(String key, V value);
+
     abstract Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher);
 
     abstract Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher);

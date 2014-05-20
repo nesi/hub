@@ -1,6 +1,6 @@
 package hub;
 
-import hub.config.HubConfig;
+import hub.config.mongo.HubConfigMongo;
 import org.springframework.boot.SpringApplication;
 
 /**
@@ -10,12 +10,12 @@ import org.springframework.boot.SpringApplication;
  * Date: 12/03/14
  * Time: 10:56 AM
  */
-public class HubService {
+public class HubServiceMongo {
 
 
     public static void main(String[] args) throws Exception {
 
-        SpringApplication.run(HubConfig.class);
+        SpringApplication.run(HubConfigMongo.class);
 
     }
 

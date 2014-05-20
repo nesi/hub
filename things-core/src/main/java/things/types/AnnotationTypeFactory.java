@@ -9,11 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import things.exceptions.TypeRuntimeException;
 import things.model.types.Value;
-import things.model.types.attributes.Subordinate;
-import things.model.types.attributes.UniqueKey;
-import things.model.types.attributes.UniqueKeyInOtherThings;
-import things.model.types.attributes.UniqueValueForKey;
+import things.model.types.attributes.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -41,6 +39,10 @@ public class AnnotationTypeFactory {
                 tt.setNeedsUniqueKey(typeNeedsUniqueKey(typeClass));
                 tt.setNeedsUniqueKeyAsChild(typeNeedsUniqueKeyWithinChildren(typeClass));
                 tt.setNeedsUniqueValue(typeNeedsUniqueValue(typeClass));
+                Optional<SingleStringConverter> conv = getStringConverter(typeClass);
+                if ( conv.isPresent() ) {
+                    tt.setConverter(conv.get());
+                }
                 thingTypes.add(tt);
             }
         }
@@ -109,7 +111,7 @@ public class AnnotationTypeFactory {
     public static boolean typeNeedsUniqueKey(Class<?> typeClass) {
 
         if ( typeClass == null ) {
-            throw new TypeRuntimeException("No typeClass provided", null);
+            throw new TypeRuntimeException("No typeClass provided");
         }
 
         UniqueKey annotation = typeClass.getAnnotation(UniqueKey.class);
@@ -117,6 +119,26 @@ public class AnnotationTypeFactory {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public static  Optional<SingleStringConverter> getStringConverter(Class<?> typeClass) {
+
+        if ( typeClass == null ) {
+            throw new TypeRuntimeException("No typeClass provided");
+        }
+
+        StringConverter annotation = typeClass.getAnnotation(StringConverter.class);
+        if ( annotation == null || annotation.value() == null ) {
+            return Optional.empty();
+        } else {
+            Class<? extends SingleStringConverter<?>> converterClass = annotation.value();
+            try {
+                SingleStringConverter conv = converterClass.newInstance();
+                return Optional.of(conv);
+            } catch (Exception e) {
+                throw new TypeRuntimeException("Can't create stringconverter for class '"+typeClass.getName()+"'", typeClass, e);
+            }
         }
     }
 
@@ -132,7 +154,7 @@ public class AnnotationTypeFactory {
     public static boolean typeNeedsUniqueKeyWithinChildren(Class<?> typeClass) {
 
         if ( typeClass == null ) {
-            throw new TypeRuntimeException("No typeClass provided", null);
+            throw new TypeRuntimeException("No typeClass provided");
         }
 
         UniqueKeyInOtherThings annotation = typeClass.getAnnotation(UniqueKeyInOtherThings.class);
@@ -158,7 +180,7 @@ public class AnnotationTypeFactory {
     public static boolean typeNeedsUniqueValue(Class<?> typeClass) {
 
         if ( typeClass == null ) {
-            throw new TypeRuntimeException("No typeClass provided", null);
+            throw new TypeRuntimeException("No typeClass provided");
         }
 
         UniqueValueForKey annotation = typeClass.getAnnotation(UniqueValueForKey.class);

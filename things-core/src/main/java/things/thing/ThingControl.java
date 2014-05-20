@@ -134,6 +134,16 @@ public class ThingControl extends ThingControlReactive {
         }
     }
 
+    public List<Thing> findThingsMatchingKeyAndValueConvertedFromString(String type, String keyMatcher, String stringValue) {
+        Observable<? extends Thing<?>> obs = observeThingsMatchingKeyAndValueConvertedFromString(type, keyMatcher, stringValue);
+        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+    }
+
+    public <V> List<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
+        Observable<Thing<V>> obs = observeThingsMatchingKeyAndValue(keyMatcher, value);
+        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+    }
+
     public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key) {
         return findUniqueThingMatchingTypeAndKey(type, key, POPULATED_BY_DEFAULT);
     }
@@ -146,6 +156,16 @@ public class ThingControl extends ThingControlReactive {
         } catch (NoSuchElementException nsee) {
             return Optional.empty();
         }
+    }
+
+    public List<Thing> findParents(Thing<?> t) {
+        return findParents(Observable.just(t));
+    }
+
+    public List<Thing> findParents(Observable<? extends Thing<?>> things) {
+
+        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
+
     }
 
     public List<Thing> getChildren(Observable<? extends Thing<?>> things) {

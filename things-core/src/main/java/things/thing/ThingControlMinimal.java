@@ -1,5 +1,7 @@
 package things.thing;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -20,10 +22,7 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Project: things-to-build
@@ -38,6 +37,13 @@ public class ThingControlMinimal {
             .getLogger(ThingControl.class);
 
     protected final PopluateOperator POPULATE_THINGS;
+
+    protected MetricRegistry metrics;
+
+    @Inject
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     protected ThingActions thingActions = new ThingActions();
     protected ThingQueries thingQueries = new ThingQueries();
@@ -56,30 +62,22 @@ public class ThingControlMinimal {
     }
 
     protected <V> Thing<V> populateAndConvertToTyped(Class<V> type, Thing untyped) {
+        POPULATE_THINGS.populate(untyped);
 
-            untyped = ensurePopulatedValue(untyped);
-            Thing<V> temp = (Thing<V>) untyped;
-            // make sure the value is of the right type;
-            Class expectedTypeClass = typeRegistry.getTypeClass(temp.getThingType());
+        Thing<V> temp = (Thing<V>) untyped;
+        // make sure the value is of the right type;
+        Class expectedTypeClass = typeRegistry.getTypeClass(temp.getThingType());
 
-            if ( ! temp.getValue().getClass().equals(type) ) {
-                throw new TypeRuntimeException("Can't convert to type: "+temp.getThingType(), temp.getThingType());
-            }
-
-            return temp;
-
-    }
-
-    protected <V> Thing<V> ensurePopulatedValue(Thing<V> thing) {
-        if ( thing.getValueIsPopulated() ) {
-            V value = getValue(thing);
-            thing.setValue(value);
-            thing.setValueIsPopulated(false);
+        if ( !temp.getValue().getClass().equals(type) ) {
+            throw new TypeRuntimeException("Can't convert to type: " + temp.getThingType(), temp.getThingType());
         }
-        return thing;
+
+        return temp;
+
     }
 
-    public String executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
+
+    public Observable<? extends Thing<?>> executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
         ThingAction ta = thingActions.get(actionName);
 
@@ -91,27 +89,27 @@ public class ThingControlMinimal {
             parameters = Maps.newHashMap();
         }
 
-        String actionId = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
+        Observable<? extends Thing<?>> result = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
 
-        return actionId;
+        return result;
 
     }
 
-    public String executeQuery(String actionName, Observable<Thing> things, Map<String, String> parameters) throws ActionException {
+    public Observable<? extends Thing<?>> executeQuery(String queryName, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
-        ThingAction ta = thingActions.get(actionName);
+        ThingQuery ta = thingQueries.get(queryName);
 
         if ( ta == null ) {
-            throw new ActionException("Can't find action with name: " + actionName, actionName);
+            throw new QueryRuntimeException("Can't find query with name: " + queryName);
         }
 
         if ( parameters == null ) {
             parameters = Maps.newHashMap();
         }
 
-        String actionId = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
+        Observable<? extends Thing<?>> result = ta.execute(queryName, things.lift(POPULATE_THINGS), parameters);
 
-        return actionId;
+        return result;
 
     }
 
@@ -123,10 +121,14 @@ public class ThingControlMinimal {
 
     public <V> V getValue(Thing<V> thing) {
         if ( !thing.getValueIsPopulated() ) {
-            return (V) thing.getValue();
+            ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
+            V value = r.readValue(thing);
+            thing.setValue(value);
+            thing.setValueIsPopulated(true);
+            return value;
         }
-        ThingReader r = thingReaders.getUnique(thing.getThingType(), thing.getKey());
-        return r.readValue(thing);
+        return (V) thing.getValue();
+
     }
 
     public Observable<? extends Thing<?>> observeAllThings(boolean populateValues) {
@@ -280,6 +282,7 @@ public class ThingControlMinimal {
                         newThing.setKey(key);
                         newThing.setThingType(typeRegistry.getType(value));
                         newThing.setValue(value);
+                        newThing.setValueIsPopulated(true);
                         Thing<V> t = saveThing(newThing);
 
                         subscriber.onNext(t);
@@ -327,24 +330,54 @@ public class ThingControlMinimal {
 
     }
 
-    public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValue(String key, V value) {
+    public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValue(String keyMatcher, V value) {
+
+
+        Set<ThingReader> readers = thingReaders.get(typeRegistry.getType(value), keyMatcher);
 
         List<Observable<? extends Thing<?>>> observables = Lists.newArrayList();
-        for ( ThingReader r : thingReaders.get(typeRegistry.getType(value), key) ) {
-            Observable<? extends Thing<?>> t = r.findThingsMatchingKey(key);
-            observables.add(t);
+
+        for ( ThingReader r : readers ) {
+            Observable<? extends Thing<?>> obs = r.findThingsMatchingKeyAndValue(keyMatcher, value);
+            observables.add(obs);
         }
 
         Observable<? extends Thing<?>> result = null;
         if ( observables.size() == 0 ) {
-            throw new TypeRuntimeException("No connector found for type " + typeRegistry.getType(value) + " and key " + key, typeRegistry.getType(value));
+            throw new TypeRuntimeException("No reader found for type " + typeRegistry.getType(value) + " and key " + keyMatcher, typeRegistry.getType(value));
         } else if ( observables.size() == 1 ) {
             result = observables.get(0);
         } else {
             result = Observable.merge(observables);
         }
 
-        return filterThingsWithValue(result, value);
+        return result.map(t -> populateAndConvertToTyped((Class<V>) value.getClass(), t));
+
+    }
+
+    public Observable<? extends Thing<?>> observeThingsMatchingKeyAndValueConvertedFromString(String type, String keyMatcher, String valueString) {
+        if ( MatcherUtils.isGlob(type) ) {
+            throw new ThingRuntimeException("Type can't be glob for this query");
+        }
+        return observeThingsMatchingKeyAndValueConvertedFromString(typeRegistry.getTypeClass(type), keyMatcher, valueString);
+    }
+
+
+    public <V> Observable<Thing<V>> observeThingsMatchingKeyAndValueConvertedFromString(Class<V> typeClass, String keyMatcher, String valueString) {
+
+        String type = typeRegistry.getType(typeClass);
+
+        if ( !typeRegistry.convertsFromString(type) ) {
+            throw new TypeRuntimeException("Can't convert value for type '" + type + "' from String", type);
+        }
+
+        Optional<?> value = typeRegistry.convertFromString(type, valueString);
+        if ( !value.isPresent() ) {
+            throw new TypeRuntimeException("Could not convert type '" + type + "' from String", type);
+        }
+
+        return observeThingsMatchingKeyAndValue(keyMatcher, (V) value.get());
+
     }
 
     public Observable<? extends Thing<?>> observeThingsMatchingTypeAndKey(final String typeMatch, final String keyMatch, boolean populate) {

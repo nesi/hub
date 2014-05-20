@@ -4,6 +4,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,15 +15,17 @@ import java.util.Set;
  * Date: 6/05/14
  * Time: 7:55 PM
  */
+
 public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     private String id;
 
     private String key;
+
     private Set<String> parents = Sets.newHashSet();
     private String thingType;
     protected V value;
-    private Boolean valueIsPopulated = false;
+    private Boolean valueIsPopulated = true;
 
     /**
      * Default constructor, don't use in normal circumstances.
@@ -33,6 +36,11 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      * If creating a Thing for returning via the API, prefer the {@link things.thing.Thing#Thing(String, java.io.Serializable)} constructor.
      */
     public Thing() {
+    }
+
+    public Thing(String type, String key) {
+        this.thingType = type;
+        this.key = key;
     }
 
     @Override
@@ -69,8 +77,6 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      *
      * @return the (unique) id
      */
-//    @GeneratedValue(generator = "uuid")
-//    @GenericGenerator(name = "uuid", strategy = "uuid2")
     public String getId() {
         return id;
     }
@@ -174,17 +180,9 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
         thingType = type;
     }
 
-    /**
-     * Sets the id of this Things' value.
-     * <p>
-     * Don't use. Only used internally.
-     *
-     * @param value the value id.
-     */
+
     public void setValue(V value) {
-        if ( this.value == null || this.value.equals(value) ) {
-            this.value = value;
-        }
+        this.value = value;
     }
 
     public void setValueIsPopulated(Boolean valueIsPopulated) {

@@ -2,6 +2,7 @@ package hub.types.persistent;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
+import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
 import things.model.types.attributes.UniqueKeyInOtherThings;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 @UniqueKeyInOtherThings(unique = false)
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "username")
+@StringConverter( value = UsernameStringConverter.class)
 public class Username {
 
     @NotEmpty

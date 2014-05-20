@@ -94,6 +94,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         return Optional.of(thing);
     }
 
+    @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                        final String key) {
 
@@ -144,29 +145,25 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     @Override
     public <V> V readValue(Thing<V> t) {
 
-        boolean stringConverter = typeRegistry.convertsFromString(t.getThingType());
-        if ( stringConverter ) {
-            return (V) typeRegistry.convertFromString(t.getThingType(), (String) t.getValue());
-        }
+        return t.getValue();
 
-
-        Query q = new Query();
-        q.addCriteria(Criteria.where("_id").is(new ObjectId((String) t.getValue())));
+//        Query q = new Query();
+//        q.addCriteria(Criteria.where("_id").is(new ObjectId((String) t.getValue())));
+////
+//        Class typeClass = typeRegistry.getTypeClass(t.getThingType());
+//        if ( hasUsableId(typeClass) ) {
+//            Object v = mongoTemplate.findOne(q, typeClass);
+//            return (V) v;
+//        } else {
+//            Object v = mongoTemplate.findOne(q, IdWrapper.class, t.getThingType());
+//            return (V) ((IdWrapper) v).getValue();
 //
-        Class typeClass = typeRegistry.getTypeClass(t.getThingType());
-        if ( hasUsableId(typeClass) ) {
-            Object v = mongoTemplate.findOne(q, typeClass);
-            return (V) v;
-        } else {
-            Object v = mongoTemplate.findOne(q, IdWrapper.class, t.getThingType());
-            return (V) ((IdWrapper) v).getValue();
-
-        }
+//        }
     }
 
     @Override
     public <V> Thing<V> saveThing(Thing<V> t) {
-
+        t.setValueIsPopulated(true);
         myLogger.debug("Saving thing: " + t.toString());
         // mongo gives it an id if necessary
         mongoTemplate.save(t);
@@ -197,10 +194,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         myLogger.debug("Saving value: " + value);
 
         Object vId = null;
-        Optional<String> stringValue = typeRegistry.convertToString(value);
-        if ( stringValue.isPresent() ) {
-            vId = value;
-        } else {
+
             MongoPersistentProperty idField = getIdField(value.getClass());
             if ( idField == null ) {
                 IdWrapper wrapper = new IdWrapper(value);
@@ -210,7 +204,7 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
                 mongoTemplate.save(value, typeRegistry.getType(value));
                 vId = extractId(idField, value);
             }
-        }
+
         return vId;
     }
 

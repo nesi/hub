@@ -27,7 +27,7 @@ public class LightAction implements ThingAction {
     }
 
     @Override
-    public String execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
+    public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
         Observable<Thing<Light>> lights = tc.filterThingsOfType(Light.class, things);
 

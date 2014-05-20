@@ -5,6 +5,8 @@ import com.unboundid.ldap.sdk.*;
 import hub.types.dynamic.User;
 import hub.types.persistent.Person;
 import hub.types.persistent.Username;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
  * Imports users from current LDAP database
  */
 public class LdapImporter implements ThingAction {
+
+    public static Logger myLogger = LoggerFactory.getLogger(LdapImporter.class);
 
     /**
      * Assembles a {@link hub.types.dynamic.User} object from an LDAP search result entry.
@@ -113,7 +117,7 @@ public class LdapImporter implements ThingAction {
     private ThingControl tc;
 
     @Override
-    public String execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
+    public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
         List<User> users;
         try {
@@ -130,7 +134,7 @@ public class LdapImporter implements ThingAction {
             try {
                 tp = tc.createThing(nesi_username, p);
             } catch (Exception te) {
-                System.out.println("Can't create thing for person " + p.nameToString() + ": " + te.getLocalizedMessage());
+                myLogger.debug("Can't create thing for person " + p.nameToString() + ": " + te.getLocalizedMessage(), te);
                 Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
                 if ( !opt.isPresent() ) {
                     throw new ThingRuntimeException("Could not find person for key: " + nesi_username);

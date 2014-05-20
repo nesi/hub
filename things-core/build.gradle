@@ -5,6 +5,8 @@ dependencies {
 
     compile project(":things-common")
 
+    compile('org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final')
+
     compile('javax.el:javax.el-api:2.2.4')
     compile('org.glassfish.web:javax.el:2.2.4')
 
@@ -19,7 +21,12 @@ dependencies {
 
     compile("ch.qos.logback:logback-classic:1.+")
 
-    compile("org.reflections:reflections:0.9.9-RC1")
+    compile("org.reflections:reflections:0.9.9-RC1") {
+        exclude module: 'javassist'
+    }
+    compile("org.javassist:javassist:3.18.1-GA")
+
+    compile ("com.codahale.metrics:metrics-core:3.0.2")
 
 
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import things.thing.ThingQuery;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: Markus Binsteiner
@@ -15,10 +16,9 @@ public class ThingQueries {
     public ThingQueries() {
     }
 
-    public void addQuery(String matcher, ThingQuery action) {
-
-        thingQueries.put(matcher, action);
-
+    public void addQuery(ThingQuery action) {
+        Set<String> matchers = action.getSupportedQueryNames();
+        matchers.forEach(t -> thingQueries.put(t, action));
     }
 
     public ThingQuery get(String actionName) {

@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ThingReaderRuntimeException;
+import things.thing.AbstractSimpleThingReader;
 import things.thing.AbstractThingReader;
 import things.thing.Thing;
 import things.thing.ThingWriter;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Created by markus on 18/05/14.
  */
-public class InMemoryConnector extends AbstractThingReader implements ThingWriter {
+public class InMemoryConnector extends AbstractSimpleThingReader implements ThingWriter {
 
     private final Map<String, Multimap<String, Thing<?>>> allThings = Maps.newConcurrentMap();
 

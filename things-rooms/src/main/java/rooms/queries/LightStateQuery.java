@@ -1,7 +1,7 @@
 package rooms.queries;
 
 import rooms.types.LightState;
-import things.exceptions.QueryException;
+import things.exceptions.QueryRuntimeException;
 import things.thing.Thing;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class LightStateQuery {
         return null;
     }
 
-    public List<Thing<LightState>> query(List<Thing> things, Map<String, String> queryParams) throws QueryException {
+    public List<Thing<LightState>> query(List<Thing> things, Map<String, String> queryParams) throws QueryRuntimeException {
 
         List<Thing<LightState>> states = things.stream().map(t -> getState(t)).collect(Collectors.toList());
         return states;

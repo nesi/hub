@@ -22,7 +22,7 @@ public class ClearMongoDatabase implements ThingAction {
     }
 
     @Override
-    public String execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
+    public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
         mo.dropCollection(Person.class);
         mo.dropCollection(Thing.class);
         mo.dropCollection(Username.class);

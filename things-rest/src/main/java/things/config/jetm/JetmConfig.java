@@ -21,13 +21,12 @@ public class JetmConfig {
         bc.setInterceptorNames(new String[]{"etmMethodCallInterceptor"});
         bc.setBeanNames(new String[]{
                 "thingControl"
-//                "userReader"
 //                "*RestController"
-//                "*Reader",
+//                "*Reader"
 //                "*Writer",
 //                "*Action",
-//                "*Query"
-//                "mongoConnector"
+//                "*Query",
+//                "*Connector"
         });
 
         return bc;

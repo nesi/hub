@@ -1,6 +1,6 @@
 package hub;
 
-import hub.config.HubConfig;
+import hub.config.mongo.HubConfigMongo;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -20,7 +20,7 @@ public class Application {
 
     public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
 
-        AbstractApplicationContext context = new AnnotationConfigApplicationContext(HubConfig.class);
+        AbstractApplicationContext context = new AnnotationConfigApplicationContext(HubConfigMongo.class);
 
         MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
         final ThingControl tc = (ThingControl) context.getBean("thingControl");

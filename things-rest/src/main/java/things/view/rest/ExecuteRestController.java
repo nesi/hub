@@ -36,8 +36,9 @@ public class ExecuteRestController {
 
         Observable<? extends Thing<?>> things = thingControl.observeAllThings(false);
 
-        String handle = thingControl.executeAction(action, things, actionParams);
-        return handle;
+        Observable<? extends Thing<?>> handle = thingControl.executeAction(action, things, actionParams);
+        handle.toBlockingObservable();
+        return "n/a";
     }
 
     @Transactional(readOnly = false)
@@ -46,16 +47,18 @@ public class ExecuteRestController {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsForType(type, false);
 
-        String handle = thingControl.executeAction(action, things, actionParams);
-        return handle;
+        Observable<? extends Thing<?>> handle = thingControl.executeAction(action, things, actionParams);
+        handle.toBlockingObservable();
+        return "n/a";
     }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}", method = RequestMethod.POST)
     public String executeGetAction(@PathVariable("actionName") String actionName, @RequestParam Map<String, String> allRequestParams) throws ActionException {
 
-        String handle = thingControl.executeAction(actionName, Observable.empty(), allRequestParams);
-        return handle;
+        Observable<? extends Thing<?>> handle = thingControl.executeAction(actionName, Observable.empty(), allRequestParams);
+        handle.toBlockingObservable();
+        return "n/a";
     }
 
     @Transactional(readOnly = false)
@@ -64,7 +67,10 @@ public class ExecuteRestController {
 
         Observable<? extends Thing<?>> thing = thingControl.observeUniqueThingMatchingTypeAndKey(type, key, false);
 
-        return thingControl.executeAction(action, thing, actionParam);
+        Observable actionResult = thingControl.executeAction(action, thing, actionParam);
+        actionResult.toBlockingObservable();
+
+        return "n/a";
 
     }
 

@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-milestone" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+}
+
+apply plugin: 'spring-boot'
+
+def springBootVersion = '1.0.2.RELEASE'
+
+
+dependencies {
+
+    compile project(":things-core")
+    compile ("org.springframework.boot:spring-boot-starter-data-jpa:"+springBootVersion)
+    compile ("com.h2database:h2")
+
+    testCompile("junit:junit")
+
+}

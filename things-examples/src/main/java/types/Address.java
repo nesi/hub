@@ -1,6 +1,11 @@
 package types;
 
+import org.hibernate.annotations.GenericGenerator;
 import things.model.types.Value;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Project: things-to-build
@@ -10,12 +15,22 @@ import things.model.types.Value;
  * Time: 6:59 PM
  */
 @Value(typeName = "address")
+@Entity
 public class Address {
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
     private String city;
     private String country;
     private int nr;
     private String street;
+
+    public Address() {
+
+    }
 
     public String getCity() {
         return city;

@@ -61,7 +61,7 @@ public class BaseRestController {
 
 //    @Transactional(readOnly = true)
 //    @RequestMapping(value = "/query/{queryName}", method = RequestMethod.POST)
-//    public List<Thing> queryForThings(@PathVariable("queryName") String queryName, @RequestParam(required = false) Map<String, String> queryParameters) throws QueryException, QueryException {
+//    public List<Thing> queryForThings(@PathVariable("queryName") String queryName, @RequestParam(required = false) Map<String, String> queryParameters) throws QueryRuntimeException, QueryRuntimeException {
 //
 //        List<Thing> result = thingControl.queryForThings(queryName, null, queryParameters);
 //        return result;

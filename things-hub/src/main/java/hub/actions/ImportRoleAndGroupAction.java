@@ -158,7 +158,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
     }
 
     @Override
-    public String execute(String s, Observable<? extends Thing<?>> things, Map<String, String> stringStringMap) {
+    public Observable<? extends Thing<?>> execute(String s, Observable<? extends Thing<?>> things, Map<String, String> stringStringMap) {
 
         Observable<Thing<Person>> persons = userUtils.convertToPerson(things);
 

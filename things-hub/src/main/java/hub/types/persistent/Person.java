@@ -1,11 +1,15 @@
 package hub.types.persistent;
 
 import com.google.common.base.Strings;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
 import things.model.types.attributes.UniqueKey;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -13,13 +17,17 @@ import java.util.Objects;
  */
 @UniqueKey(unique = true)
 @Value(typeName = "person")
+@Entity
 public class Person {
 
     @Email
     private String email;
     @NotEmpty
     private String first_name;
-    //    @Id
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     String id;
     @NotEmpty
     private String last_name;

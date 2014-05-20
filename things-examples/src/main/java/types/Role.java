@@ -2,9 +2,15 @@ package types;
 
 
 import org.apache.bval.constraints.NotEmpty;
+import org.hibernate.annotations.GenericGenerator;
 import things.model.types.SimpleValue;
 import things.model.types.Value;
+import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Project: things-to-build
@@ -15,10 +21,17 @@ import things.model.types.attributes.Subordinate;
  */
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "role")
+@StringConverter(value = RoleStringConverter.class)
 public class Role implements SimpleValue<String> {
+
+    public String id;
 
     @NotEmpty
     private String role;
+
+    private Role() {
+
+    }
 
     public Role(String role) {
         setRole(role);

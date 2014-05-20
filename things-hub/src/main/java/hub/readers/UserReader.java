@@ -4,20 +4,29 @@ import hub.actions.UserUtils;
 import hub.types.persistent.Person;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
-import things.thing.AbstractThingReader;
-import things.thing.Thing;
-import things.thing.ThingControl;
-import things.thing.ThingReader;
+import things.thing.*;
+import things.utils.MatcherUtils;
 
 import javax.inject.Inject;
 
 /**
  * @author: Markus Binsteiner
  */
-public class UserReader extends AbstractThingReader implements ThingReader {
+public class UserReader extends AbstractSimpleThingReader implements ThingReader {
 
     private ThingControl tc;
     private UserUtils userUtils;
+
+    @Override
+    public Observable<? extends Thing<?>> findThingForId(String id) {
+
+        return Observable.empty();
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+        return Observable.empty();
+    }
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
@@ -44,6 +53,7 @@ public class UserReader extends AbstractThingReader implements ThingReader {
     public void setUserUtils(UserUtils userUtils) {
         this.userUtils = userUtils;
     }
+
 
 
 }

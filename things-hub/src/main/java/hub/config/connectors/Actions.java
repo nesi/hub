@@ -1,8 +1,9 @@
-package hub.config;
+package hub.config.connectors;
 
 import hub.actions.ClearMongoDatabase;
 import hub.actions.ImportRoleAndGroupAction;
 import hub.actions.LdapImporter;
+import hub.config.mongo.HubConfigMongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import things.config.ThingActions;
  * @author: Markus Binsteiner
  */
 @Configuration
-@Import(HubConfig.class)
+@Import( HubConfigMongo.class)
 public class Actions {
 
     @Autowired

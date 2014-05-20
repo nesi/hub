@@ -7,10 +7,7 @@ import com.thoughtworks.xstream.XStream;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
-import things.thing.AbstractThingReader;
-import things.thing.Thing;
-import things.thing.ThingReader;
-import things.thing.ThingWriter;
+import things.thing.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * @author: Markus Binsteiner
  */
-public class XstreamConnector extends AbstractThingReader implements ThingReader, ThingWriter {
+public class XstreamConnector extends AbstractSimpleThingReader implements ThingReader, ThingWriter {
 
     private final File thingsFolder;
     private final File valuesFolder;
