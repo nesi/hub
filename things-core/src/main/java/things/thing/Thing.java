@@ -4,7 +4,6 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
-import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 

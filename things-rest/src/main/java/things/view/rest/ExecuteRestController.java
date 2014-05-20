@@ -1,5 +1,6 @@
 package things.view.rest;
 
+import com.google.common.collect.Lists;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import rx.Observable;
@@ -11,6 +12,7 @@ import things.thing.ThingControl;
 import things.thing.ThingUtils;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,46 +34,44 @@ public class ExecuteRestController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}/everything", method = RequestMethod.POST)
-    public String executeAllThings(@PathVariable("actionName") String action, @RequestParam Map<String, String> actionParams) throws ActionException {
+    public List<Thing> executeAllThings(@PathVariable("actionName") String action, @RequestParam Map<String, String> actionParams) throws ActionException {
 
         Observable<? extends Thing<?>> things = thingControl.observeAllThings(false);
 
         Observable<? extends Thing<?>> handle = thingControl.executeAction(action, things, actionParams);
-        handle.toBlockingObservable();
-        return "n/a";
+
+        return Lists.newArrayList(handle.toBlockingObservable().toIterable());
     }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}/every/{type}", method = RequestMethod.POST)
-    public String executeAllThingsOfType(@PathVariable("actionName") String action, @PathVariable("type") String type, @RequestParam Map<String, String> actionParams) throws ActionException {
+    public List<Thing> executeAllThingsOfType(@PathVariable("actionName") String action, @PathVariable("type") String type, @RequestParam Map<String, String> actionParams) throws ActionException {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsForType(type, false);
 
         Observable<? extends Thing<?>> handle = thingControl.executeAction(action, things, actionParams);
-        handle.toBlockingObservable();
-        return "n/a";
+
+        return Lists.newArrayList(handle.toBlockingObservable().toIterable());
     }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}", method = RequestMethod.POST)
-    public String executeGetAction(@PathVariable("actionName") String actionName, @RequestParam Map<String, String> allRequestParams) throws ActionException {
+    public List<Thing> executeGetAction(@PathVariable("actionName") String actionName, @RequestParam Map<String, String> allRequestParams) throws ActionException {
 
         Observable<? extends Thing<?>> handle = thingControl.executeAction(actionName, Observable.empty(), allRequestParams);
-        handle.toBlockingObservable();
-        return "n/a";
+
+        return Lists.newArrayList(handle.toBlockingObservable().toIterable());
     }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}/{type}/{key}")
-    public String getUniqueThingForTypeAndKey(@PathVariable("actionName") String action, @PathVariable("type") String type, @PathVariable("key") String key, @RequestParam Map<String, String> actionParam) throws ThingException, NoSuchThingException, ActionException {
+    public List<Thing> getUniqueThingForTypeAndKey(@PathVariable("actionName") String action, @PathVariable("type") String type, @PathVariable("key") String key, @RequestParam Map<String, String> actionParam) throws ThingException, NoSuchThingException, ActionException {
 
         Observable<? extends Thing<?>> thing = thingControl.observeUniqueThingMatchingTypeAndKey(type, key, false);
 
         Observable actionResult = thingControl.executeAction(action, thing, actionParam);
-        actionResult.toBlockingObservable();
 
-        return "n/a";
-
+        return Lists.newArrayList(actionResult.toBlockingObservable().toIterable());
     }
 
 }

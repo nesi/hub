@@ -30,9 +30,15 @@ public class LimitlessLEDControllerV2 {
 
     private final static int COMMAND_WAIT_TIME = 400;
     private static final int DEFAULT_PORT = 50000;
-    private final static int WAIT_TIME = 100;
     private static final Logger myLogger = LoggerFactory.getLogger(LimitlessLEDControllerV2.class);
     final private InetAddress bridgeAddr;
+
+    private int waitTime =30;
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
+    }
+
     private final List<Group> groups = Lists.newArrayList(Group.GROUP_1, Group.GROUP_2, Group.GROUP_3, Group.GROUP_4, Group.GROUP_ALL, Group.GROUP_COLOUR);
     private final Thread sendCommandDaemonThread = new Thread() {
         public void run() {
@@ -63,7 +69,7 @@ public class LimitlessLEDControllerV2 {
                             for ( byte[] t : tempSeq ) {
                                 send(t);
                                 try {
-                                    Thread.sleep(WAIT_TIME);
+                                    Thread.sleep(waitTime);
                                 } catch (InterruptedException e) {
                                 }
                             }
@@ -81,7 +87,7 @@ public class LimitlessLEDControllerV2 {
                             for ( byte[] c : seq ) {
                                 send(c);
                                 try {
-                                    Thread.sleep(WAIT_TIME);
+                                    Thread.sleep(waitTime);
                                 } catch (InterruptedException e) {
                                 }
                             }
@@ -172,10 +178,10 @@ public class LimitlessLEDControllerV2 {
             clientSocket = new DatagramSocket();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getIp(), getPort());
             clientSocket.send(sendPacket);
-//            try {
-//                Thread.sleep(WAIT_TIME);
-//            } catch (InterruptedException e) {
-//            }
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e) {
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

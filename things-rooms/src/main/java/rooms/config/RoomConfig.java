@@ -1,5 +1,6 @@
 package rooms.config;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -16,6 +17,8 @@ import things.config.ThingReaders;
 import things.config.ThingWriters;
 import things.config.mongo.MongoConfig;
 import things.mongo.MongoConnector;
+import things.thing.ActionManager;
+import things.thing.DefaultActionManager;
 import things.thing.ThingControl;
 import things.types.AnnotationTypeFactory;
 import things.types.ThingType;
@@ -42,6 +45,16 @@ public class RoomConfig extends MongoConfig {
     public MongoConnector defaultConnector() throws Exception {
         MongoConnector mc = new MongoConnector(mongoTemplate());
         return mc;
+    }
+
+    @Bean
+    public ActionManager actionManager() {
+        return new DefaultActionManager();
+    }
+
+    @Bean
+    public MetricRegistry metricRegistry() {
+        return new MetricRegistry();
     }
 
     @Override

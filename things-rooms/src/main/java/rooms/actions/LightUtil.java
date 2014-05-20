@@ -3,11 +3,14 @@ package rooms.actions;
 import com.google.common.collect.Maps;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
+import rooms.readers.LightStateReader;
 import rooms.types.Bridge;
 import rooms.types.Light;
+import rooms.types.LightState;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
+import things.types.TypeRegistry;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -25,8 +28,33 @@ public class LightUtil {
     private List<Thing<Bridge>> bridges;
     private Map<String, LightWhiteV2> lights;
     private ThingControl tc;
+    private TypeRegistry tr;
+
+
 
     public LightUtil() {
+    }
+
+    public Thing<LightState> createLightStateThing(Thing<Light> light) {
+
+        LightState ls = createState(light.getKey());
+
+        Thing<LightState> lightState = new Thing();
+        lightState.setId("light:" + light.getId());
+        lightState.setThingType(tr.getType(LightState.class));
+        lightState.setValueIsPopulated(false);
+        lightState.setValue(ls);
+        lightState.setKey(light.getKey());
+        return lightState;
+    }
+
+    public LightState createState(String lightName) {
+        LightWhiteV2 l = getLights().get(lightName);
+        LightState ls = new LightState();
+        ls.setBrightness(l.getBrightness());
+        ls.setOn(l.isOn());
+        ls.setWarmth(l.getWarmth());
+        return ls;
     }
 
     public synchronized List<Thing<Bridge>> getBridges() {
@@ -56,11 +84,16 @@ public class LightUtil {
         return lights;
     }
 
+
+    @Inject
+    public void setTypeRegistry(TypeRegistry tr) {
+        this.tr = tr;
+    }
+
     @Inject
     public void setThingControl(ThingControl tc) {
         this.tc = tc;
 //        new Thread(() -> getLights()).start();
-
     }
 
 }

@@ -17,9 +17,18 @@ public class Bridge {
     private String host;
     private int port;
     private String version = "2.0";
+    private int waitTime = 30;
 
     public Bridge() {
 
+    }
+
+    public int getWaitTime() {
+        return waitTime;
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
     }
 
     public Bridge(String host, int port) {

@@ -45,6 +45,13 @@ public class ThingControlMinimal {
         this.metrics = metrics;
     }
 
+    private ActionManager actionManager;
+
+    @Inject
+    public void setActionManager(ActionManager am) {
+        this.actionManager = am;
+    }
+
     protected ThingActions thingActions = new ThingActions();
     protected ThingQueries thingQueries = new ThingQueries();
     protected ThingReaders thingReaders = new ThingReaders();
@@ -79,19 +86,7 @@ public class ThingControlMinimal {
 
     public Observable<? extends Thing<?>> executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
-        ThingAction ta = thingActions.get(actionName);
-
-        if ( ta == null ) {
-            throw new ActionException("Can't find action with name: " + actionName, actionName);
-        }
-
-        if ( parameters == null ) {
-            parameters = Maps.newHashMap();
-        }
-
-        Observable<? extends Thing<?>> result = ta.execute(actionName, things.lift(POPULATE_THINGS), parameters);
-
-        return result;
+        return actionManager.execute(actionName, things,  parameters);
 
     }
 
