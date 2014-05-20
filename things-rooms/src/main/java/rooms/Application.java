@@ -4,7 +4,8 @@ import com.google.common.collect.Maps;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
-import rooms.config.RoomConfig;
+import rooms.config.jpa.RoomConfigJpa;
+import rooms.config.mongo.RoomConfigMongo;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Bridge;
@@ -31,18 +32,19 @@ public class Application {
 
     public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
 
-        AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfig.class);
+        AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfigJpa.class);
+        //AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfigMongo.class);
 
-        MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
+//        MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
         final ThingControl tc = (ThingControl) context.getBean("thingControl");
 
         for ( String s : context.getBeanDefinitionNames() ) {
             System.out.println(s);
         }
 
-        mo.dropCollection(Thing.class);
-        mo.dropCollection(Bridge.class);
-        mo.dropCollection(Light.class);
+//        mo.dropCollection(Thing.class);
+//        mo.dropCollection(Bridge.class);
+//        mo.dropCollection(Light.class);
 
         Bridge b = new Bridge("10.0.0.40");
         Thing tb = tc.createThing("bridge", b);

@@ -1,21 +1,45 @@
-package rooms.config;
+package rooms.config.jpa;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import rooms.actions.LightAction;
 import rooms.actions.LightUtil;
 import rooms.readers.LightStateReader;
+import rooms.types.Bridge;
+import rooms.types.Light;
+import rooms.types.Profile;
+import rooms.types.repositories.BridgeRepository;
+import rooms.types.repositories.LightRepository;
+import rooms.types.repositories.ProfileRepository;
 import things.config.ThingActions;
 import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
 import things.config.mongo.MongoConfig;
+import things.jpa.JpaConnector;
+import things.jpa.ValueRepositories;
+import things.jpa.ValueRepository;
 import things.mongo.MongoConnector;
 import things.thing.ActionManager;
 import things.thing.DefaultActionManager;
@@ -25,9 +49,13 @@ import things.types.ThingType;
 import things.types.TypeRegistry;
 import things.utils.json.ThingsObjectMapper;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.List;
 
 /**
  * Project: things
@@ -37,25 +65,17 @@ import javax.validation.ValidatorFactory;
  * Time: 2:16 PM
  */
 @Configuration
-@EnableAutoConfiguration
 @ComponentScan({"things.thing", "things.view.rest"})
-public class RoomConfig extends MongoConfig {
+@EnableTransactionManagement
+@EnableJpaRepositories(basePackages = {"things.jpa", "rooms.types.repositories"})
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
+public class RoomConfigJpa {
 
     @Bean
     public ActionManager actionManager() {
         return new DefaultActionManager();
     }
 
-    @Bean
-    public MongoConnector defaultConnector() throws Exception {
-        MongoConnector mc = new MongoConnector(mongoTemplate());
-        return mc;
-    }
-
-    @Override
-    protected String getDatabaseName() {
-        return "rooms";
-    }
 
     @Bean
     public LightAction lightAction() throws Exception {
@@ -85,8 +105,51 @@ public class RoomConfig extends MongoConfig {
     }
 
     @Bean
+    public HibernateExceptionTranslator hibernateExceptionTranslator() {
+        return new HibernateExceptionTranslator();
+    }
+
+
+    @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         return new JettyEmbeddedServletContainerFactory();
+    }
+
+    @Bean
+    public JpaConnector defaultConnector() {
+        JpaConnector con = new JpaConnector();
+        return con;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(
+                entityManagerFactory());
+        return transactionManager;
+    }
+
+    @Bean(name = "thingDataSource")
+    public DataSource dataSource() {
+
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
+    }
+
+    @Bean
+    public EntityManagerFactory entityManagerFactory() {
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("things.thing", "rooms.types");
+        factory.setDataSource(dataSource());
+        factory.setMappingResources("thing.hbm.xml");
+        factory.afterPropertiesSet();
+
+        return factory.getObject();
     }
 
     @Bean
@@ -150,5 +213,17 @@ public class RoomConfig extends MongoConfig {
                 Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         return validator;
+    }
+
+    @Bean
+    @Inject
+    public ValueRepositories valueRepositories(TypeRegistry tr, BridgeRepository br, LightRepository lr, ProfileRepository pr) {
+
+        ValueRepositories vr = new ValueRepositories();
+        vr.addRepository(tr.getType(Bridge.class), br);
+        vr.addRepository(tr.getType(Light.class), lr);
+        vr.addRepository(tr.getType(Profile.class), pr);
+
+        return vr;
     }
 }

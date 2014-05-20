@@ -28,10 +28,14 @@ dependencies {
 
     compile project(':things-core')
     compile project(':things-mongo')
+    compile project(':things-jpa')
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
 
     compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
+
+    compile("org.springframework:spring-jdbc:" + springVersion)
+    compile("org.springframework:spring-tx:" + springVersion)
 
     compile("org.springframework.boot:spring-boot-starter-web:" + springBootVersion) {
         exclude module: "spring-boot-starter-tomcat"

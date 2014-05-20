@@ -1,9 +1,11 @@
 package rooms.types;
 
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -14,12 +16,28 @@ import javax.validation.constraints.NotNull;
  * Time: 12:09 AM
  */
 @Value(typeName = "light")
+@Entity
 public class Light {
 
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
+
     @NotNull
+    @Enumerated(EnumType.STRING)
     private Group group;
     @NotEmpty
     private String type;
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Light(Group group, String type) {
         this.group = group;

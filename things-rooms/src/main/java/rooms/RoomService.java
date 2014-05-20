@@ -1,7 +1,8 @@
 package rooms;
 
 import org.springframework.boot.SpringApplication;
-import rooms.config.RoomConfig;
+import rooms.config.jpa.RoomConfigJpa;
+import rooms.config.mongo.RoomConfigMongo;
 
 /**
  * Project: hub
@@ -15,7 +16,8 @@ public class RoomService {
 
     public static void main(String[] args) throws Exception {
 
-        SpringApplication.run(RoomConfig.class);
+        //SpringApplication.run(RoomConfigMongo.class);
+        SpringApplication.run(RoomConfigJpa.class);
 
     }
 

@@ -44,6 +44,7 @@ public class ThingControlMinimal {
     protected ThingWriters thingWriters = new ThingWriters();
     protected TypeRegistry typeRegistry = new TypeRegistry();
     protected Validator validator = null;
+
     public ThingControlMinimal() {
         this.POPULATE_THINGS = new PopluateOperator(this);
     }

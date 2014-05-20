@@ -1,5 +1,7 @@
 package rooms.types;
 
+import javax.persistence.Entity;
+
 /**
  * Project: hub
  * <p>

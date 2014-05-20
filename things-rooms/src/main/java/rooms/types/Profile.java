@@ -1,9 +1,14 @@
 package rooms.types;
 
 import com.google.common.collect.Maps;
+import org.hibernate.annotations.GenericGenerator;
 import things.model.types.Value;
 import things.model.types.attributes.UniqueKey;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Map;
 
 /**
@@ -15,9 +20,24 @@ import java.util.Map;
  */
 @UniqueKey
 @Value(typeName = "profile")
+@Entity
 public class Profile {
 
+    @Transient
     private Map<String, Light> lights = Maps.newHashMap();
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 
     public Profile() {
