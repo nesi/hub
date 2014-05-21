@@ -29,3 +29,5 @@ include 'things-examples'
 
 include 'things-jpa'
 
+include 'things-dropwizard'
+

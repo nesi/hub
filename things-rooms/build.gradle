@@ -27,11 +27,9 @@ targetCompatibility = 1.8
 dependencies {
 
     compile project(':things-core')
-    compile project(':things-mongo')
     compile project(':things-jpa')
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
-    compile("mysql:mysql-connector-java:5.1.30")
 
     compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
 
@@ -45,8 +43,11 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
     compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
-    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
-
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
+}
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.runtime
 }
