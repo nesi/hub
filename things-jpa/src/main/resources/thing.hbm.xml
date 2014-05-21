@@ -7,10 +7,10 @@
         <id name="id" type="string" column="thing_id" unsaved-value="-1" access="field">
             <generator class="uuid2"></generator>
         </id>
-        <property name="key" type="string" column="thing_key" access="field" update="true"/>
-        <property name="thingType" type="string" column="thing_type" access="field" update="true"/>
-        <property name="value" type="string" column="value_link" access="field" update="true"/>
-        <property name="valueIsPopulated" type="boolean" column="popluated" access="field" update="true"/>
+        <property name="key" type="string" column="thing_key" access="field" update="false"/>
+        <property name="thingType" type="string" column="thing_type" access="field" update="false"/>
+        <property name="value" type="string" column="value_link" access="field" update="false"/>
+        <property name="valueIsPopulated" type="boolean" column="popluated" access="field" update="false"/>
         <set name="parents" table="thing_parents" lazy="false">
             <key column="child_id" ></key>
             <element column="parent" type="string"></element>

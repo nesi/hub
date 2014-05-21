@@ -2,10 +2,13 @@ package things.jpa;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import rx.Observable;
 import rx.Subscriber;
+import things.exceptions.QueryRuntimeException;
 import things.exceptions.TypeRuntimeException;
 import things.thing.AbstractThingReader;
 import things.thing.Thing;
@@ -27,6 +30,8 @@ import static com.codahale.metrics.MetricRegistry.name;
  * Created by markus on 20/05/14.
  */
 public class JpaConnector extends AbstractThingReader implements ThingReader, ThingWriter {
+
+    public static Logger myLogger = LoggerFactory.getLogger(JpaConnector.class);
 
     @Autowired
     protected EntityManager entityManager;
@@ -101,8 +106,11 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
         final Timer.Context context = find_for_type_timer.time();
 
         try {
-            Iterable<Thing<?>> things = thingRepository.findByThingType(type);
+            Iterable<? extends Thing<?>> things = thingRepository.findByThingType(type);
             return Observable.from(things);
+        } catch (Exception e) {
+            myLogger.debug("Query Exception when querying for type "+type+": "+e.getLocalizedMessage(), e);
+            throw new QueryRuntimeException("Can't query for type: "+type, e);
         } finally {
             context.stop();
         }

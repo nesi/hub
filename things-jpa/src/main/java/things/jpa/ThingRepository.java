@@ -12,7 +12,8 @@ public interface ThingRepository extends CrudRepository<Thing<?>, String> {
 
     Iterable<Thing<?>> findByKey(String key);
 
-    Iterable<Thing<?>> findByThingType(String type);
+    @Query("select t from Thing t WHERE t.thingType = :thingType")
+    Iterable<Thing<?>> findByThingType(@Param("thingType") String thingtype);
 
     @Query("select t from Thing t WHERE t.thingType = :thingType and t.key = :thingKey")
     Iterable<Thing<?>> findByTypeAndKey(@Param("thingType") String thingType, @Param("thingKey") String thingKey);

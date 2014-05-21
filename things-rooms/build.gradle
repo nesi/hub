@@ -18,7 +18,7 @@ apply plugin: 'spring-boot'
 def springBootVersion = '1.0.2.RELEASE'
 
 springBoot {
-    mainClass = "RoomService"
+    mainClass = "rooms.RoomService"
 }
 
 sourceCompatibility = 1.8
@@ -31,6 +31,7 @@ dependencies {
     compile project(':things-jpa')
     compile project(':things-rest')
     compile('com.google.guava:guava:17.0')
+    compile("mysql:mysql-connector-java:5.1.30")
 
     compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
 

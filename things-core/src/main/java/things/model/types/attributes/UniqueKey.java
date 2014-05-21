@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface UniqueKey {
 
-    public boolean unique() default false;
+    public boolean unique() default true;
 }

@@ -2,6 +2,7 @@ package rooms.types;
 
 import org.hibernate.annotations.GenericGenerator;
 import things.model.types.Value;
+import things.model.types.attributes.UniqueKey;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
  */
 @Value(typeName = "bridge")
 @Entity
+@UniqueKey(unique = true)
 public class Bridge {
 
     public static final int DEFAULT_PORT = 8899;
