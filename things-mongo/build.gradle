@@ -14,7 +14,7 @@ repositories {
 }
 
 
-apply plugin: 'spring-boot'
+//apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'
 

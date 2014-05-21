@@ -1,8 +1,6 @@
 package things.thing;
 
-
 import rx.Observable;
-
 
 /**
  * Project: things-to-build

@@ -2,7 +2,6 @@ package rooms;
 
 import org.springframework.boot.SpringApplication;
 import rooms.config.jpa.RoomConfigJpa;
-import rooms.config.mongo.RoomConfigMongo;
 
 /**
  * Project: hub

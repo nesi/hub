@@ -36,11 +36,8 @@ import things.config.ThingActions;
 import things.config.ThingQueries;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
-import things.config.mongo.MongoConfig;
 import things.jpa.JpaConnector;
 import things.jpa.ValueRepositories;
-import things.jpa.ValueRepository;
-import things.mongo.MongoConnector;
 import things.thing.ActionManager;
 import things.thing.DefaultActionManager;
 import things.thing.ThingControl;
@@ -55,7 +52,6 @@ import javax.sql.DataSource;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.List;
 
 /**
  * Project: things
@@ -76,6 +72,39 @@ public class RoomConfigJpa {
         return new DefaultActionManager();
     }
 
+    @Bean(name = "thingDataSource")
+    public DataSource dataSource() {
+
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
+    }
+
+    @Bean
+    public JpaConnector defaultConnector() {
+        JpaConnector con = new JpaConnector();
+        return con;
+    }
+
+    @Bean
+    public EntityManagerFactory entityManagerFactory() {
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("things.thing", "rooms.types");
+        factory.setDataSource(dataSource());
+        factory.setMappingResources("thing.hbm.xml");
+        factory.afterPropertiesSet();
+
+        return factory.getObject();
+    }
+
+    @Bean
+    public HibernateExceptionTranslator hibernateExceptionTranslator() {
+        return new HibernateExceptionTranslator();
+    }
 
     @Bean
     public LightAction lightAction() throws Exception {
@@ -105,51 +134,8 @@ public class RoomConfigJpa {
     }
 
     @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator() {
-        return new HibernateExceptionTranslator();
-    }
-
-
-    @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         return new JettyEmbeddedServletContainerFactory();
-    }
-
-    @Bean
-    public JpaConnector defaultConnector() {
-        JpaConnector con = new JpaConnector();
-        return con;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(
-                entityManagerFactory());
-        return transactionManager;
-    }
-
-    @Bean(name = "thingDataSource")
-    public DataSource dataSource() {
-
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
-    }
-
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
-
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(true);
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("things.thing", "rooms.types");
-        factory.setDataSource(dataSource());
-        factory.setMappingResources("thing.hbm.xml");
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
     }
 
     @Bean
@@ -196,6 +182,14 @@ public class RoomConfigJpa {
         tw.addWriter("profile/*", defaultConnector());
 
         return tw;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(
+                entityManagerFactory());
+        return transactionManager;
     }
 
     @Bean

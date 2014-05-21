@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;
+import rx.Subscriber;
 import things.exceptions.ThingRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingAction;
@@ -116,25 +117,15 @@ public class LdapImporter implements ThingAction {
     @Autowired
     private ThingControl tc;
 
-    @Override
-    public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
+    private Thing<Person> importUser(User u) {
 
-        List<User> users;
-        try {
-            users = retrieveLdapUsers();
-        } catch (LDAPException e) {
-            throw new ThingRuntimeException("Could not lookup ldap users");
-        }
-
-        for ( User u : users ) {
-
-            Person p = u.getPerson();
+        Person p = u.getPerson();
             String nesi_username = (p.getFirst_name() + "_" + p.getLast_name()).toLowerCase();
             Thing<Person> tp = null;
             try {
                 tp = tc.createThing(nesi_username, p);
             } catch (Exception te) {
-                myLogger.debug("Can't create thing for person " + p.nameToString() + ": " + te.getLocalizedMessage(), te);
+                myLogger.debug("Can't create thing for person " + p.nameToString() + ": {}", te.getLocalizedMessage());
                 Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
                 if ( !opt.isPresent() ) {
                     throw new ThingRuntimeException("Could not find person for key: " + nesi_username);
@@ -163,9 +154,37 @@ public class LdapImporter implements ThingAction {
             }
             System.out.println("All imported: " + tp.getKey());
 
+        return tp;
+
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
+
+        List<User> users;
+        try {
+            users = retrieveLdapUsers();
+        } catch (LDAPException e) {
+            throw new ThingRuntimeException("Could not lookup ldap users");
         }
 
-        return null;
+        Observable<Thing<Person>> obs = Observable.create((Subscriber<? super Thing<Person>> subscriber) -> {
+            for ( User u : users ) {
+
+                try {
+                    Thing<Person> p = importUser(u);
+                    subscriber.onNext(p);
+                } catch (Exception e) {
+                    myLogger.debug("Could not import user: "+u.toString(), e);
+                }
+
+            }
+            subscriber.onCompleted();
+        });
+
+
+
+        return obs;
     }
 
 

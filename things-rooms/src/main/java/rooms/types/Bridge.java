@@ -19,29 +19,17 @@ import javax.persistence.Id;
 public class Bridge {
 
     public static final int DEFAULT_PORT = 8899;
-
+    private String host;
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    private String host;
     private int port;
     private String version = "2.0";
     private int waitTime = 30;
-
     public Bridge() {
 
     }
-
     public Bridge(String host, int port) {
         this.host = host;
         this.port = port;
@@ -53,6 +41,10 @@ public class Bridge {
 
     public String getHost() {
         return host;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public int getPort() {
@@ -69,6 +61,10 @@ public class Bridge {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setPort(int port) {

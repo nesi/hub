@@ -1,5 +1,7 @@
 package things.mongo;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import rx.Observable;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import things.connectors.IdWrapper;
 import things.exceptions.NoSuchThingException;
 import things.exceptions.TypeRuntimeException;
@@ -23,6 +26,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 /**
  * Project: things-to-build
  * <p>
@@ -35,8 +40,13 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
     private static final Logger myLogger = LoggerFactory
             .getLogger(MongoConnector.class);
-
+    private Timer find_all_timer;
+    private Timer find_children_matching_timer;
+    private Timer find_matching_timer;
+    @Autowired
+    private MetricRegistry metrics;
     private MongoTemplate mongoTemplate;
+
 
     @Autowired
     public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
@@ -77,8 +87,13 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        List<Thing> things = mongoTemplate.findAll(Thing.class);
-        return Observable.from(things).map(t -> (Thing<?>) t);
+        final Timer.Context context = find_all_timer.time();
+        try {
+            List<Thing> things = mongoTemplate.findAll(Thing.class);
+            return Observable.from(things).map(t -> (Thing<?>) t);
+        } finally {
+            context.stop();
+        }
     }
 
     @Override
@@ -117,15 +132,20 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                        final String key) {
 
-        Query q = new Query();
-        String regexType = MatcherUtils.convertGlobToRegex(type);
-        String regexKey = MatcherUtils.convertGlobToRegex(key);
+        final Timer.Context context = find_matching_timer.time();
+        try {
+            Query q = new Query();
+            String regexType = MatcherUtils.convertGlobToRegex(type);
+            String regexKey = MatcherUtils.convertGlobToRegex(key);
 
-        q.addCriteria(Criteria.where("thingType").regex(regexType).and("key").regex(regexKey));
+            q.addCriteria(Criteria.where("thingType").regex(regexType).and("key").regex(regexKey));
 
-        List<Thing> things = mongoTemplate.find(q, Thing.class);
+            List<Thing> things = mongoTemplate.find(q, Thing.class);
 
-        return Observable.from(things).map(t -> (Thing<?>) t);
+            return Observable.from(things).map(t -> (Thing<?>) t);
+        } finally {
+            context.stop();
+        }
 
     }
 
@@ -146,11 +166,26 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         return things.flatMap(t -> getChildrenMatchingTypeAndKey(t, typeMatcher, keyMatcher));
     }
 
+    @Override
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+
+        Query q = new Query();
+
+        q.addCriteria(Criteria.where("parents").is(id));
+
+        List<Thing> result = mongoTemplate.find(q, Thing.class);
+        return Observable.from(result).map(t -> (Thing<?>)t);
+    }
+
     private MongoPersistentProperty getIdField(Class valueClass) {
         MongoPersistentEntity<?> mongoPersistentEntity = mongoTemplate.getConverter()
                 .getMappingContext().getPersistentEntity(valueClass);
         MongoPersistentProperty id = mongoPersistentEntity.getIdProperty();
         return id;
+    }
+
+    public MongoTemplate getMongoTemplate() {
+        return mongoTemplate;
     }
 
     private boolean hasUsableId(Class valueClass) {
@@ -206,6 +241,14 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         }
 
         return vId;
+    }
+
+    @Autowired
+    public void setMetricRegistry(MetricRegistry reg) {
+        this.metrics = reg;
+        find_all_timer = metrics.timer(name(MongoConnector.class, "find-all"));
+        find_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
+        find_children_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
     }
 
 }

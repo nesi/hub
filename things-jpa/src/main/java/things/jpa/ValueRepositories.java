@@ -3,6 +3,7 @@ package things.jpa;
 import com.google.common.collect.Maps;
 import things.exceptions.TypeRuntimeException;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -26,4 +27,7 @@ public class ValueRepositories {
         return repo;
     }
 
+    public Collection<ValueRepository> getAll() {
+        return valueRepositories.values();
+    }
 }

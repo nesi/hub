@@ -1,6 +1,9 @@
 package things.jpa;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.TypeRuntimeException;
@@ -18,17 +21,39 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 /**
  * Created by markus on 20/05/14.
  */
 public class JpaConnector extends AbstractThingReader implements ThingReader, ThingWriter {
 
     @Autowired
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
+    private Timer find_all_timer;
+    private Timer find_for_type_timer;
+    private Timer find_for_key_timer;
+    private Timer find_for_type_and_key_timer;
+    private Timer read_value_timer;
+    private Timer save_value_timer;
+    private Timer find_parents_timer;
+
+    @Autowired
+    protected MetricRegistry metrics;
     @Autowired
     private ThingRepository thingRepository;
     @Autowired
     private ValueRepositories valueRepositories;
+
+    /**
+     * For testing only
+     */
+    public void deleteAll() {
+        thingRepository.deleteAll();
+        for ( ValueRepository vr : valueRepositories.getAll() ) {
+            ((CrudRepository) vr).deleteAll();
+        }
+    }
 
     @Override
     public boolean deleteThing(String id, Optional<String> type, Optional<String> key) {
@@ -43,7 +68,12 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        return Observable.from(thingRepository.findAll());
+        final Timer.Context context = find_all_timer.time();
+        try {
+            return Observable.from(thingRepository.findAll());
+        } finally {
+            context.stop();
+        }
     }
 
     @Override
@@ -54,24 +84,59 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
 
     @Override
     public Observable<? extends Thing<?>> findThingsForKey(String type) {
-        Iterable<Thing<?>> things = thingRepository.findByKey(type);
-        return Observable.from(things);
+
+        final Timer.Context context = find_for_key_timer.time();
+
+        try {
+            Iterable<Thing<?>> things = thingRepository.findByKey(type);
+            return Observable.from(things);
+        } finally {
+            context.stop();
+        }
     }
 
     @Override
     public Observable<? extends Thing<?>> findThingsForType(String type) {
-        Iterable<Thing<?>> things = thingRepository.findByThingType(type);
-        return Observable.from(things);
+
+        final Timer.Context context = find_for_type_timer.time();
+
+        try {
+            Iterable<Thing<?>> things = thingRepository.findByThingType(type);
+            return Observable.from(things);
+        } finally {
+            context.stop();
+        }
     }
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        Iterable<Thing<?>> things = thingRepository.findByTypeAndKey(type, key);
-        return Observable.from(things);
+
+        final Timer.Context context = find_for_type_and_key_timer.time();
+        try {
+            Iterable<Thing<?>> things = thingRepository.findByTypeAndKey(type, key);
+            return Observable.from(things);
+        } finally {
+            context.stop();
+        }
     }
 
     @Override
-    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(String type, String key) {
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+
+        final Timer.Context context = find_parents_timer.time();
+
+        try {
+            Iterable<Thing<?>> result = thingRepository.findByParents(id);
+
+            return Observable.from(result);
+        } finally {
+            context.stop();
+        }
+    }
+
+    public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
+                                                                       final String key) {
+
         Observable obs = Observable.create((Subscriber<? super Object> subscriber) -> {
 
             findAllThings().subscribe(
@@ -90,8 +155,10 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
         return obs;
     }
 
+
     @Override
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
+
         Observable result = things.flatMap(t -> getChildrenForId(t.getId()))
                 .filter(t -> MatcherUtils.wildCardMatch(t.getThingType(), typeMatcher)
                         && MatcherUtils.wildCardMatch(t.getKey(), keyMatcher));
@@ -134,6 +201,7 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
     @Override
     public <V> V readValue(Thing<V> thing) {
 
+
         if ( typeRegistry.convertsFromString(thing.getThingType()) ) {
             Optional<V> value = (Optional<V>) typeRegistry.convertFromString(thing.getThingType(), (String) thing.getValue());
             if ( !value.isPresent() ) {
@@ -141,11 +209,17 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
             }
             return value.get();
         } else {
-            ValueRepository repo = valueRepositories.get(thing.getThingType());
+            final Timer.Context context = read_value_timer.time();
+            try {
+                ValueRepository repo = valueRepositories.get(thing.getThingType());
 
-            V value = (V) repo.findOne(thing.getValue());
-            return value;
+                V value = (V) repo.findOne(thing.getValue());
+                return value;
+            } finally {
+                context.stop();
+            }
         }
+
     }
 
     @Override
@@ -175,10 +249,29 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
     }
 
     private String saveValue(Object value) {
-        ValueRepository repo = valueRepositories.get(typeRegistry.getType(value));
-        Object newValue = repo.save(value);
-        String id = getId(newValue);
-        return id;
+        final Timer.Context context = save_value_timer.time();
+        try {
+
+            ValueRepository repo = valueRepositories.get(typeRegistry.getType(value));
+            Object newValue = repo.save(value);
+            String id = getId(newValue);
+            return id;
+        } finally {
+            context.stop();
+        }
+    }
+
+    @Autowired
+    public void setMetricRegistry(MetricRegistry reg) {
+        this.metrics = reg;
+        find_all_timer = metrics.timer(name(JpaConnector.class, "find-all"));
+        find_parents_timer = metrics.timer(name(JpaConnector.class, "find-parents"));
+        find_for_type_timer = metrics.timer(name(JpaConnector.class, "find-for-type"));
+        find_for_key_timer = metrics.timer(name(JpaConnector.class, "find-for-key"));
+        find_for_type_and_key_timer = metrics.timer(name(JpaConnector.class, "find-for-type-and-key"));
+        read_value_timer = metrics.timer(name(JpaConnector.class, "read-value"));
+        save_value_timer = metrics.timer(name(JpaConnector.class, "save-value"));
+
     }
 
     public void setThingRepository(ThingRepository thingRepository) {

@@ -1,5 +1,6 @@
 package things.view.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class BaseRestController {
 
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @Timed
     public Thing createThing(@RequestBody Thing thing) throws ThingException, ValueException {
 
         if ( !Strings.isNullOrEmpty(thing.getId()) ) {
@@ -46,6 +48,7 @@ public class BaseRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @Timed
     public List<Thing> getAllThings() {
 
         List<Thing> things = thingControl.findAllThings();
@@ -54,6 +57,7 @@ public class BaseRestController {
 
     @Transactional
     @RequestMapping(value = "/types", method = RequestMethod.GET)
+    @Timed
     public Map<String, Map<String, String>> getAllTypes() {
         return thingUtils.getRegisteredTypeProperties();
     }

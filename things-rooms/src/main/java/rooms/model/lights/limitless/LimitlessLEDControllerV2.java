@@ -105,6 +105,7 @@ public class LimitlessLEDControllerV2 {
             }
         }
     };
+
     public LimitlessLEDControllerV2(String hostname) {
         this(hostname, DEFAULT_PORT);
     }

@@ -23,22 +23,12 @@ import java.util.Map;
 @Entity
 public class Profile {
 
-    @Transient
-    private Map<String, Light> lights = Maps.newHashMap();
-
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    @Transient
+    private Map<String, Light> lights = Maps.newHashMap();
 
     public Profile() {
     }
@@ -47,8 +37,16 @@ public class Profile {
         getLights().put(name, l2);
     }
 
+    public String getId() {
+        return id;
+    }
+
     public Map<String, Light> getLights() {
         return lights;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setLights(Map<String, Light> lights) {

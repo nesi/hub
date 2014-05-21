@@ -1,6 +1,7 @@
 package hub.actions;
 
 import com.google.common.collect.Maps;
+import hub.types.dynamic.User;
 import hub.types.persistent.Person;
 import hub.types.persistent.Role;
 import org.apache.commons.lang3.StringUtils;
@@ -83,9 +84,10 @@ public class ImportRoleAndGroupAction implements ThingAction {
 
     }
 
-    private void checkProjectDb(Thing person) {
+    private Thing<User> checkProjectDb(Thing<Person> person) {
         checkResearcherRole(person);
         checkAdviserAndAdminRole(person);
+        return userUtils.createUser(person);
     }
 
     private void checkResearcherRole(Thing<Person> person) {
@@ -160,10 +162,9 @@ public class ImportRoleAndGroupAction implements ThingAction {
     @Override
     public Observable<? extends Thing<?>> execute(String s, Observable<? extends Thing<?>> things, Map<String, String> stringStringMap) {
 
-        Observable<Thing<Person>> persons = userUtils.convertToPerson(things);
+        Observable<Thing<User>> persons = userUtils.convertToPerson(things).map(p -> checkProjectDb(p));
 
-        persons.toBlockingObservable().forEach(p -> checkProjectDb(p));
-        return null;
+        return persons;
     }
 
     public synchronized Map<Integer, String> getProjectMap() {

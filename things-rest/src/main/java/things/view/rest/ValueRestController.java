@@ -1,5 +1,6 @@
 package things.view.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ public class ValueRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/every/{type}/{key}/matching/{value}")
+    @Timed
     public List<Thing> getThingsOfTypeMatchingKeyAndValue(@PathVariable("type") String type, @PathVariable("key") String keyMatcher, @PathVariable("value") String stringValue) {
 
         List<Thing> result = thingControl.findThingsMatchingKeyAndValueConvertedFromString(type, keyMatcher, stringValue);
@@ -36,6 +38,7 @@ public class ValueRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/every/{type}/matching/{value}")
+    @Timed
     public List<Thing> getThingsOfTypeMatchingValue(@PathVariable("type") String type, @PathVariable("value") String stringValue) {
 
         List<Thing> result = thingControl.findThingsMatchingKeyAndValueConvertedFromString(type, "*", stringValue);

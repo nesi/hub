@@ -36,6 +36,12 @@ public abstract class AbstractSimpleThingReader extends AbstractThingReader {
         return obs;
     }
 
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+        Observable<? extends Thing<?>> obs = findAllThings();
+        return obs.filter(t -> t.getParents().contains(id));
+    }
+
+
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
 
         Observable result = things.flatMap(t -> getChildrenForId(t.getId()))

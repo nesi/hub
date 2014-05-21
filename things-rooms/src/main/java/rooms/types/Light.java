@@ -19,25 +19,16 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class Light {
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Group group;
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private Group group;
     @NotEmpty
     private String type;
 
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Light(Group group, String type) {
         this.group = group;
@@ -51,12 +42,20 @@ public class Light {
         return group;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getType() {
         return type;
     }
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setType(String type) {

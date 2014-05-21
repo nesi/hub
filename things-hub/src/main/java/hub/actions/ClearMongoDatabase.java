@@ -28,7 +28,7 @@ public class ClearMongoDatabase implements ThingAction {
         mo.dropCollection(Username.class);
         mo.dropCollection(Role.class);
 
-        return null;
+        return Observable.empty();
     }
 
     @Autowired

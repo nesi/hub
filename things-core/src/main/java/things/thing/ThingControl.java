@@ -1,5 +1,6 @@
 package things.thing;
 
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,16 @@ public class ThingControl extends ThingControlReactive {
      */
     public <V> Thing<V> createThing(String key, V value)
             throws ThingException, ValueException {
-        Observable<Thing<V>> obs = observeCreateThing(key, value);
 
-        return obs.toBlockingObservable().single();
+        final Timer.Context context = create_thing_timer.time();
+
+        try {
+            Observable<Thing<V>> obs = observeCreateThing(key, value);
+
+            return obs.toBlockingObservable().single();
+        } finally {
+            context.stop();
+        }
     }
 
     public <V> List<Thing<V>> filterThingsWithValue(List<Thing> things, V value) {

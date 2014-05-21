@@ -1,7 +1,6 @@
 package rooms.types.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import rooms.types.Bridge;
 import rooms.types.Profile;
 import things.jpa.ValueRepository;
 

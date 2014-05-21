@@ -14,7 +14,6 @@ repositories {
 }
 
 
-apply plugin: 'spring-boot'
 def springBootVersion = '1.0.2.RELEASE'
 
 // In this section you declare where to find the dependencies of your project
@@ -27,6 +26,8 @@ repositories {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile project(":things-core")
+    compile project(":things-mongo")
+    compile project(":things-jpa")
     compile("org.springframework.boot:spring-boot-starter:" + springBootVersion)
     compile("org.springframework.boot:spring-boot-starter-test:" + springBootVersion)
 
@@ -35,6 +36,8 @@ dependencies {
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
     testCompile project(":things-core")
+    testCompile project(":things-mongo")
+    testCompile project(":things-jpa")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:" + springBootVersion)
     testCompile("org.hamcrest:hamcrest-core:1.3")

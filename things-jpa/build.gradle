@@ -24,7 +24,7 @@ dependencies {
 
     compile project(":things-core")
     compile("org.springframework.boot:spring-boot-starter-data-jpa:" + springBootVersion)
-    compile("com.h2database:h2")
+    compile("com.h2database:h2:1.4.178")
 
     testCompile("junit:junit")
 

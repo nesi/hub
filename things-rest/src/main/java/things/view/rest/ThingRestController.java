@@ -1,5 +1,6 @@
 package things.view.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class ThingRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{type}/{key}")
+    @Timed
     public Thing getUniqueThingForTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key) throws ThingException, NoSuchThingException {
         Optional<Thing> thing = thingControl.findUniqueThingMatchingTypeAndKey(type, key, true);
 

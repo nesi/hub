@@ -1,6 +1,7 @@
 package things.thing;
 
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -22,6 +23,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.*;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Project: things-to-build
@@ -56,25 +59,25 @@ public class ThingControlMinimal {
 
     public Observable<? extends Thing<?>> executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
-        return actionManager.execute(actionName, things, parameters);
+            return actionManager.execute(actionName, things, parameters);
 
     }
 
     public Observable<? extends Thing<?>> executeQuery(String queryName, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
-        ThingQuery ta = thingQueries.get(queryName);
+            ThingQuery ta = thingQueries.get(queryName);
 
-        if ( ta == null ) {
-            throw new QueryRuntimeException("Can't find query with name: " + queryName);
-        }
+            if ( ta == null ) {
+                throw new QueryRuntimeException("Can't find query with name: " + queryName);
+            }
 
-        if ( parameters == null ) {
-            parameters = Maps.newHashMap();
-        }
+            if ( parameters == null ) {
+                parameters = Maps.newHashMap();
+            }
 
-        Observable<? extends Thing<?>> result = ta.execute(queryName, things.lift(POPULATE_THINGS), parameters);
+            Observable<? extends Thing<?>> result = ta.execute(queryName, things.lift(POPULATE_THINGS), parameters);
 
-        return result;
+            return result;
 
     }
 
@@ -440,9 +443,13 @@ public class ThingControlMinimal {
         this.actionManager = am;
     }
 
+    protected Timer create_thing_timer;
+
     @Inject
     public void setMetrics(MetricRegistry metrics) {
         this.metrics = metrics;
+        create_thing_timer = metrics.timer(name(ThingControlMinimal.class, "create-thing"));
+
     }
 
     @Inject

@@ -1,5 +1,6 @@
 package things.view.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/every/{type}", method = RequestMethod.GET)
+    @Timed
     public List<Thing> queryAllThingsOfType(@PathVariable("type") String type, @PathVariable("query") String query, @RequestParam Map<String, String> queryParam) {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingType(type, false);
@@ -46,6 +48,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/every/{type}/{key}/matching/{value}", method = RequestMethod.GET)
+    @Timed
     public List<Thing> queryLookupSingleThingWithKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key, value);
 
@@ -55,6 +58,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/every/{type}/matching/{value}", method = RequestMethod.GET)
+    @Timed
     public List<Thing> queryLookupThing(@PathVariable("type") String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", value);
@@ -65,6 +69,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/{type}/{key}/matching/{value}", method = RequestMethod.GET)
+    @Timed
     public List<Thing> queryLookupThingWithKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, key, value).single();
 
@@ -74,6 +79,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/every/{type}/{key}")
+    @Timed
     public List<Thing> queryThingsOfTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingTypeAndKey(type, key, false);
 
@@ -83,6 +89,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/{query}/for/{type}/matching/{value}", method = RequestMethod.GET)
+    @Timed
     public List<Thing> queryUniqueLookupThing(@PathVariable("type") String type, @PathVariable("value") String value, @PathVariable("query") String query, @RequestParam Map<String, String> queryParams) {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", value).single();
@@ -94,6 +101,7 @@ public class QueryRestController {
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "{query}/for/{type}/{key}")
+    @Timed
     public List<Thing> queryUniqueThingWithTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String key, @PathVariable("query") String query, @RequestParam Map<String, String> allRequestParams) {
 
         Observable<? extends Thing<?>> things = thingControl.observeThingsMatchingTypeAndKey(type, key, false).single();
