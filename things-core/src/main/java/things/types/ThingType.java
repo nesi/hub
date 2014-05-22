@@ -19,11 +19,11 @@ public class ThingType<V> {
     private SingleStringConverter<V> converter;
     private boolean needsParent = false;
     private boolean needsUniqueKey = false;
+    private boolean needsUniqueValueForKeyAsChild = false;
     private boolean needsUniqueKeyAsChild = false;
     private boolean needsUniqueValue = false;
     private final String type;
     private final Class typeClass;
-
     public ThingType(String type, Class typeClass) {
         this.type = type;
         this.typeClass = typeClass;
@@ -87,6 +87,10 @@ public class ThingType<V> {
         return needsUniqueKey;
     }
 
+    public boolean isNeedsUniqueValueForKeyAsChild() {
+        return needsUniqueValueForKeyAsChild;
+    }
+
     public boolean isNeedsUniqueKeyAsChild() {
         return needsUniqueKeyAsChild;
     }
@@ -109,6 +113,10 @@ public class ThingType<V> {
 
     public void setNeedsUniqueKey(boolean needsUniqueKey) {
         this.needsUniqueKey = needsUniqueKey;
+    }
+
+    public void setNeedsUniqueValueForKeyAsChild(boolean needsUniqueValueForKeyAsChild) {
+        this.needsUniqueValueForKeyAsChild = needsUniqueValueForKeyAsChild;
     }
 
     public void setNeedsUniqueKeyAsChild(boolean needsUniqueKeyAsChild) {

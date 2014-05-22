@@ -251,4 +251,10 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         find_children_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
     }
 
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
+    }
+
 }

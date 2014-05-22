@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface UniqueKeyInOtherThings {
+public @interface UniqueKeyAsChild {
 
     public boolean unique() default true;
 }

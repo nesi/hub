@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import things.exceptions.NoSuchTypeException;
+import things.thing.Thing;
 
 import java.util.*;
 
@@ -114,7 +115,11 @@ public class TypeRegistry {
     }
 
     public ThingType getThingType(Object value) {
-        return getThingType(value.getClass());
+        if ( value instanceof Thing ) {
+            return getThingType(((Thing) value).getThingType());
+        } else {
+            return getThingType(value.getClass());
+        }
     }
 
     public String getType(Class<?> typeClass) {
@@ -143,5 +148,41 @@ public class TypeRegistry {
 
     public boolean needsUniqueKey(String type) {
         return getThingType(type).isNeedsUniqueKey();
+    }
+
+    public boolean needsUniqueKeyAsChild(Object value) {
+        return getThingType(value).isNeedsUniqueKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAsChild(Class typeClass) {
+        return getThingType(typeClass).isNeedsUniqueKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAsChild(String type) {
+        return getThingType(type).isNeedsUniqueKeyAsChild();
+    }
+
+    public boolean needsUniqueValueForKey(Object value) {
+        return getThingType(value).isNeedsUniqueValue();
+    }
+
+    public boolean needsUniqueValueForKey(Class typeClass) {
+        return getThingType(typeClass).isNeedsUniqueValue();
+    }
+
+    public boolean needsUniqueValueForKey(String type) {
+        return getThingType(type).isNeedsUniqueValue();
+    }
+
+    public boolean needsUniqueKeyAndValueAsChild(Object value) {
+        return getThingType(value).isNeedsUniqueValueForKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAndValueAsChild(Class typeClass) {
+        return getThingType(typeClass).isNeedsUniqueValueForKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAndValueAsChild(String type) {
+        return getThingType(type).isNeedsUniqueValueForKeyAsChild();
     }
 }

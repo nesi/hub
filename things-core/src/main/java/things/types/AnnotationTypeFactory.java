@@ -39,6 +39,7 @@ public class AnnotationTypeFactory {
                 tt.setNeedsUniqueKey(typeNeedsUniqueKey(typeClass));
                 tt.setNeedsUniqueKeyAsChild(typeNeedsUniqueKeyWithinChildren(typeClass));
                 tt.setNeedsUniqueValue(typeNeedsUniqueValue(typeClass));
+                tt.setNeedsUniqueValueForKeyAsChild(typeNeedsUniqueKeyAndValueWithinChildren(typeClass));
                 Optional<SingleStringConverter> conv = getStringConverter(typeClass);
                 if ( conv.isPresent() ) {
                     tt.setConverter(conv.get());
@@ -145,7 +146,7 @@ public class AnnotationTypeFactory {
     /**
      * Checks whether values of this type need to have a unique key when being added to another Thing.
      * <p>
-     * To determine this, the {@link things.model.types.attributes.UniqueKeyInOtherThings} annotation is used.
+     * To determine this, the {@link things.model.types.attributes.UniqueKeyAsChild} annotation is used.
      * If the annotation is not present, false is returned.
      *
      * @param typeClass the type
@@ -157,7 +158,21 @@ public class AnnotationTypeFactory {
             throw new TypeRuntimeException("No typeClass provided");
         }
 
-        UniqueKeyInOtherThings annotation = typeClass.getAnnotation(UniqueKeyInOtherThings.class);
+        UniqueKeyAsChild annotation = typeClass.getAnnotation(UniqueKeyAsChild.class);
+        if ( annotation == null || annotation.unique() == false ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean typeNeedsUniqueKeyAndValueWithinChildren(Class<?> typeClass) {
+
+        if ( typeClass == null ) {
+            throw new TypeRuntimeException("No typeClass provided");
+        }
+
+        UniqueValueForKeyAsChild annotation = typeClass.getAnnotation(UniqueValueForKeyAsChild.class);
         if ( annotation == null || annotation.unique() == false ) {
             return false;
         } else {

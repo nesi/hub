@@ -75,6 +75,23 @@ public abstract class BaseThingControlTest {
     }
 
     @Test
+    public void testAddChildThingTwice() throws Exception {
+
+        thingControl.addChildThing(t1, t2);
+
+        Optional<Thing<NoRestrictionsType>> nt1 = thingControl.findUniqueThingMatchingTypeAndKey(NoRestrictionsType.class, "nrt1", true);
+
+        thingControl.addChildThing(nt1.get(), t2);
+        nt1 = thingControl.findUniqueThingMatchingTypeAndKey(NoRestrictionsType.class, "nrt1", true);
+        Optional<Thing<NoRestrictionsType>> nt2 = thingControl.findUniqueThingMatchingTypeAndKey(NoRestrictionsType.class, "nrt2", true);
+
+        List<Thing> children = thingControl.getChildren(nt1.get());
+
+        assertThat("Parent contains new child", children.contains(nt2.get()));
+        assertThat("Child only has one parent", nt2.get().getParents().size() == 1);
+    }
+
+    @Test
     public void testConvertToTyped() throws Exception {
 
         List<Thing> allThings = thingControl.findThingsForType("noRestrictionsType");

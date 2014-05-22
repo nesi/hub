@@ -9,6 +9,7 @@ import org.jooq.*;
 import org.jooq.impl.DefaultDSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import projectdb.Tables;
 import rx.Observable;
 import things.exceptions.ThingException;
@@ -68,13 +69,14 @@ public class ImportRoleAndGroupAction implements ThingAction {
 
             Thing<Role> adviserRole = getRole(PROJECT_DB_KEY, PROJECT_DB_ADVISER_VALUE);
             myLogger.debug("Adding adviser role' to " + p.nameToString());
-            tc.addChildThing(person, adviserRole);
-
+            adviserRole = tc.addChildThing(person, adviserRole);
+            updateRole(PROJECT_DB_KEY, PROJECT_DB_ADVISER_VALUE, adviserRole);
 
             if ( isAdmin.intValue() != 0 ) {
                 Thing<Role> adminRole = getRole(PROJECT_DB_KEY, PROJECT_DB_ADMIN_VALUE);
                 myLogger.debug("Adding admin role to " + p.nameToString());
-                tc.addChildThing(person, adminRole);
+                adminRole = tc.addChildThing(person, adminRole);
+                updateRole(PROJECT_DB_KEY, PROJECT_DB_ADMIN_VALUE, adminRole);
             }
 
         } catch (Exception e) {
@@ -85,7 +87,7 @@ public class ImportRoleAndGroupAction implements ThingAction {
     }
 
     private Thing<User> checkProjectDb(Thing<Person> person) {
-        checkResearcherRole(person);
+//        checkResearcherRole(person);
         checkAdviserAndAdminRole(person);
         return userUtils.createUser(person);
     }
@@ -176,6 +178,10 @@ public class ImportRoleAndGroupAction implements ThingAction {
             result.forEach(rec -> projectMap.put(rec.getValue(Tables.PROJECT.ID), rec.getValue(Tables.PROJECT.PROJECTCODE)));
         }
         return projectMap;
+    }
+
+    private void updateRole(String key, String rolename, Thing<Role> role) {
+        roles.put(key+"_"+rolename, role);
     }
 
     private Thing<Role> getRole(String key, String rolename) throws ValueException, ThingException {

@@ -187,4 +187,10 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
 
         return vId;
     }
+
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
+    }
 }

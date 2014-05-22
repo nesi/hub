@@ -25,4 +25,5 @@ public interface ThingRepository extends CrudRepository<Thing<?>, String> {
 //    Iterable<Object[]> findMatchingTypeAndKey(String thingType, String thingKey);
 
     Iterable<Thing<?>> findByParents(String parentId);
+
 }

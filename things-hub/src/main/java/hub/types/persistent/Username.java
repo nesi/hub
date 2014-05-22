@@ -4,7 +4,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
 import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
-import things.model.types.attributes.UniqueKeyInOtherThings;
+import things.model.types.attributes.UniqueKeyAsChild;
+import things.model.types.attributes.UniqueValueForKey;
 
 import java.util.Objects;
 
@@ -17,10 +18,11 @@ import java.util.Objects;
  * A {@link Person}} object can have multiple Usernames with the same keys, since a user can have multiple
  * accounts on a system.
  */
-@UniqueKeyInOtherThings(unique = false)
+@UniqueKeyAsChild(unique = false)
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "username")
 @StringConverter(value = UsernameStringConverter.class)
+@UniqueValueForKey(unique = true)
 public class Username {
 
     @NotEmpty

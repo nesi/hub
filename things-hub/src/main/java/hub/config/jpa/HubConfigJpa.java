@@ -95,6 +95,10 @@ public class HubConfigJpa {
 
     @Bean(destroyMethod = "close", name = "thingDataSource")
     public DataSource dataSource() {
+//        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+//        DataSource ds = builder.setType(EmbeddedDatabaseType.H2).build();
+//        return ds;
+
         BoneCPDataSource dataSource = new BoneCPDataSource();
 
         dataSource.setDriverClass(env.getRequiredProperty("thingDB.db.driver"));
@@ -111,7 +115,7 @@ public class HubConfigJpa {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(false);
-        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+//        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);

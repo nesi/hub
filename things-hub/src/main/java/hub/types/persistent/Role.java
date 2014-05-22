@@ -2,10 +2,7 @@ package hub.types.persistent;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
-import things.model.types.attributes.StringConverter;
-import things.model.types.attributes.Subordinate;
-import things.model.types.attributes.UniqueKeyInOtherThings;
-import things.model.types.attributes.UniqueValueForKey;
+import things.model.types.attributes.*;
 
 import java.util.Objects;
 
@@ -13,10 +10,11 @@ import java.util.Objects;
  * A role is just an arbitrary String which will be used to determine
  * permissions by an authorization engine.
  */
-@UniqueKeyInOtherThings(unique = false)
+@UniqueKeyAsChild(unique = false)
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "role")
 @UniqueValueForKey(unique = true)
+@UniqueValueForKeyAsChild(unique = true)
 @StringConverter(value = RoleStringConverter.class)
 public class Role {
 

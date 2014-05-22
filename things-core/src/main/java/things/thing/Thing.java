@@ -59,10 +59,10 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
         if ( getClass().equals(obj.getClass()) ) {
             final Thing other = (Thing) obj;
-            if ( getId() == null || other.getId() == null ) {
+            if ( getId() == null && other.getId() == null ) {
                 return Objects.equals(getThingType(), other.getThingType()) && Objects.equals(getValue(), other.getValue());
             } else {
-                return getId().equals(other.getId());
+                return Objects.equals(getId(), other.getId());
             }
         } else {
             return false;

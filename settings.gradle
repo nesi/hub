@@ -26,8 +26,6 @@ include 'things-jpa'
 include 'things-hub'
 include 'things-rooms'
 include 'things-examples'
-
 include 'things-jpa'
 
-include 'things-dropwizard'
 

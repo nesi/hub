@@ -52,7 +52,33 @@ public class ThingControlMinimal {
         this.POPULATE_THINGS = new PopluateOperator(this);
     }
 
-    public Thing<?> addChildThing(Thing<?> parent, Thing<?> child) {
+    public <V> Thing<V> addChildThing(Thing<?> parent, Thing<V> child) {
+
+//        if ( child.getParents().contains(parent.getId()) ) {
+//            return child;
+//        }
+
+        boolean needsUniqueKeyAsChild = typeRegistry.needsUniqueKeyAsChild(child.getThingType());
+        boolean needsUniqueKeyAndValueAsChild = typeRegistry.needsUniqueKeyAndValueAsChild(child.getThingType());
+
+        if ( needsUniqueKeyAndValueAsChild || needsUniqueKeyAsChild ) {
+            Observable<? extends Thing<?>> childs = observeChildrenForTypeAndKey(parent, child.getThingType(), child.getKey(), false);
+            if ( needsUniqueKeyAsChild ) {
+                boolean empty = childs.isEmpty().toBlockingObservable().single();
+                if ( ! empty ) {
+                    throw new ThingRuntimeException(parent, "Parent already contains child with type "+child.getThingType()+" and key "+child.getKey());
+                }
+            } else {
+                Object value = getValue(child);
+                childs = filterThingsWithValue(childs, value);
+                boolean empty = childs.isEmpty().toBlockingObservable().single();
+                if ( ! empty ) {
+                    throw new ThingRuntimeException(parent, "Parent already contains child with type "+child.getThingType()+" and key "+child.getKey()+" and value "+value);
+                }
+            }
+
+        }
+
         ThingWriter w = thingWriters.getUnique(child.getThingType(), child.getKey());
         return w.addChild(parent, child);
     }
@@ -133,6 +159,11 @@ public class ThingControlMinimal {
 
         return things.flatMap(t -> observeChildren(t, populate));
     }
+
+    public Observable<? extends Thing<?>> observeChildrenForTypeAndKey(Thing<?> t, String type, String key, boolean populated) {
+        return observeChildrenForTypeAndKey(Observable.just(t), type, key, populated);
+    }
+
 
     public Observable<? extends Thing<?>> observeChildrenForTypeAndKey(Observable<? extends Thing<?>> t, String type, String key, boolean populated) {
 
@@ -223,9 +254,7 @@ public class ThingControlMinimal {
 
                 public void run() {
 
-                    if ( typeRegistry.needsUniqueKey(value) )
-
-                    {
+                    if ( typeRegistry.needsUniqueKey(value) ) {
                         if ( thingMatchingTypeAndKeyExists(typeRegistry.getType(value), key) ) {
                             subscriber.onError(
                                     new ThingException(
@@ -233,6 +262,22 @@ public class ThingControlMinimal {
                                                     + key
                                                     + " and type "
                                                     + typeRegistry.getType(value)
+                                    )
+                            );
+                            subscriber.onCompleted();
+                            return;
+                        }
+                    }
+
+                    if ( typeRegistry.needsUniqueValueForKey(value) ) {
+                        Observable<? extends Thing<?>> obs = observeThingsMatchingKeyAndValue(key, value);
+                        if ( ! obs.isEmpty().toBlockingObservable().single() ) {
+                            subscriber.onError(
+                                    new ThingException(
+                                            "There's already a thing stored for key "
+                                                    + key
+                                                    + " and value "
+                                                    + value
                                     )
                             );
                             subscriber.onCompleted();

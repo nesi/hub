@@ -12,8 +12,8 @@
         <property name="value" type="string" column="value_link" access="field" update="false"/>
         <property name="valueIsPopulated" type="boolean" column="popluated" access="field" update="false"/>
         <set name="parents" table="thing_parents" lazy="false">
-            <key column="child_id" ></key>
-            <element column="parent" type="string"></element>
+            <key column="child_id" not-null="true" ></key>
+            <element column="parent" type="string" not-null="true" ></element>
         </set>
     </class>
 </hibernate-mapping>
