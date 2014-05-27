@@ -21,6 +21,7 @@
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/light_change', function(greeting){
+                    console.log('xxxxxxx')
                     showGreeting(JSON.parse(greeting.body).content);
                 });
             });
@@ -41,8 +42,9 @@
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            response.appendChild(p);
+            p.appendChild(document.createTextNode("XXX"));
+
+//            response.appendChild(p);
         }
     </script>
 </head>

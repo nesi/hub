@@ -1,9 +1,12 @@
 package rooms.actions;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Light;
 import rooms.types.LightState;
 import rx.Observable;
+import rx.functions.Action1;
 import things.thing.Thing;
 import things.thing.ThingAction;
 import things.thing.ThingControl;
@@ -23,6 +26,9 @@ public class LightAction implements ThingAction {
     private LightUtil lightUtil;
     private ThingControl tc;
 
+
+    @Autowired
+    public SimpMessagingTemplate simpMessagingTemplate;
 
     public LightAction() {
 
@@ -51,7 +57,10 @@ public class LightAction implements ThingAction {
             default:
                 result = Observable.empty();
         }
-        return result;
+
+        return result.doOnNext(o -> {
+            simpMessagingTemplate.convertAndSend("/topic/light_change", o);
+        });
     }
 
     private Thing<LightState> setLight(Thing<Light> light, Map<String, String> params) {

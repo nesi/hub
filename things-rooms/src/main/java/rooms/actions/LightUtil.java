@@ -1,13 +1,11 @@
 package rooms.actions;
 
 import com.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Bridge;
 import rooms.types.Light;
 import rooms.types.LightState;
-import rooms.view.websockets.LightsController;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
@@ -30,9 +28,6 @@ public class LightUtil {
     private Map<String, LightWhiteV2> lights;
     private ThingControl tc;
     private TypeRegistry tr;
-
-    @Autowired
-    private LightsController lc;
 
 
     public LightUtil() {
@@ -57,8 +52,6 @@ public class LightUtil {
         ls.setBrightness(l.getBrightness());
         ls.setOn(l.isOn());
         ls.setWarmth(l.getWarmth());
-
-        lc.stateChanged(ls);
 
         return ls;
     }
