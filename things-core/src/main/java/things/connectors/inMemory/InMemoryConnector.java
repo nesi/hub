@@ -20,7 +20,6 @@ public class InMemoryConnector extends AbstractSimpleThingReader implements Thin
 
     private final Map<String, Multimap<String, Thing<?>>> allThings = Maps.newConcurrentMap();
 
-
     public void deleteAllThings() {
         allThings.clear();
     }

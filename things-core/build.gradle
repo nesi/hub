@@ -19,7 +19,7 @@ dependencies {
 
     compile("org.apache.bval:bval-guice:0.5")
 
-    compile("ch.qos.logback:logback-classic:1.+")
+    compile("ch.qos.logback:logback-classic:1.1.1")
 
     compile("org.reflections:reflections:0.9.9-RC1") {
         exclude module: 'javassist'

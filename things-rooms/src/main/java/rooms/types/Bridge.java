@@ -1,12 +1,7 @@
 package rooms.types;
 
-import org.hibernate.annotations.GenericGenerator;
 import things.model.types.Value;
 import things.model.types.attributes.UniqueKey;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * Project: things-to-build
@@ -16,16 +11,11 @@ import javax.persistence.Id;
  * Time: 12:06 AM
  */
 @Value(typeName = "bridge")
-@Entity
 @UniqueKey(unique = true)
 public class Bridge {
 
     public static final int DEFAULT_PORT = 8899;
     private String host;
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
     private int port;
     private String version = "2.0";
     private int waitTime = 30;
@@ -45,10 +35,6 @@ public class Bridge {
         return host;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public int getPort() {
         return port;
     }
@@ -63,10 +49,6 @@ public class Bridge {
 
     public void setHost(String host) {
         this.host = host;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setPort(int port) {

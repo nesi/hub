@@ -1,7 +1,10 @@
 package things.connectors.xstream;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
 import rx.Observable;
 import rx.Subscriber;
@@ -21,18 +24,17 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author: Markus Binsteiner
  */
 public class XstreamConnector extends AbstractSimpleThingReader implements ThingReader, ThingWriter {
 
+    private Map<String, Multimap<String, Thing<?>>> allThingsCache = null;
     private final File thingsFolder;
     private final File valuesFolder;
+
     private final XStream xstream = new XStream();
 
     @Inject
@@ -91,26 +93,53 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
         return false;
     }
 
+    private void addElement(Thing<?> t) {
+
+        if ( allThingsCache.get(t.getThingType()) == null ) {
+            allThingsCache.put(t.getThingType(), HashMultimap.create());
+        }
+        allThingsCache.get(t.getThingType()).put(t.getKey(), t);
+
+    }
+
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
 
-        Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
-            new Thread(() -> {
-                try {
-                    Files.walk(Paths.get(thingsFolder.toURI()))
-                            .filter((path) -> path.toString().endsWith(".thing"))
-                            .map(path -> assembleThing(path))
-                            .forEach(t -> subscriber.onNext(t));
+        if ( allThingsCache == null ) {
 
-                    subscriber.onCompleted();
+            allThingsCache = Maps.newConcurrentMap();
 
-                } catch (IOException e) {
-                    throw new ThingRuntimeException("Could not read thing files.", e);
+            Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
+                new Thread(() -> {
+                    try {
+                        Files.walk(Paths.get(thingsFolder.toURI()))
+                                .filter((path) -> path.toString().endsWith(".thing"))
+                                .map(path -> assembleThing(path))
+                                .peek(t -> addElement(t))
+                                .forEach(t -> subscriber.onNext(t));
+
+                        subscriber.onCompleted();
+
+                    } catch (IOException e) {
+                        throw new ThingRuntimeException("Could not read thing files.", e);
+                    }
+                }).start();
+            });
+            return obs;
+        } else {
+            Observable<? extends Thing<?>> obs = Observable.create((Subscriber<? super Thing<?>> subscriber) -> {
+                for ( String type : allThingsCache.keySet() ) {
+                    for ( String key : allThingsCache.get(type).keySet() ) {
+                        for ( Thing<?> thing : allThingsCache.get(type).get(key) ) {
+                            subscriber.onNext(thing);
+                        }
+                    }
                 }
-            }).start();
-        });
+                subscriber.onCompleted();
+            });
 
-        return obs;
+            return obs;
+        }
     }
 
     private Path getPath(String type, String key, String id) {
@@ -160,6 +189,8 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
             throw new ThingRuntimeException("Could not create writer for file: " + thingFile.getAbsolutePath(), e);
         }
         xstream.toXML(t, writer);
+
+        allThingsCache = null;
 
         return t;
     }

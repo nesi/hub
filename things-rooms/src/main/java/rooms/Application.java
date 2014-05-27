@@ -3,7 +3,7 @@ package rooms;
 import com.google.common.collect.Maps;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import rooms.config.jpa.RoomConfigJpa;
+import rooms.config.RoomConfig;
 import rooms.model.lights.limitless.LimitlessLEDControllerV2;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Bridge;
@@ -30,7 +30,7 @@ public class Application {
 
     public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
 
-        AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfigJpa.class);
+        AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfig.class);
         //AbstractApplicationContext context = new AnnotationConfigApplicationContext(RoomConfigMongo.class);
 
 //        MongoOperations mo = (MongoOperations) context.getBean("mongoTemplate");
