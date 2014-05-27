@@ -1,12 +1,11 @@
 package things.view.rest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author: Markus Binsteiner
  */
-@RestController
+//@RestController
 @RequestMapping(value = "/id")
 public class IdRestController {
 

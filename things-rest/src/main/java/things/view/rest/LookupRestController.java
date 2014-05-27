@@ -2,14 +2,13 @@ package things.view.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import things.thing.ThingControl;
 import things.thing.ThingUtils;
 
 /**
  * @author: Markus Binsteiner
  */
-@RestController
+//@RestController
 @RequestMapping(value = "/find")
 public class LookupRestController {
 

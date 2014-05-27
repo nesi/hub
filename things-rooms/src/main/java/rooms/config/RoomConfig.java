@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +43,7 @@ import java.io.File;
  * Time: 2:16 PM
  */
 @Configuration
-@ComponentScan({"things.thing", "things.view.rest"})
+@ComponentScan({"things.thing", "things.view.rest", "rooms.config", "rooms.view.websockets"})
 @EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
 public class RoomConfig {
 
@@ -86,7 +86,8 @@ public class RoomConfig {
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
-        return new JettyEmbeddedServletContainerFactory();
+        //return new JettyEmbeddedServletContainerFactory();
+        return new TomcatEmbeddedServletContainerFactory();
     }
 
     @Bean

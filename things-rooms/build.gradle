@@ -40,7 +40,11 @@ dependencies {
         exclude module: "spring-boot-starter-tomcat"
     }
 
-    compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
+    compile("org.springframework.boot:spring-boot-starter-websocket:"+springBootVersion)
+    compile("org.springframework:spring-messaging:"+springVersion)
+
+//    compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
+        compile("org.springframework.boot:spring-boot-starter-tomcat:" + springBootVersion)
     compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
     testCompile("org.springframework.boot:spring-boot-starter-test")

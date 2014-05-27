@@ -38,7 +38,7 @@ dependencies {
 }
 
 ext {
-    springVersion = '4.0.3.RELEASE'
+    springVersion = '4.0.4.RELEASE'
     springDataCommonsVersion = '1.7.1.RELEASE'
 }
 
