@@ -24,7 +24,20 @@ abstract public class AbstractThingReader implements ThingReader {
     abstract public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                                 final String key);
 
+    abstract public Observable<? extends Thing<?>> getChildrenForId(String id);
+
     abstract public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
+
+    protected boolean equalsValue(Thing<?> t, Object value) {
+        Object thingValue = null;
+        if ( !t.getValueIsPopulated() ) {
+            thingValue = readValue(t);
+        } else {
+            thingValue = t.getValue();
+        }
+
+        return thingValue.equals(value);
+    }
 
     public Observable<? extends Thing<?>> findThingsForKey(String key) {
 
@@ -56,17 +69,6 @@ abstract public class AbstractThingReader implements ThingReader {
         return things.filter(t -> equalsValue(t, value)).map(t -> (Thing<V>) t);
     }
 
-    protected boolean equalsValue(Thing<?> t, Object value) {
-        Object thingValue = null;
-        if ( ! t.getValueIsPopulated() ) {
-            thingValue = readValue(t);
-        } else {
-            thingValue = t.getValue();
-        }
-
-        return thingValue.equals(value);
-    }
-
     public Observable<? extends Thing<?>> findThingsMatchingKey(String keyMatcher) {
         return findThingsMatchingTypeAndKey("*", keyMatcher);
     }
@@ -86,8 +88,6 @@ abstract public class AbstractThingReader implements ThingReader {
 
         return findThingsMatchingTypeAndKey(typeRegistry.getType(type), key).map(t -> (Thing<V>) t);
     }
-
-    abstract public Observable<? extends Thing<?>> getChildrenForId(String id);
 
     public Observable<? extends Thing<?>> getChildrenForKey(Observable<? extends Thing<?>> things, String key) {
 

@@ -17,10 +17,10 @@
         function connect() {
             var socket = new SockJS('/hello');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
+            stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/light_change', function(greeting){
+                stompClient.subscribe('/topic/light_change', function (greeting) {
                     console.log('xxxxxxx')
                     showGreeting(JSON.parse(greeting.body).content);
                 });
@@ -49,7 +49,8 @@
     </script>
 </head>
 <body>
-<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
     Javascript and reload this page!</h2></noscript>
 <div>
     <div>
@@ -57,7 +58,7 @@
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
     <div id="conversationDiv">
-        <label>What is your name?</label><input type="text" id="name" />
+        <label>What is your name?</label><input type="text" id="name"/>
         <button id="sendName" onclick="sendName();">Send</button>
         <p id="response"></p>
     </div>

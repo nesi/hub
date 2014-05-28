@@ -2,7 +2,6 @@ package types;
 
 
 import org.apache.bval.constraints.NotEmpty;
-import things.model.types.SimpleValue;
 import things.model.types.Value;
 import things.model.types.attributes.StringConverter;
 import things.model.types.attributes.Subordinate;
@@ -14,10 +13,10 @@ import things.model.types.attributes.Subordinate;
  * Date: 12/04/14
  * Time: 7:39 PM
  */
-@Subordinate(parentClass = Person.class)
-@Value(typeName = "role")
-@StringConverter(value = RoleStringConverter.class)
-public class Role implements SimpleValue<String> {
+@Subordinate( parentClass = Person.class )
+@Value( typeName = "role" )
+@StringConverter( value = RoleStringConverter.class )
+public class Role {
 
     public String id;
 
@@ -36,7 +35,6 @@ public class Role implements SimpleValue<String> {
         return role;
     }
 
-    @Override
     public String getValue() {
         return role;
     }
@@ -45,7 +43,6 @@ public class Role implements SimpleValue<String> {
         this.role = role;
     }
 
-    @Override
     public void setValue(String value) {
         setRole(role);
     }

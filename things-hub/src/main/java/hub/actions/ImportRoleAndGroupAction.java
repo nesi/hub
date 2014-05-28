@@ -1,5 +1,6 @@
 package hub.actions;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import hub.types.dynamic.User;
 import hub.types.persistent.Person;
@@ -9,7 +10,6 @@ import org.jooq.*;
 import org.jooq.impl.DefaultDSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import projectdb.Tables;
 import rx.Observable;
 import things.exceptions.ThingException;
@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author: Markus Binsteiner
@@ -42,8 +43,8 @@ public class ImportRoleAndGroupAction implements ThingAction {
 
     private void checkAdviserAndAdminRole(Thing<Person> person) {
 
+        Person p = tc.getValue(person);
         try {
-            Person p = tc.getValue(person);
 
             SelectConditionStep<Record3<String, Integer, Byte>> condition = null;
 
@@ -80,22 +81,21 @@ public class ImportRoleAndGroupAction implements ThingAction {
             }
 
         } catch (Exception e) {
-            //TODO
-            e.printStackTrace();
+            myLogger.debug("Failed to import person " + p.nameToString() + ": " + e.getLocalizedMessage());
         }
 
     }
 
     private Thing<User> checkProjectDb(Thing<Person> person) {
-//        checkResearcherRole(person);
+        checkResearcherRole(person);
         checkAdviserAndAdminRole(person);
         return userUtils.createUser(person);
     }
 
     private void checkResearcherRole(Thing<Person> person) {
 
+        Person p = tc.getValue(person);
         try {
-            Person p = tc.getValue(person);
 
             SelectConditionStep<Record2<Integer, String>> condition = null;
 
@@ -150,13 +150,14 @@ public class ImportRoleAndGroupAction implements ThingAction {
                 }
 
                 Thing<Role> role = getRole(projectName, roleName);
-                tc.addChildThing(person, role);
+                role = tc.addChildThing(person, role);
+                updateRole(projectName, roleName, role);
 
             }
 
         } catch (Exception e) {
             //TODO
-            e.printStackTrace();
+            myLogger.debug("Could not check researcher role for {}: {}", p.nameToString(), e.getLocalizedMessage());
         }
 
     }
@@ -178,10 +179,6 @@ public class ImportRoleAndGroupAction implements ThingAction {
             result.forEach(rec -> projectMap.put(rec.getValue(Tables.PROJECT.ID), rec.getValue(Tables.PROJECT.PROJECTCODE)));
         }
         return projectMap;
-    }
-
-    private void updateRole(String key, String rolename, Thing<Role> role) {
-        roles.put(key+"_"+rolename, role);
     }
 
     private Thing<Role> getRole(String key, String rolename) throws ValueException, ThingException {
@@ -211,6 +208,11 @@ public class ImportRoleAndGroupAction implements ThingAction {
         return roleMap;
     }
 
+    @Override
+    public Set<String> getSupportedActionNames() {
+        return ImmutableSet.<String>of("import_projectdb");
+    }
+
     @Resource(name = "projectDbContext")
     public void setJooq(DefaultDSLContext jooq) {
         this.jooq = jooq;
@@ -224,5 +226,9 @@ public class ImportRoleAndGroupAction implements ThingAction {
     @Inject
     public void setUserUtils(UserUtils userUtils) {
         this.userUtils = userUtils;
+    }
+
+    private void updateRole(String key, String rolename, Thing<Role> role) {
+        roles.put(key + "_" + rolename, role);
     }
 }

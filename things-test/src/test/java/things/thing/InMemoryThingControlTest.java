@@ -12,9 +12,9 @@ import javax.inject.Inject;
 /**
  * Created by markus on 21/05/14.
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( loader = AnnotationConfigContextLoader.class,
-        classes = {InMemoryTestConfig.class} )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+        classes = {InMemoryTestConfig.class})
 public class InMemoryThingControlTest extends BaseThingControlTest {
 
     @Inject

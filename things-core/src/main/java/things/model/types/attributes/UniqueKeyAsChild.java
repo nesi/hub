@@ -6,14 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Project: researchHub
- * <p>
- * Written by: Markus Binsteiner
- * Date: 24/01/14
- * Time: 11:17 AM
+ * Tags a type as one where when a thing has got multiple childs of this type, all of those must have different keys.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface UniqueKeyAsChild {
 
     public boolean unique() default true;

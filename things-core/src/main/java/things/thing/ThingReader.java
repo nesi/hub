@@ -4,7 +4,7 @@ import rx.Observable;
 
 /**
  * Project: things-to-build
- * <p>
+ *
  * Written by: Markus Binsteiner
  * Date: 4/05/14
  * Time: 10:13 PM

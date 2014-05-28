@@ -10,12 +10,12 @@ import java.util.List;
 public class ThingResultTransformer implements ResultTransformer {
 
     @Override
-    public Object transformTuple(Object[] tuple, String[] aliases) {
+    public List transformList(List collection) {
         return null;
     }
 
     @Override
-    public List transformList(List collection) {
+    public Object transformTuple(Object[] tuple, String[] aliases) {
         return null;
     }
 }

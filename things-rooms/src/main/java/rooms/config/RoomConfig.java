@@ -53,14 +53,14 @@ public class RoomConfig {
     }
 
     @Bean
-    public LightAction lightAction() throws Exception {
-        LightAction lc = new LightAction();
-        return lc;
+    public XstreamConnector defaultConnector() {
+        return new XstreamConnector(new File("/home/markus/ttt/things/"), new File("/home/markus/ttt/values"));
     }
 
     @Bean
-    public XstreamConnector defaultConnector() {
-        return new XstreamConnector(new File("/home/markus/ttt/things/"), new File("/home/markus/ttt/values"));
+    public LightAction lightAction() throws Exception {
+        LightAction lc = new LightAction();
+        return lc;
     }
 
     @Bean
@@ -93,11 +93,7 @@ public class RoomConfig {
     @Bean
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();
-        ta.addAction("set_light", lightAction());
-        ta.addAction("toggle", lightAction());
-        ta.addAction("turn_on", lightAction());
-        ta.addAction("turn_off", lightAction());
-        ta.addAction("set", lightAction());
+        ta.addAction(lightAction());
         return ta;
     }
 

@@ -13,7 +13,6 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
-
 //apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'

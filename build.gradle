@@ -121,7 +121,8 @@ task alldocs(type: Javadoc) {
     options.addStringOption("extensions", "autolinks,definitions,smartypants,tables,wikilinks,fenced-code-blocks")
     options.links = [
             "http://docs.oracle.com/javase/8/docs/api/",
-            "http://docs.guava-libraries.googlecode.com/git-history/v15.0/javadoc/"
+            "http://docs.guava-libraries.googlecode.com/git-history/v15.0/javadoc/",
+            "http://netflix.github.io/RxJava/javadoc/"
     ]
 }
 

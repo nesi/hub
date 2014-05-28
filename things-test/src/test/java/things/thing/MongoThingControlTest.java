@@ -15,9 +15,9 @@ import javax.inject.Inject;
 /**
  * Created by markus on 21/05/14.
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( loader = AnnotationConfigContextLoader.class,
-        classes = {MongoTestConfig.class} )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+        classes = {MongoTestConfig.class})
 public class MongoThingControlTest extends BaseThingControlTest {
 
     @Inject

@@ -21,7 +21,7 @@ import java.util.Map;
  * @author: Markus Binsteiner
  */
 @RestController
-@RequestMapping(value = "/other")
+@RequestMapping(value = "/rest")
 public class BaseRestController {
 
     @Autowired

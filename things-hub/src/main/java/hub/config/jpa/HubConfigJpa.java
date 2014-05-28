@@ -1,12 +1,10 @@
 package hub.config.jpa;
 
-import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory;
 import hub.actions.UserUtils;
 import hub.jpa.repositories.PersonRepository;
+import hub.readers.GroupReader;
 import hub.readers.UserReader;
 import hub.types.persistent.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +23,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -72,7 +66,7 @@ import javax.validation.ValidatorFactory;
 @PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
 @ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.metrics"})
 @EnableJpaRepositories(basePackages = {"hub.jpa.repositories", "things.jpa"})
-@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, DataSourceAutoConfiguration.class , MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, DataSourceAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
 public class HubConfigJpa {
 
     @Autowired
@@ -92,6 +86,11 @@ public class HubConfigJpa {
 //        return dataSource;
 //
 //    }
+
+    @Bean
+    public ActionManager actionManager() {
+        return new DefaultActionManager();
+    }
 
     @Bean(destroyMethod = "close", name = "thingDataSource")
     public DataSource dataSource() {
@@ -164,6 +163,7 @@ public class HubConfigJpa {
         tr.addReader("role/*", jpaConnector());
         tr.addReader("username/*", jpaConnector());
         tr.addReader("user/*", userReader());
+        tr.addReader("group/*", groupReader());
         return tr;
     }
 
@@ -177,12 +177,6 @@ public class HubConfigJpa {
         tw.addWriter("username/*", jpaConnector());
         return tw;
     }
-
-    @Bean
-    public ActionManager actionManager() {
-        return new DefaultActionManager();
-    }
-
 
     @Bean
     public PlatformTransactionManager transactionManager() {
@@ -204,6 +198,11 @@ public class HubConfigJpa {
     @Bean
     public UserReader userReader() {
         return new UserReader();
+    }
+
+    @Bean
+    public GroupReader groupReader() {
+        return new GroupReader();
     }
 
     @Bean

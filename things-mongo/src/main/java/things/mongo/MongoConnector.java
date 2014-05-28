@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import rx.Observable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import things.connectors.IdWrapper;
 import things.exceptions.NoSuchThingException;
 import things.exceptions.TypeRuntimeException;
@@ -51,6 +50,12 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     @Autowired
     public MongoConnector(MongoTemplate mongoTemplate) throws Exception {
         this.mongoTemplate = mongoTemplate;
+    }
+
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
     }
 
     @Override
@@ -149,6 +154,17 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
 
     }
 
+    @Override
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+
+        Query q = new Query();
+
+        q.addCriteria(Criteria.where("parents").is(id));
+
+        List<Thing> result = mongoTemplate.find(q, Thing.class);
+        return Observable.from(result).map(t -> (Thing<?>) t);
+    }
+
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Thing<?> thing, String typeMatcher, String keyMatcher) {
         Query q = new Query();
         String regexType = MatcherUtils.convertGlobToRegex(typeMatcher);
@@ -164,17 +180,6 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
 
         return things.flatMap(t -> getChildrenMatchingTypeAndKey(t, typeMatcher, keyMatcher));
-    }
-
-    @Override
-    public Observable<? extends Thing<?>> getChildrenForId(String id) {
-
-        Query q = new Query();
-
-        q.addCriteria(Criteria.where("parents").is(id));
-
-        List<Thing> result = mongoTemplate.find(q, Thing.class);
-        return Observable.from(result).map(t -> (Thing<?>)t);
     }
 
     private MongoPersistentProperty getIdField(Class valueClass) {
@@ -249,12 +254,6 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         find_all_timer = metrics.timer(name(MongoConnector.class, "find-all"));
         find_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
         find_children_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
-    }
-
-    @Override
-    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
-        child.getParents().add(parent.getId());
-        return saveThing(child);
     }
 
 }

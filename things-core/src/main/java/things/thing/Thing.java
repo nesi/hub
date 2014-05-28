@@ -8,13 +8,57 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Project: things-to-build
- * <p>
- * Written by: Markus Binsteiner
- * Date: 6/05/14
- * Time: 7:55 PM
+ * A *Thing* is the central piece in this framework. In a nutshell, it wraps a value and makes it
+ * accessible via a type & key combination.
+ *
+ * The main elements of a Thing are:
+ *
+ * - __id__: id, unique across all Things
+ * - __thingType__: the type of the value (called 'thingType' instead of simply 'type' because 'type' seems to be a keyword way too often to not cause problems
+ * - __key__: the key that can be used to access this value. Keys don't need to be unique, even among Things with the same type
+ * - __value__: the value that is wrapped by this Thing
+ * - __parent__: a list of ids that point to other things that this thing is a child of
+ *
+ * ### Properties of a Thing
+ *
+ * ##### id
+ *
+ * When creating a Thing, you should not set an id, those are usually set by the underlying storage backend ({@link things.thing.ThingWriter}).
+ *
+ * ##### thingType
+ *
+ * The type of a Thing is linked to the implementing class of the @see Value it wrappes. You can use a {@link things.types.TypeRegistry}
+ * to convert between Type-strings, Type-classes and Value-types, there are also convenience methods to compare and inspect types. Further information in the {@link things.types.ThingType} javadoc.
+ *
+ * Types are needed for serializing and de-serializing values, both in a Thing-API and underlying storage engine.
+ *
+ * ##### key
+ *
+ * Keys are used for look-ups. A Thing can have either:
+ *
+ * - a unique key for all Things of a certain type (indicated by the {@link things.model.types.attributes.UniqueKey} annotation), Things of a different type will still be able to use the same key
+ * - a unique key within all childs of a certain Type of a Thing (indicated by the {@link things.model.types.attributes.UniqueKeyAsChild} annotation), Things of a different type will still be able to use the same key
+ * - a key that is used by other Things of the same or other types
+ *
+ * ##### value
+ *
+ * A value can implement any Java class (preferrably a POJO with id value though)
+ *
+ * Every storage backend ({@link things.thing.ThingWriter}) can implement it's own way of storing such a value.
+ * Normally a value would be stored and retrieved via an 'id' field.
+ * When looking up the value of Thing, always do via the {@link things.thing.ThingControl#getValue(Thing)} method,
+ * because it is not guaranteed that the value is populated (lazy loading), so the {@link #getValue()} method may return null.
+ *
+ * If the Value type is so that it only contains one String, it can be marked by the {@link things.model.types.attributes.StringConverter} attribute. If that is present,
+ * a {@link things.thing.ThingWriter} can decide to serialize the value and, for example, store it directly as a property of a Thing, which might make querying more effective.
+ *
+ * ##### parents
+ *
+ * Things can have links to other Things, which enables (simple) modelling of relationships. If a Thing can only be added to a certain Type of
+ * other Thing, you can specify that via the {@link things.model.types.attributes.Subordinate} annotation.
+ *
+ * @author Markus Binsteiner
  */
-
 public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     private String id;
@@ -28,11 +72,6 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     /**
      * Default constructor, don't use in normal circumstances.
-     * <p>
-     * If creating a new Thing to store (i.e. one that has a {@link things.model.PersistentValue} Value),
-     * always use {@link ThingControl#createThing(String, java.io.Serializable)}.
-     * <p>
-     * If creating a Thing for returning via the API, prefer the {@link things.thing.Thing#Thing(String, java.io.Serializable)} constructor.
      */
     public Thing() {
     }
@@ -71,10 +110,8 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     /**
      * Returns the id of this thing.
-     * <p>
-     * Ids are created by the underlying storage backend and unique among all Things.
      *
-     * @return the (unique) id
+     * Ids are created by the underlying storage backend and unique among all Things.
      */
     public String getId() {
         return id;
@@ -82,8 +119,6 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     /**
      * Returns the key of this thing.
-     *
-     * @return the key
      */
     public String getKey() {
         return key;
@@ -92,34 +127,32 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     /**
-     * Returns all the other Things this Thing has references to.
-     *
-     * @return this Things' other Things
+     * Returns all the parent references of this thing
      */
     public Set<String> getParents() {
         return parents;
     }
 
     /**
-     * Returns the Type of this Things' value.
-     *
-     * @return the type
+     * Returns the type (see: {@link things.types.ThingType}) of this Things' value.
      */
     public String getThingType() {
         return thingType;
     }
 
     /**
-     * The id of the value associated with this thing.
-     * <p>
-     * Used internally to retrieve the value itself.
+     * The value that is wrapped by this thing.
      *
-     * @return the value id
+     * Try to avoid getting it directly, instead use {@link things.thing.ThingControl#getValue(Thing)} to make sure the value is populated by the associated {@link things.thing.ThingReader}.
+     * If you can't do that for some reason, make sure you check the {@link #getValueIsPopulated()} method before retrieving the value.
      */
     public V getValue() {
         return value;
     }
 
+    /**
+     * Returns the state of this thing, i.e. whether the associated {@link things.thing.ThingReader} did populate this Thing with the actual value (true) or whether lazy loading is used and the value is not populated (false).
+     */
     public Boolean getValueIsPopulated() {
         return valueIsPopulated;
     }
@@ -143,7 +176,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
 
     /**
      * Sets the key of this thing.
-     * <p>
+     *
      * Usually you should not need to have to use this method.
      *
      * @param key the key
@@ -153,13 +186,12 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     }
 
     /**
-     * Sets this Things other things.
-     * <p>
+     * Sets this Things parents.
+     *
      * You should not need to use this method, if you want to add Things to Things to be stored
-     * on the storage backend use {@link ThingControl#addThingToThing(things.thing.Thing, things.thing.Thing)}
-     * or {@link ThingControl#addThingToThing(String, String)} method.
-     * <p>
-     * When returning Things via the API, other Things are not included in the serialization, so don't
+     * on the storage backend use {@link ThingControl#addChildThing(Thing, Thing)}.
+     *
+     * When returning Things via the API, parents are not included in the serialization, so don't
      * waste cycles adding Things in the first place.
      *
      * @param ids the list of ids that point to this Things' other Things
@@ -169,39 +201,31 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     }
 
     /**
-     * Sets this Things' value. Don't use if you don't know what you are doing.
-     * <p>
-     * Use the {@link #setValue(Serializable)} method instead, it'll also the the type.
-     *
-     * @param type the type
+     * Sets this Things' type. Make sure you set a valid type (for example, check the {@link things.types.TypeRegistry} that is used in your application.
      */
     public void setThingType(String type) {
         thingType = type;
     }
 
-
+    /**
+     * Sets the value of this Thing.
+     *
+     * It is preferrable to create a thing via {@link things.thing.ThingControl#createThing(String, Object)}, not doing it manually.
+     * If you use this method within a {@link things.thing.ThingReader}/{@link things.thing.ThingWriter}, make sure you also set the correct via
+     * {@link #setThingType(String)} and also the populated state of this thing using {@link #setValueIsPopulated(Boolean)}.
+     *
+     * @param value the value
+     */
     public void setValue(V value) {
         this.value = value;
     }
 
+    /**
+     * Sets whether this things value is the actual value (true), or whether it has to be loaded still (lazy loading - false).
+     */
     public void setValueIsPopulated(Boolean valueIsPopulated) {
         this.valueIsPopulated = valueIsPopulated;
     }
-
-//    /**
-//     * Sets the value for this Thing.
-//     *
-//     * Can be used to create a Thing that is returned to a client via a Thing-API.
-//     *
-//     * @param value the value
-//     */
-//    public void setValue(V value) {
-//        setThingType(TypeRegistry.getType(value.getClass()));
-//    }
-
-    //    public void setValue(Value value) {
-//        this.value = value;
-//    }
 
     @Override
     public String toString() {

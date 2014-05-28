@@ -7,11 +7,13 @@ import things.utils.MatcherUtils;
 import java.util.List;
 
 /**
- * Project: things
- * <p>
- * Written by: Markus Binsteiner
- * Date: 17/05/14
- * Time: 8:02 PM
+ * Convenience class that extends {@link things.thing.ThingControl} and adds some convenience methods
+ * for (mostly) query purposes.
+ *
+ * Note that all of those methods return {@link rx.Observable}s (also, the start with 'observe*', opposed to 'get*'
+ * for the methods in {@link things.thing.ThingControl}), which can be used to chain filters and additional queries together.
+ *
+ * For more details about the overall workings of this class check out {@link things.thing.ThingControl}.
  */
 public class ThingControlReactive extends ThingControlMinimal {
 
@@ -19,10 +21,11 @@ public class ThingControlReactive extends ThingControlMinimal {
         super();
     }
 
-    public Thing<?> addChildThingToObservable(Observable<? extends Thing<?>> parents, Thing<?> child) {
-        parents.map(p -> addChildThing(p, child)).toBlockingObservable();
-        return child;
-    }
+    // might be dangerous, since addChildThing result won't be updated with result from hibernate session
+//    public Thing<?> addChildThingToObservable(Observable<? extends Thing<?>> parents, Thing<?> child) {
+//        parents.map(p -> addChildThing(p, child)).toBlockingObservable();
+//        return child;
+//    }
 
     public <V> Observable<Thing<V>> filterThingsOfType(Class<V> type, Observable<? extends Thing<?>> things) {
         return things.filter(t -> typeRegistry.equals(type, t.getThingType())).map(t -> populateAndConvertToTyped(type, t));

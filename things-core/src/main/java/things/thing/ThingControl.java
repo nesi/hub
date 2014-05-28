@@ -15,11 +15,32 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * Project: things-to-build
- * <p>
- * Written by: Markus Binsteiner
- * Date: 6/05/14
- * Time: 8:21 PM
+ * Convenience class that extends {@link things.thing.ThingControlReactive} and {@link things.thing.ThingControl} and adds some convenience methods
+ * for (mostly) query purposes.
+ *
+ * Note that all of those methods block and return Lists (also, the start with 'get*', opposed to 'observe*'
+ * for the methods in {@link things.thing.ThingControlReactive}).
+ *
+ * This class (or one of it's parents) is the central control class of this framework, and it binds together access to
+ * {@link things.thing.ThingReader}s, {@link things.thing.ThingWriter}s, {@link things.thing.ThingAction}s and
+ * {@link things.thing.ThingQuery}s with methods to query, filter and populate {@link Thing}s.
+ *
+ * Overall, the methods in this class can be categorized into:
+ *
+ * - methods that start with __observe__: those methods don't block and return RxJava {@link Observable}s
+ * - methods that start with __find__: those methods block and return 'normal' java objects, optionals or Collections. Mostly those methods use their underlying 'observe*' equivalent
+ * - methods that start with __getChildren__: those are similar to the ones that start with 'find', but deal with querying children things
+ *
+ * The naming scheme for queries is as such:
+ *
+ * - queries that include __for__: those look for exact matches of a type or key, if used with a glob they throw an exception. If you know exactly which type/key you are looking for, use this, because chances are the underlying query is faster.
+ * - queries that include __matching__: those use globs (which internally are converted to regexes) to query for types/keys. Those queries are most likely slower than their '__for__' counterparts, but more flexible and they can be quite powerful.
+ *
+ * Depending on the underlying {@link things.thing.ThingReader}/{@link things.thing.ThingWriter} that is used, result {@link things.thing.Thing}s
+ * can either return with a populated value or one that still needs to be (lazy-)loaded. To make sure you get a populated value,
+ * use the query that includes a boolean 'populated' parameter and set that parameter to true.
+ * Similarly, if you are sure you don't need the value, just the metadata of a Thing, specify 'false', because your query might be
+ * faster that way.
  */
 @Singleton
 public class ThingControl extends ThingControlReactive {
@@ -34,17 +55,16 @@ public class ThingControl extends ThingControlReactive {
 
     /**
      * Creates a Thing using the provided key and Value and persists it.
-     * <p>
+     *
      * Before any persisting occurs, the Value will be validated.
-     * <p>
+     *
      * If the Value is not persisted yet, it will be using the configured
-     * {@link ThingWriter} before the Thing itself is
-     * saved.
+     * {@link ThingWriter} before the Thing itself is saved. Internally, this uses the {@link #observeCreateThing(String, Object)}
+     * method and puts a blocking operation on it.
      *
      * @param key   the key
      * @param value the Value
-     * @return the newly created and persisted Thing (including a shiny new
-     * Thing id)
+     * @return the newly created and persisted Thing (including a shiny new Thing id)
      * @throws things.exceptions.ThingException if the Thing can't be persisted for some reason
      * @throws ValueException                   if there is something wrong with the Value
      */
@@ -62,6 +82,12 @@ public class ThingControl extends ThingControlReactive {
         }
     }
 
+    /**
+     * A filter that filters out all things that do not have a value that equals the provided one.
+     *
+     * Be aware that this can take quite a while, because depending on the type/backend configured,
+     * all values may need to be loaded first for every one of the things you provide.
+     */
     public <V> List<Thing<V>> filterThingsWithValue(List<Thing> things, V value) {
 
         Observable<Thing<V>> obs = Observable.from(things).filter(t -> value.equals(getValue(t))).map(t -> (Thing<V>) t);

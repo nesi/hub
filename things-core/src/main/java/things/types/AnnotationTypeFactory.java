@@ -15,11 +15,13 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Project: things
- * <p>
- * Written by: Markus Binsteiner
- * Date: 15/05/14
- * Time: 10:12 PM
+ * Tries to find all types in the classpath.
+ *
+ * Uses the {@link things.model.types.Value} annotation to determine whether a class can be a {@link things.types.ThingType} or not.
+ * Other possible annotations:
+ *
+ * {@link things.model.types.attributes.UniqueKey}, {@link things.model.types.attributes.UniqueKeyAsChild}
+ * {@link things.model.types.attributes.UniqueValueForKey}, {@link things.model.types.attributes.UniqueValueForKeyAsChild}
  */
 public class AnnotationTypeFactory {
 
@@ -30,6 +32,9 @@ public class AnnotationTypeFactory {
     private static ImmutableBiMap<String, Class> typeMap;
     private static Set<Class<?>> types;
 
+    /**
+     * Returns all types that are found in the classpath.
+     */
     public synchronized static Set<ThingType<?>> getAllTypes() {
         if ( thingTypes == null ) {
             thingTypes = Sets.newHashSet();
@@ -38,7 +43,7 @@ public class AnnotationTypeFactory {
                 ThingType tt = new ThingType(type, typeClass);
                 tt.setNeedsUniqueKey(typeNeedsUniqueKey(typeClass));
                 tt.setNeedsUniqueKeyAsChild(typeNeedsUniqueKeyWithinChildren(typeClass));
-                tt.setNeedsUniqueValue(typeNeedsUniqueValue(typeClass));
+                tt.setNeedsUniqueValue(typeNeedsUniqueValueForKey(typeClass));
                 tt.setNeedsUniqueValueForKeyAsChild(typeNeedsUniqueKeyAndValueWithinChildren(typeClass));
                 Optional<SingleStringConverter> conv = getStringConverter(typeClass);
                 if ( conv.isPresent() ) {
@@ -50,6 +55,9 @@ public class AnnotationTypeFactory {
         return thingTypes;
     }
 
+    /**
+     * Returns the StringConverter for the specified class.
+     */
     public static Optional<SingleStringConverter> getStringConverter(Class<?> typeClass) {
 
         if ( typeClass == null ) {
@@ -73,7 +81,7 @@ public class AnnotationTypeFactory {
     /**
      * Checks if a value of this type has restrictions as to which types it can
      * be added to.
-     * <p>
+     *
      * This is determined by looking up the {@link things.model.types.attributes.Subordinate} annotation.
      * If no such annotation is present, null is returned.
      *
@@ -89,6 +97,9 @@ public class AnnotationTypeFactory {
         }
     }
 
+    /**
+     * The map that stores all types that could be found on the classpath.
+     */
     public static BiMap<String, Class> getTypeMap() {
         if ( typeMap == null ) {
             types = singleton().getTypesAnnotatedWith(Value.class);
@@ -111,6 +122,9 @@ public class AnnotationTypeFactory {
         return typeMap;
     }
 
+    /**
+     * Singleton instance of this class.
+     */
     public static Reflections singleton() {
 
         if ( reflections == null ) {
@@ -122,7 +136,7 @@ public class AnnotationTypeFactory {
 
     /**
      * Checks whether values of this type need to have a unique key.
-     * <p>
+     *
      * To determine this, the {@link things.model.types.attributes.UniqueKey} annotation is used.
      * If the annotation is not present, false is returned.
      *
@@ -144,8 +158,31 @@ public class AnnotationTypeFactory {
     }
 
     /**
+     * Checks whether values of this type need to have a unique key/value combination when being added to another Thing.
+     *
+     * To determine this, the {@link things.model.types.attributes.UniqueValueForKeyAsChild} annotation is used.
+     * If the annotation is not present, false is returned.
+     *
+     * @param typeClass the type
+     * @return whether values of this type need a unique key
+     */
+    public static boolean typeNeedsUniqueKeyAndValueWithinChildren(Class<?> typeClass) {
+
+        if ( typeClass == null ) {
+            throw new TypeRuntimeException("No typeClass provided");
+        }
+
+        UniqueValueForKeyAsChild annotation = typeClass.getAnnotation(UniqueValueForKeyAsChild.class);
+        if ( annotation == null || annotation.unique() == false ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Checks whether values of this type need to have a unique key when being added to another Thing.
-     * <p>
+     *
      * To determine this, the {@link things.model.types.attributes.UniqueKeyAsChild} annotation is used.
      * If the annotation is not present, false is returned.
      *
@@ -166,33 +203,19 @@ public class AnnotationTypeFactory {
         }
     }
 
-    public static boolean typeNeedsUniqueKeyAndValueWithinChildren(Class<?> typeClass) {
-
-        if ( typeClass == null ) {
-            throw new TypeRuntimeException("No typeClass provided");
-        }
-
-        UniqueValueForKeyAsChild annotation = typeClass.getAnnotation(UniqueValueForKeyAsChild.class);
-        if ( annotation == null || annotation.unique() == false ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     /**
      * Checks whether values of this type need to have a unique value for this type.
-     * <p>
+     *
      * To determine this, the {@link things.model.types.attributes.UniqueValueForKey} annotation is used.
      * If the annotation is not present, false is returned.
-     * <p>
+     *
      * Be careful using the {@link things.model.types.attributes.UniqueValueForKey} annotation, since it can slow down
      * persisting things of this type due to checking whether the value already exists.
      *
      * @param typeClass the type
      * @return whether values of this type need a unique value
      */
-    public static boolean typeNeedsUniqueValue(Class<?> typeClass) {
+    public static boolean typeNeedsUniqueValueForKey(Class<?> typeClass) {
 
         if ( typeClass == null ) {
             throw new TypeRuntimeException("No typeClass provided");

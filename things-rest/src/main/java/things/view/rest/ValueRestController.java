@@ -17,7 +17,7 @@ import java.util.List;
  * Created by markus on 19/05/14.
  */
 @RestController
-@RequestMapping(value = "/get")
+@RequestMapping(value = "/rest/get")
 public class ValueRestController {
 
     @Autowired

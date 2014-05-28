@@ -18,8 +18,6 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
-
 /**
  * Created by markus on 21/05/14.
  */
@@ -29,21 +27,20 @@ public class MetricsServletConfig extends MetricsConfigurerAdapter {
 
     private MetricRegistry registry;
 
-    @Bean
-    @Autowired
-    public ServletRegistrationBean servletRegistrationBean(MetricRegistry metricRegistry) {
-        MetricsServlet ms = new MetricsServlet(metricRegistry);
+    @Override
+    public void configureReporters(MetricRegistry metricRegistry) {
+        JmxReporter.forRegistry(metricRegistry).build().start();
+    }
 
-        ServletRegistrationBean srb = new ServletRegistrationBean(ms, "/metrics/*");
-        srb.setLoadOnStartup(1);
-        return srb;
-
+    @Override
+    public HealthCheckRegistry getHealthCheckRegistry() {
+        return new HealthCheckRegistry();
     }
 
     @Override
     public MetricRegistry getMetricRegistry() {
 
-        if (this.registry == null) {
+        if ( this.registry == null ) {
             registry = new MetricRegistry();
 
             registry.registerAll(new GarbageCollectorMetricSet());
@@ -62,17 +59,16 @@ public class MetricsServletConfig extends MetricsConfigurerAdapter {
         return registry;
     }
 
-    @Override
-    public HealthCheckRegistry getHealthCheckRegistry() {
-        return new HealthCheckRegistry();
+    @Bean
+    @Autowired
+    public ServletRegistrationBean servletRegistrationBean(MetricRegistry metricRegistry) {
+        MetricsServlet ms = new MetricsServlet(metricRegistry);
+
+        ServletRegistrationBean srb = new ServletRegistrationBean(ms, "/metrics/*");
+        srb.setLoadOnStartup(1);
+        return srb;
+
     }
-
-    @Override
-    public void configureReporters(MetricRegistry metricRegistry) {
-        JmxReporter.forRegistry(metricRegistry).build().start();
-    }
-
-
 
 
 }

@@ -19,9 +19,11 @@ public class Bridge {
     private int port;
     private String version = "2.0";
     private int waitTime = 30;
+
     public Bridge() {
 
     }
+
     public Bridge(String host, int port) {
         this.host = host;
         this.port = port;

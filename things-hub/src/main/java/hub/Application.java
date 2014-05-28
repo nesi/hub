@@ -1,10 +1,8 @@
 package hub;
 
 import hub.config.jpa.HubConfigJpa;
-import hub.config.mongo.HubConfigMongo;
 import hub.types.persistent.Person;
 import hub.types.persistent.Role;
-import hub.types.persistent.Username;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;

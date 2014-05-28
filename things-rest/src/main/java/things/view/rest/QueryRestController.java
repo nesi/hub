@@ -22,7 +22,7 @@ import java.util.Map;
  * Time: 6:51 PM
  */
 @RestController
-@RequestMapping(value = "/query")
+@RequestMapping(value = "/rest/query")
 public class QueryRestController {
 
     @Autowired

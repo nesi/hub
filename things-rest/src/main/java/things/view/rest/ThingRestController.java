@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  */
 @RestController
-@RequestMapping(value = "/get")
+@RequestMapping(value = "/rest/get")
 public class ThingRestController {
 
     @Autowired

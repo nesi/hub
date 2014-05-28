@@ -131,6 +131,7 @@ public class JobsQuery implements ThingQuery {
 
     private Thing<Jobs> wrapJobs(Thing<Person> person, Jobs jobs) {
         Thing<Jobs> t = new Thing();
+        t.setId("jobs:"+person.getId());
         t.setKey(person.getKey());
         t.setValue(jobs);
         return t;

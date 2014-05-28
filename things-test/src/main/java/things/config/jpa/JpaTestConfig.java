@@ -35,9 +35,9 @@ import javax.sql.DataSource;
  * Created by markus on 21/05/14.
  */
 @Configuration
-@EnableAutoConfiguration( exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class} )
-@ComponentScan( {"things.thing", "things.config.generic", "things.types"} )
-@EnableJpaRepositories( basePackages = {"things.jpa"} )
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
+@ComponentScan({"things.thing", "things.config.generic", "things.types"})
+@EnableJpaRepositories(basePackages = {"things.jpa"})
 public class JpaTestConfig extends BaseTestConfigInMemory {
 
     @Bean
@@ -45,7 +45,7 @@ public class JpaTestConfig extends BaseTestConfigInMemory {
         return new JpaConnector();
     }
 
-    @Bean( name = "thingDataSource" )
+    @Bean(name = "thingDataSource")
     public DataSource dataSource() throws Exception {
 
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();

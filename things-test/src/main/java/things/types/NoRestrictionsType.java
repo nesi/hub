@@ -12,14 +12,14 @@ import java.util.Objects;
 /**
  * Created by markus on 18/05/14.
  */
-@Value( typeName = "noRestrictionsType" )
-@UniqueKey( unique = false )
+@Value(typeName = "noRestrictionsType")
+@UniqueKey(unique = false)
 @Entity
 public class NoRestrictionsType {
 
     @Id
-    @GeneratedValue( generator = "uuid" )
-    @GenericGenerator( name = "uuid", strategy = "uuid2" )
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String property1;
     private String property2;

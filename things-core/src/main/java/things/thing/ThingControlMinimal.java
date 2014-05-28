@@ -1,6 +1,6 @@
 package things.thing;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -27,11 +27,17 @@ import java.util.*;
 import static com.codahale.metrics.MetricRegistry.name;
 
 /**
- * Project: things-to-build
- * <p>
- * Written by: Markus Binsteiner
- * Date: 10/05/14
- * Time: 9:34 PM
+ * Minimal implementation of a central class that manages all things related, well..., things...
+ *
+ * Minimal means there are no utility/convenience methods, and this is the only control class that talks to
+ * the registered {@link things.thing.ThingReader}, {@link things.thing.ThingWriter}, {@link things.thing.ThingAction} and
+ * {@link things.thing.ThingQuery} classes.
+ *
+ * In all likelyhood you'll want to use either the {@link things.thing.ThingControlReactive} controller (if you want to
+ * use the RxJava {@link rx.Observable}s directly) or, more likely, the full-blown {@link things.thing.ThingControl}
+ * implementation, which extends both and additionally provides convenience method to get plain result Lists that block.
+ *
+ * For more details about the overall workings of this class check out {@link things.thing.ThingControl}.
  */
 public class ThingControlMinimal {
 
@@ -40,6 +46,7 @@ public class ThingControlMinimal {
 
     protected final PopluateOperator POPULATE_THINGS;
     private ActionManager actionManager;
+    protected Timer create_thing_timer;
     protected MetricRegistry metrics;
     protected ThingActions thingActions = new ThingActions();
     protected ThingQueries thingQueries = new ThingQueries();
@@ -65,15 +72,15 @@ public class ThingControlMinimal {
             Observable<? extends Thing<?>> childs = observeChildrenForTypeAndKey(parent, child.getThingType(), child.getKey(), false);
             if ( needsUniqueKeyAsChild ) {
                 boolean empty = childs.isEmpty().toBlockingObservable().single();
-                if ( ! empty ) {
-                    throw new ThingRuntimeException(parent, "Parent already contains child with type "+child.getThingType()+" and key "+child.getKey());
+                if ( !empty ) {
+                    throw new ThingRuntimeException(parent, "Parent already contains child with type " + child.getThingType() + " and key " + child.getKey());
                 }
             } else {
                 Object value = getValue(child);
                 childs = filterThingsWithValue(childs, value);
                 boolean empty = childs.isEmpty().toBlockingObservable().single();
-                if ( ! empty ) {
-                    throw new ThingRuntimeException(parent, "Parent already contains child with type "+child.getThingType()+" and key "+child.getKey()+" and value "+value);
+                if ( !empty ) {
+                    throw new ThingRuntimeException(parent, "Parent already contains child with type " + child.getThingType() + " and key " + child.getKey() + " and value " + value);
                 }
             }
 
@@ -85,25 +92,25 @@ public class ThingControlMinimal {
 
     public Observable<? extends Thing<?>> executeAction(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
-            return actionManager.execute(actionName, things, parameters);
+        return actionManager.execute(actionName, things, parameters);
 
     }
 
     public Observable<? extends Thing<?>> executeQuery(String queryName, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
-            ThingQuery ta = thingQueries.get(queryName);
+        Optional<ThingQuery> ta = thingQueries.get(queryName);
 
-            if ( ta == null ) {
-                throw new QueryRuntimeException("Can't find query with name: " + queryName);
-            }
+        if ( !ta.isPresent() ) {
+            throw new QueryRuntimeException("Can't find query with name: " + queryName);
+        }
 
-            if ( parameters == null ) {
-                parameters = Maps.newHashMap();
-            }
+        if ( parameters == null ) {
+            parameters = Maps.newHashMap();
+        }
 
-            Observable<? extends Thing<?>> result = ta.execute(queryName, things.lift(POPULATE_THINGS), parameters);
+        Observable<? extends Thing<?>> result = ta.get().execute(queryName, things.lift(POPULATE_THINGS), parameters);
 
-            return result;
+        return result;
 
     }
 
@@ -163,7 +170,6 @@ public class ThingControlMinimal {
     public Observable<? extends Thing<?>> observeChildrenForTypeAndKey(Thing<?> t, String type, String key, boolean populated) {
         return observeChildrenForTypeAndKey(Observable.just(t), type, key, populated);
     }
-
 
     public Observable<? extends Thing<?>> observeChildrenForTypeAndKey(Observable<? extends Thing<?>> t, String type, String key, boolean populated) {
 
@@ -271,7 +277,7 @@ public class ThingControlMinimal {
 
                     if ( typeRegistry.needsUniqueValueForKey(value) ) {
                         Observable<? extends Thing<?>> obs = observeThingsMatchingKeyAndValue(key, value);
-                        if ( ! obs.isEmpty().toBlockingObservable().single() ) {
+                        if ( !obs.isEmpty().toBlockingObservable().single() ) {
                             subscriber.onError(
                                     new ThingException(
                                             "There's already a thing stored for key "
@@ -468,6 +474,16 @@ public class ThingControlMinimal {
 
     }
 
+    /**
+     * Saves or updates this thing.
+     *
+     * Make sure you use the return-Thing after saving, because depending on the underlying storage
+     * backend ({@link things.thing.ThingWriter}), it might be that the old Thing is out of date (session-handling, etc...)
+     *
+     * @param thing the thing
+     * @return the persistent thing
+     * @throws ThingException if more than one {@link things.thing.ThingWriter} was configured for the type/key combination of this thing
+     */
     public <V> Thing<V> saveThing(Thing<V> thing) throws ThingException {
 
         if ( MatcherUtils.isGlob(thing.getThingType()) ) {
@@ -487,8 +503,6 @@ public class ThingControlMinimal {
     public void setActionManager(ActionManager am) {
         this.actionManager = am;
     }
-
-    protected Timer create_thing_timer;
 
     @Inject
     public void setMetrics(MetricRegistry metrics) {
@@ -542,7 +556,7 @@ public class ThingControlMinimal {
 
     /**
      * Validates the value.
-     * <p>
+     *
      * Internally, this uses hibernate-validate.
      *
      * @param value the value to validate

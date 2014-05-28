@@ -20,7 +20,7 @@ import java.util.Map;
  * @author: Markus Binsteiner
  */
 @RestController
-@RequestMapping(value = "/execute")
+@RequestMapping(value = "/rest")
 public class ExecuteRestController {
 
     private ThingControl thingControl;

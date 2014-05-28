@@ -8,10 +8,9 @@ import org.hibernate.validator.constraints.Length;
  */
 public class Saying {
 
-    private long id;
-
-    @Length(max = 3)
+    @Length( max = 3 )
     private String content;
+    private long id;
 
     public Saying() {
         // Jackson deserialization
@@ -23,13 +22,13 @@ public class Saying {
     }
 
     @JsonProperty
-    public long getId() {
-        return id;
+    public String getContent() {
+        return content;
     }
 
     @JsonProperty
-    public String getContent() {
-        return content;
+    public long getId() {
+        return id;
     }
 
 }

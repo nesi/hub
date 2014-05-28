@@ -6,14 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Project: researchHub
- * <p>
- * Written by: Markus Binsteiner
- * Date: 24/01/14
- * Time: 11:17 AM
+ * Marker to tag a class as being usable as a {@link things.types.ThingType} when using the {@link things.types.AnnotationTypeFactory} way of gathering types.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface Value {
 
     public String typeName();

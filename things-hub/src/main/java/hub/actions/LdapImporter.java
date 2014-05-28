@@ -1,6 +1,7 @@
 package hub.actions;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.unboundid.ldap.sdk.*;
 import hub.types.dynamic.User;
 import hub.types.persistent.Person;
@@ -15,10 +16,7 @@ import things.thing.Thing;
 import things.thing.ThingAction;
 import things.thing.ThingControl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -117,47 +115,6 @@ public class LdapImporter implements ThingAction {
     @Autowired
     private ThingControl tc;
 
-    private Thing<Person> importUser(User u) {
-
-        Person p = u.getPerson();
-            String nesi_username = (p.getFirst_name() + "_" + p.getLast_name()).toLowerCase();
-            Thing<Person> tp = null;
-            try {
-                tp = tc.createThing(nesi_username, p);
-            } catch (Exception te) {
-                myLogger.debug("Can't create thing for person " + p.nameToString() + ": {}", te.getLocalizedMessage());
-                Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
-                if ( !opt.isPresent() ) {
-                    throw new ThingRuntimeException("Could not find person for key: " + nesi_username);
-                }
-                tp = opt.get();
-            }
-
-            for ( String key : u.getUsernames().keySet() ) {
-                for ( String un : u.getUsernames().get(key) ) {
-                    try {
-                        Username username = new Username(un);
-                        List<Thing<Username>> obs = tc.getChildrenForType(tp, Username.class, false);
-                        Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(Observable.just(tp), username);
-
-                        if ( !childMatches.isEmpty().toBlockingObservable().single() ) {
-                            System.out.println("Username already in db: " + un);
-                            continue;
-                        }
-
-                        Thing<?> tu = tc.createThing(key, username);
-                        tc.addChildThing(tp, tu);
-                    } catch (Exception e) {
-                        throw new ThingRuntimeException("Could not import: " + un, e);
-                    }
-                }
-            }
-            System.out.println("All imported: " + tp.getKey());
-
-        return tp;
-
-    }
-
     @Override
     public Observable<? extends Thing<?>> execute(String command, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
 
@@ -175,7 +132,7 @@ public class LdapImporter implements ThingAction {
                     Thing<Person> p = importUser(u);
                     subscriber.onNext(p);
                 } catch (Exception e) {
-                    myLogger.debug("Could not import user: "+u.toString(), e);
+                    myLogger.debug(e.getLocalizedMessage());
                 }
 
             }
@@ -183,8 +140,53 @@ public class LdapImporter implements ThingAction {
         });
 
 
-
         return obs;
+    }
+
+    @Override
+    public Set<String> getSupportedActionNames() {
+        return ImmutableSet.<String>of("import_uoa_ldap");
+    }
+
+    private Thing<Person> importUser(User u) {
+
+        Person p = u.getPerson();
+        String nesi_username = (p.getFirst_name() + "_" + p.getLast_name()).toLowerCase();
+        Thing<Person> tp = null;
+        try {
+            tp = tc.createThing(nesi_username, p);
+        } catch (Exception te) {
+            myLogger.debug("Can't create thing for person " + p.nameToString() + ": {}", te.getLocalizedMessage());
+            Optional<Thing<Person>> opt = tc.findUniqueThingMatchingTypeAndKey(Person.class, nesi_username, false);
+            if ( !opt.isPresent() ) {
+                throw new ThingRuntimeException("Could not find person for key: " + nesi_username);
+            }
+            tp = opt.get();
+        }
+
+        for ( String key : u.getUsernames().keySet() ) {
+            for ( String un : u.getUsernames().get(key) ) {
+                try {
+                    Username username = new Username(un);
+                    List<Thing<Username>> obs = tc.getChildrenForType(tp, Username.class, false);
+                    Observable<Thing<Username>> childMatches = tc.filterThingsWithValue(Observable.just(tp), username);
+
+                    if ( !childMatches.isEmpty().toBlockingObservable().single() ) {
+                        System.out.println("Username already in db: " + un);
+                        continue;
+                    }
+
+                    Thing<?> tu = tc.createThing(key, username);
+                    tc.addChildThing(tp, tu);
+                } catch (Exception e) {
+                    throw new ThingRuntimeException("Could not import: " + un + ": " + e.getLocalizedMessage());
+                }
+            }
+        }
+        System.out.println("All imported: " + tp.getKey());
+
+        return tp;
+
     }
 
 

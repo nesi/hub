@@ -8,10 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by markus on 19/05/14.
+ * Specifies the {@link things.types.SingleStringConverter} that is used to convert this type to a single string.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface StringConverter {
     public Class<? extends SingleStringConverter<?>> value();
 }

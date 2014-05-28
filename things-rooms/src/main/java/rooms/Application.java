@@ -43,7 +43,7 @@ public class Application {
 
         System.out.println("THINGSSSS");
         for ( Thing t : tc.findAllThings() ) {
-            System.out.println("THING: "+t);
+            System.out.println("THING: " + t);
         }
 
 //        mo.dropCollection(Thing.class);

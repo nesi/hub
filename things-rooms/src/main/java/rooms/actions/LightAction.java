@@ -1,18 +1,19 @@
 package rooms.actions;
 
+import com.google.common.collect.ImmutableSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import rooms.model.lights.limitless.whiteV2.LightWhiteV2;
 import rooms.types.Light;
 import rooms.types.LightState;
 import rx.Observable;
-import rx.functions.Action1;
 import things.thing.Thing;
 import things.thing.ThingAction;
 import things.thing.ThingControl;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Project: things
@@ -24,11 +25,9 @@ import java.util.Map;
 public class LightAction implements ThingAction {
 
     private LightUtil lightUtil;
-    private ThingControl tc;
-
-
     @Autowired
     public SimpMessagingTemplate simpMessagingTemplate;
+    private ThingControl tc;
 
     public LightAction() {
 
@@ -61,6 +60,11 @@ public class LightAction implements ThingAction {
         return result.doOnNext(o -> {
             simpMessagingTemplate.convertAndSend("/topic/light_change", o);
         });
+    }
+
+    @Override
+    public Set<String> getSupportedActionNames() {
+        return ImmutableSet.<String>of("set_light", "toggle", "turn_on", "turn_off", "set");
     }
 
     private Thing<LightState> setLight(Thing<Light> light, Map<String, String> params) {

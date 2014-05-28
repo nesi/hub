@@ -6,14 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Project: researchHub
- * <p>
- * Written by: Markus Binsteiner
- * Date: 24/01/14
- * Time: 11:17 AM
+ * Tags a type as one where there can be only ever one key with the same value.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface UniqueKey {
 
     public boolean unique() default true;

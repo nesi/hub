@@ -20,6 +20,12 @@ public class InMemoryConnector extends AbstractSimpleThingReader implements Thin
 
     private final Map<String, Multimap<String, Thing<?>>> allThings = Maps.newConcurrentMap();
 
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
+    }
+
     public void deleteAllThings() {
         allThings.clear();
     }
@@ -89,12 +95,6 @@ public class InMemoryConnector extends AbstractSimpleThingReader implements Thin
         }
         allThings.get(t.getThingType()).put(t.getKey(), t);
         return t;
-    }
-
-    @Override
-    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
-        child.getParents().add(parent.getId());
-        return saveThing(child);
     }
 
 }

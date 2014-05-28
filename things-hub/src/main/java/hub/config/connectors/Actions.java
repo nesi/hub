@@ -41,9 +41,7 @@ public class Actions {
     @Bean
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();
-        ta.addAction("import_uoa_ldap", ldapImporter());
-        ta.addAction("import_projectdb", importRoleAndGroupAction());
-        ta.addAction("clear_mongo", clearMongoDatabase());
+        ta.addAction(ldapImporter());
         return ta;
     }
 

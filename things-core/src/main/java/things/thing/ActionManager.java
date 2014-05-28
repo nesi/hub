@@ -6,7 +6,10 @@ import things.exceptions.ActionException;
 import java.util.Map;
 
 /**
- * Created by markus on 20/05/14.
+ * If you need more control over how Actions are executed (e.g. everthing should be executed in a Fork/Join threadpool, or different actions need to be executed differently)
+ * you can implement this interface.
+ *
+ * Default ActionManager is {@link things.thing.DefaultActionManager}.
  */
 public interface ActionManager {
     Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException;

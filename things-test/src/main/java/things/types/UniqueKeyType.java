@@ -12,14 +12,14 @@ import java.util.Objects;
 /**
  * Created by markus on 18/05/14.
  */
-@Value( typeName = "uniqueKeyType" )
-@UniqueKey( unique = true )
+@Value(typeName = "uniqueKeyType")
+@UniqueKey(unique = true)
 @Entity
 public class UniqueKeyType {
 
     @Id
-    @GeneratedValue( generator = "uuid" )
-    @GenericGenerator( name = "uuid", strategy = "uuid2" )
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String property1;
     private String property2;

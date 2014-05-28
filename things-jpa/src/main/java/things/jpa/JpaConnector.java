@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
 import rx.Observable;
 import rx.Subscriber;
 import things.exceptions.QueryRuntimeException;
@@ -18,11 +17,9 @@ import things.thing.ThingWriter;
 import things.utils.MatcherUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
@@ -39,19 +36,24 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
     @Autowired
     protected EntityManager entityManager;
     private Timer find_all_timer;
-    private Timer find_for_type_timer;
     private Timer find_for_key_timer;
     private Timer find_for_type_and_key_timer;
-    private Timer read_value_timer;
-    private Timer save_value_timer;
+    private Timer find_for_type_timer;
     private Timer find_parents_timer;
-
     @Autowired
     protected MetricRegistry metrics;
+    private Timer read_value_timer;
+    private Timer save_value_timer;
     @Autowired
     private ThingRepository thingRepository;
     @Autowired
     private ValueRepositories valueRepositories;
+
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
+    }
 
     /**
      * For testing only
@@ -112,8 +114,8 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
             Iterable<? extends Thing<?>> things = thingRepository.findByThingType(type);
             return Observable.from(things);
         } catch (Exception e) {
-            myLogger.debug("Query Exception when querying for type "+type+": "+e.getLocalizedMessage(), e);
-            throw new QueryRuntimeException("Can't query for type: "+type, e);
+            myLogger.debug("Query Exception when querying for type " + type + ": " + e.getLocalizedMessage(), e);
+            throw new QueryRuntimeException("Can't query for type: " + type, e);
         } finally {
             context.stop();
         }
@@ -126,20 +128,6 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
         try {
             Iterable<Thing<?>> things = thingRepository.findByTypeAndKey(type, key);
             return Observable.from(things);
-        } finally {
-            context.stop();
-        }
-    }
-
-    @Override
-    public Observable<? extends Thing<?>> getChildrenForId(String id) {
-
-        final Timer.Context context = find_parents_timer.time();
-
-        try {
-            Iterable<Thing<?>> result = thingRepository.findByParents(id);
-
-            return Observable.from(result);
         } finally {
             context.stop();
         }
@@ -166,6 +154,19 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
         return obs;
     }
 
+    @Override
+    public Observable<? extends Thing<?>> getChildrenForId(String id) {
+
+        final Timer.Context context = find_parents_timer.time();
+
+        try {
+            Iterable<Thing<?>> result = thingRepository.findByParents(id);
+
+            return Observable.from(result);
+        } finally {
+            context.stop();
+        }
+    }
 
     @Override
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
@@ -291,11 +292,5 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
 
     public void setValueRepositories(ValueRepositories valueRepositories) {
         this.valueRepositories = valueRepositories;
-    }
-
-    @Override
-    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
-        child.getParents().add(parent.getId());
-        return saveThing(child);
     }
 }

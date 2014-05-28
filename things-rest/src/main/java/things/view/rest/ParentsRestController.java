@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingControl;
@@ -15,8 +16,8 @@ import java.util.List;
 /**
  * Created by markus on 19/05/14.
  */
-//@RestController
-@RequestMapping(value = "/get")
+@RestController
+@RequestMapping(value = "/rest/get")
 public class ParentsRestController {
 
     @Autowired
@@ -34,6 +35,28 @@ public class ParentsRestController {
 
         List<Thing> parents = thingControl.findParents(result);
 
+        return parents;
+
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/parents/of/every/{type}/{key}")
+    public List<Thing> getParentsOfThingsMatchingTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String keyMatcher) {
+
+        Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingTypeAndKey(type, keyMatcher, false);
+
+        List<Thing> parents = thingControl.findParents(result);
+        return parents;
+
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/parents/of/every/{type}")
+    public List<Thing> getParentsOfThingsMatchingType(@PathVariable("type") String type) {
+
+        Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingType(type, false);
+
+        List<Thing> parents = thingControl.findParents(result);
         return parents;
 
     }

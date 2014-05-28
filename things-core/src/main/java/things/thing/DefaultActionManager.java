@@ -7,24 +7,24 @@ import things.exceptions.ActionException;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Created by markus on 20/05/14.
+ * Default implementation of an {@link ActionManager}.
+ *
+ * Executes all actions in the same thread and just forwards the result of the execution.
  */
 public class DefaultActionManager implements ActionManager {
 
     @Inject
     private ThingActions thingActions;
 
-    @Inject
-    private ThingControl thingControl;
-
     @Override
     public Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) throws ActionException {
 
-        ThingAction ta = thingActions.get(actionName);
+        Optional<ThingAction> ta = thingActions.get(actionName);
 
-        if ( ta == null ) {
+        if ( !ta.isPresent() ) {
             throw new ActionException("Can't find action with name: " + actionName, actionName);
         }
 
@@ -32,7 +32,7 @@ public class DefaultActionManager implements ActionManager {
             parameters = Maps.newHashMap();
         }
 
-        Observable<? extends Thing<?>> result = ta.execute(actionName, things, parameters);
+        Observable<? extends Thing<?>> result = ta.get().execute(actionName, things, parameters);
 
         return result;
     }

@@ -74,7 +74,7 @@ public class PanAuditQuery implements ThingQuery {
 
         Result<Record2<Integer, BigDecimal>> result = query.fetch();
 
-        final AuditRecord ar = new AuditRecord();
+        final AuditRecord ar = new AuditRecord(un.getValue().getUsername());
 
         result.stream()
                 .forEach(r -> ar.addJob(r.getValue(Tables.AUDIT_USER.DONE).toString(), r.getValue(Tables.AUDIT_USER.CORE_HOURS)));
@@ -87,6 +87,7 @@ public class PanAuditQuery implements ThingQuery {
         return ImmutableSet.<String>builder().add("audit_data").build();
     }
 
+
     private Observable<Thing<AuditRecord>> lookupAudit(Thing username_or_person) {
         if ( typeRegistry.equals(Person.class, username_or_person.getThingType()) ) {
             return getAuditForPerson(username_or_person);
@@ -97,6 +98,7 @@ public class PanAuditQuery implements ThingQuery {
 
     private Thing<AuditRecord> wrapJobs(Thing<Person> person, AuditRecord auditRecord) {
         Thing<AuditRecord> t = new Thing();
+        t.setId("audit_data:person:"+person.getId());
         t.setKey(person.getKey());
         t.setValue(auditRecord);
         return t;

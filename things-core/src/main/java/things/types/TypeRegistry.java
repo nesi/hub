@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  * Project: things
- * <p>
+ *
  * Written by: Markus Binsteiner
  * Date: 14/05/14
  * Time: 8:43 PM
@@ -150,6 +150,18 @@ public class TypeRegistry {
         return getThingType(type).isNeedsUniqueKey();
     }
 
+    public boolean needsUniqueKeyAndValueAsChild(Object value) {
+        return getThingType(value).isNeedsUniqueValueForKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAndValueAsChild(Class typeClass) {
+        return getThingType(typeClass).isNeedsUniqueValueForKeyAsChild();
+    }
+
+    public boolean needsUniqueKeyAndValueAsChild(String type) {
+        return getThingType(type).isNeedsUniqueValueForKeyAsChild();
+    }
+
     public boolean needsUniqueKeyAsChild(Object value) {
         return getThingType(value).isNeedsUniqueKeyAsChild();
     }
@@ -172,17 +184,5 @@ public class TypeRegistry {
 
     public boolean needsUniqueValueForKey(String type) {
         return getThingType(type).isNeedsUniqueValue();
-    }
-
-    public boolean needsUniqueKeyAndValueAsChild(Object value) {
-        return getThingType(value).isNeedsUniqueValueForKeyAsChild();
-    }
-
-    public boolean needsUniqueKeyAndValueAsChild(Class typeClass) {
-        return getThingType(typeClass).isNeedsUniqueValueForKeyAsChild();
-    }
-
-    public boolean needsUniqueKeyAndValueAsChild(String type) {
-        return getThingType(type).isNeedsUniqueValueForKeyAsChild();
     }
 }

@@ -6,11 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Project: researchHub
- * <p>
- * Written by: Markus Binsteiner
- * Date: 24/01/14
- * Time: 11:17 AM
+ * Specifies which classes this type can be a child of.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

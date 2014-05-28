@@ -13,7 +13,6 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
-
 //apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'
@@ -27,7 +26,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
     compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
-    compile("org.springframework:spring-tx:"+springVersion)
+    compile("org.springframework:spring-tx:" + springVersion)
 
     compile("com.fasterxml.jackson.datatype:jackson-datatype-guava:2.2.0")
     compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.2.0")

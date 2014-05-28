@@ -16,8 +16,8 @@ import things.mongo.MongoConnector;
  * Created by markus on 21/05/14.
  */
 @Configuration
-@EnableAutoConfiguration( exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class} )
-@ComponentScan( {"things.thing", "things.config.generic"} )
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
+@ComponentScan({"things.thing", "things.config.generic"})
 public class MongoTestConfig extends MongoConfig {
 
     @Override

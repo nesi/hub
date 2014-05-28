@@ -4,11 +4,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 /**
- * Project: things
- * <p>
- * Written by: Markus Binsteiner
- * Date: 12/05/14
- * Time: 9:14 PM
+ * Convenience class to be able to populate a {@link Thing} as part of an Observable chain.
  */
 public final class PopluateOperator<T> implements Observable.Operator<T, T> {
 
@@ -39,6 +35,9 @@ public final class PopluateOperator<T> implements Observable.Operator<T, T> {
         };
     }
 
+    /**
+     * Ensures that the provided Thing has it's value ready.
+     */
     public T populate(T thing) {
         Thing<? super Thing> t = (Thing<? super Thing>) thing;
         tc.getValue(t);

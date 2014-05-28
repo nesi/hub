@@ -1,5 +1,6 @@
 package hub.actions;
 
+import com.google.common.collect.ImmutableSet;
 import hub.types.persistent.Person;
 import hub.types.persistent.Role;
 import hub.types.persistent.Username;
@@ -10,6 +11,7 @@ import things.thing.Thing;
 import things.thing.ThingAction;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: Markus Binsteiner
@@ -29,6 +31,11 @@ public class ClearMongoDatabase implements ThingAction {
         mo.dropCollection(Role.class);
 
         return Observable.empty();
+    }
+
+    @Override
+    public Set<String> getSupportedActionNames() {
+        return ImmutableSet.<String>of("clear_mongo");
     }
 
     @Autowired

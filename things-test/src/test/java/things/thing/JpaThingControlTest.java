@@ -12,9 +12,9 @@ import javax.inject.Inject;
 /**
  * Created by markus on 21/05/14.
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( loader = AnnotationConfigContextLoader.class,
-        classes = {JpaTestConfig.class} )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+        classes = {JpaTestConfig.class})
 public class JpaThingControlTest extends BaseThingControlTest {
 
     @Inject

@@ -15,7 +15,7 @@ public class LightsController {
     @MessageMapping("/hello")
     @SendTo("/topic/light_change")
     public LightState stateChanged(LightState ls) {
-        System.out.println("CHANGE: "+ls);
+        System.out.println("CHANGE: " + ls);
         return ls;
     }
 }

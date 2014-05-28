@@ -46,6 +46,21 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
         xstream.processAnnotations(Thing.class);
     }
 
+    @Override
+    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
+        child.getParents().add(parent.getId());
+        return saveThing(child);
+    }
+
+    private void addElement(Thing<?> t) {
+
+        if ( allThingsCache.get(t.getThingType()) == null ) {
+            allThingsCache.put(t.getThingType(), HashMultimap.create());
+        }
+        allThingsCache.get(t.getThingType()).put(t.getKey(), t);
+
+    }
+
     private Thing<?> assembleThing(Path path) {
         return assembleThing(path.toFile());
     }
@@ -91,15 +106,6 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
             }
         }
         return false;
-    }
-
-    private void addElement(Thing<?> t) {
-
-        if ( allThingsCache.get(t.getThingType()) == null ) {
-            allThingsCache.put(t.getThingType(), HashMultimap.create());
-        }
-        allThingsCache.get(t.getThingType()).put(t.getKey(), t);
-
     }
 
     @Override
@@ -217,11 +223,5 @@ public class XstreamConnector extends AbstractSimpleThingReader implements Thing
         xstream.toXML(value, writer);
 
         return vId;
-    }
-
-    @Override
-    public <V> Thing<V> addChild(Thing<?> parent, Thing<V> child) {
-        child.getParents().add(parent.getId());
-        return saveThing(child);
     }
 }

@@ -15,7 +15,10 @@ public class AuditRecord implements Serializable {
 
     private final Map<String, BigDecimal> coreHours = Maps.newConcurrentMap();
 
-    public AuditRecord() {
+    private final String username;
+
+    public AuditRecord(String username) {
+        this.username = username;
     }
 
     public void addJob(String name, BigDecimal corehours) {
@@ -24,5 +27,9 @@ public class AuditRecord implements Serializable {
 
     public Map<String, BigDecimal> getCoreHours() {
         return coreHours;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }
