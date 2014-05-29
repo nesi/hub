@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -319,18 +320,31 @@ public class ThingControlMinimal {
         return obs;
     }
 
-    public Observable<? extends Thing<?>> observeThingById(String id) {
+    public Observable<? extends Thing<?>> observeThingById(String id, Optional<String> type, Optional<String> key, boolean populate) {
 
-        List<Observable<? extends Thing<?>>> all = Lists.newLinkedList();
+        List<Observable<? extends Thing<?>>> all = Lists.newArrayList();
 
-        //TODO make that smarter? maybe cache?
-        for ( ThingReader r : thingReaders.getAll() ) {
-            all.add(r.findThingForId(id));
+        if ( type.isPresent() && key.isPresent() ) {
+            Set<ThingReader> readers = thingReaders.get(type.get(), key.get());
+            for ( ThingReader r : readers ) {
+                all.add(r.findThingForId(id));
+            }
+
+        } else {
+
+            //TODO make that smarter? maybe cache?
+            for ( ThingReader r : thingReaders.getAll() ) {
+                all.add(r.findThingForId(id));
+            }
         }
         Observable<? extends Thing<?>> obs = Observable.merge(all);
 
         //TODO maybe check for single? Although, first might be quicker.
-        return obs.first();
+        if ( populate ) {
+            return obs.first().lift(POPULATE_THINGS);
+        } else {
+            return obs.first();
+        }
     }
 
     public Observable<? extends Thing<?>> observeThingsForTypeAndKey(String type, String key, boolean populate) {
@@ -395,6 +409,45 @@ public class ThingControlMinimal {
         }
 
         return observeThingsMatchingKeyAndValue(keyMatcher, (V) value.get());
+
+    }
+
+
+    public <V> Observable<Thing<V>> observeThingsForTypeMatchingKey(Class<V> groupClass, String keyMatcher, boolean populate) {
+
+        List<Observable<? extends Thing<?>>> all = Lists.newLinkedList();
+        Set<ThingReader> readers;
+
+        String type = typeRegistry.getType(groupClass);
+        try {
+            readers = thingReaders.get(type, keyMatcher);
+        } catch (TypeRuntimeException tre) {
+            myLogger.debug("No connector found for type '{}' and key '{}", type, keyMatcher, tre);
+            return Observable.empty();
+        }
+
+        if ("*".equals(keyMatcher)) {
+            for ( ThingReader r : readers ) {
+                all.add(r.findThingsForType(type));
+            }
+        } else if ( MatcherUtils.isGlob(keyMatcher) ) {
+            for (ThingReader r : readers ) {
+                all.add(r.findThingsMatchingTypeAndKey(type, keyMatcher));
+            }
+        } else {
+            for (ThingReader r : readers ) {
+                all.add(r.findThingsForTypeAndKey(type, keyMatcher));
+            }
+        }
+
+        Observable<? extends Thing<?>> obs = Observable.merge(all);
+
+        if ( populate ) {
+            return obs.map(t-> (Thing<V>)t).lift(POPULATE_THINGS);
+        } else {
+            return obs.map(t -> (Thing<V>)t);
+
+        }
 
     }
 

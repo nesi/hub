@@ -50,4 +50,13 @@ public abstract class AbstractSimpleThingReader extends AbstractThingReader {
 
         return result;
     }
+
+    public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
+        return findThingsMatchingTypeAndKey(type, key);
+    }
+
+    public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
+        return findThingsMatchingTypeAndKey(type, key);
+    }
+
 }

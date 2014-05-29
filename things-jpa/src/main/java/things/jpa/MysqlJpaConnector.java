@@ -40,6 +40,28 @@ public class MysqlJpaConnector extends JpaConnector {
 
     }
 
+
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
+
+        final Timer.Context context = find_matching_type_and_key_timer.time();
+
+        try {
+
+            String sqlQuery = "select * from things thing0_ where thing0_.thing_type = :thingType and thing0_.thing_key regexp :thingKey";
+
+            Query q = entityManager.createNativeQuery(sqlQuery, Thing.class);
+            q.setParameter("thingType", type);
+            q.setParameter("thingKey", MatcherUtils.convertGlobToRegex(key));
+            List<Thing<?>> result = q.getResultList();
+
+            return Observable.from(result);
+        } finally {
+            context.stop();
+        }
+
+    }
+
     @Autowired
     @Override
     public void setMetricRegistry(MetricRegistry reg) {

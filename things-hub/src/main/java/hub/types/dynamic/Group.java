@@ -1,7 +1,10 @@
 package hub.types.dynamic;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import things.model.types.Value;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -10,10 +13,12 @@ import java.util.Objects;
 @Value(typeName = "group")
 public class Group {
 
-    private String groupName;
+    private final String groupName;
 
-    public Group() {
-    }
+    private Multimap<String, User> members = LinkedHashMultimap.create();
+
+//    public Group() {
+//    }
 
     public Group(String groupName) {
         this.groupName = groupName;
@@ -23,9 +28,22 @@ public class Group {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+//    public void setGroupName(String groupName) {
+//        this.groupName = groupName;
+//    }
+
+    public Multimap<String, User> getMembers() {
+        return members;
     }
+
+    public void addMember(User member) {
+        Collection<String> roles = member.getRoles().get(groupName);
+        for ( String role : roles ) {
+            members.put(role, member);
+        }
+
+    }
+
 
     public boolean equals(Object obj) {
         if ( obj == this ) return true;

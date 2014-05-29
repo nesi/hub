@@ -133,6 +133,26 @@ public class JpaConnector extends AbstractThingReader implements ThingReader, Th
         }
     }
 
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
+
+        Observable obs = Observable.create((Subscriber<? super Object> subscriber) -> {
+
+            findThingsForType(type).subscribe(
+                    (thing) -> {
+                        if ( MatcherUtils.wildCardMatch(thing.getKey(), key) ) {
+                            subscriber.onNext(thing);
+                        }
+                    },
+                    (throwable) -> {
+                        subscriber.onError(throwable);
+                    },
+                    () -> subscriber.onCompleted()
+            );
+        });
+        return obs;
+    }
+
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                        final String key) {
 

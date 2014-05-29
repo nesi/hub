@@ -28,6 +28,10 @@ abstract public class AbstractThingReader implements ThingReader {
 
     abstract public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher);
 
+    abstract public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key);
+
+    abstract public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key);
+
     protected boolean equalsValue(Thing<?> t, Object value) {
         Object thingValue = null;
         if ( !t.getValueIsPopulated() ) {
@@ -54,9 +58,7 @@ abstract public class AbstractThingReader implements ThingReader {
         return findThingsMatchingTypeAndKey(type, "*");
     }
 
-    public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return findThingsMatchingTypeAndKey(type, key);
-    }
+
 
     public <V> Observable<Thing<V>> findThingsForValue(V value) {
         Observable<? extends Thing<?>> obs = findThingsForType(typeRegistry.getType(value));

@@ -33,6 +33,9 @@ public interface ThingReader {
 
     abstract Observable<? extends Thing<?>> findThingsMatchingType(String typeMatcher);
 
+    abstract public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key);
+
+
     /**
      * Returns an {@link rx.Observable} of all Things what match the provided type and key.
      * <p>

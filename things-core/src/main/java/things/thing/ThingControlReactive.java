@@ -5,6 +5,7 @@ import things.exceptions.ThingRuntimeException;
 import things.utils.MatcherUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Convenience class that extends {@link things.thing.ThingControl} and adds some convenience methods
@@ -83,18 +84,30 @@ public class ThingControlReactive extends ThingControlMinimal {
         return observeChildrenMatchingTypeAndKey(Observable.from(t), typeMatch, keyMatch, populated);
     }
 
+    public <V> Observable<Thing<V>> observeParentsOfType(Thing<?> t, Class<V> parentType, boolean populate) {
+        return observeParents(Observable.just(t), Optional.of(typeRegistry.getType(parentType)), Optional.of("*"), populate).map(thing -> (Thing<V>)thing);
+    }
+
+    public Observable<? extends Thing<?>> observeParents(Thing<?> t, Optional<String> type, Optional<String> key, boolean populate) {
+        return observeParents(Observable.just(t), type, key, populate);
+    }
+
     public Observable<? extends Thing<?>> observeParents(Thing<?> t) {
-        return observeParents(Observable.just(t));
+        return observeParents(t, Optional.empty(), Optional.empty(), false);
     }
 
-    public Observable<? extends Thing<?>> observeParents(Observable<? extends Thing<?>> things) {
+    public Observable<? extends Thing<?>> observeParents(Observable<? extends Thing<?>> things, Optional<String> type, Optional<String> key, boolean populate) {
 
-        return things.flatMap(t -> observeThingsById(Observable.from(t.getParents())));
+        return things.flatMap(t -> observeThingsById(Observable.from(t.getParents()), type, key, populate));
 
     }
 
-    public Observable<? extends Thing<?>> observeThingsById(Observable<String> id) {
-        return id.flatMap(i -> observeThingById(i));
+    public Observable<? extends Thing<?>> observeThingsById(Observable<String> id, boolean populate) {
+        return id.flatMap(i -> observeThingById(i, Optional.empty(), Optional.empty(), populate));
+    }
+
+    public Observable<? extends Thing<?>> observeThingsById(Observable<String> id, Optional<String> type, Optional<String> key, boolean populate) {
+        return id.flatMap(i -> observeThingById(i, type, key, populate));
     }
 
     public <V> Observable<Thing<V>> observeThingsForType(Class<V> typeClass, boolean populateValues) {
@@ -119,6 +132,7 @@ public class ThingControlReactive extends ThingControlMinimal {
                 .map(t -> populateAndConvertToTyped(typeClass, t));
 
     }
+
 
     public Observable<? extends Thing<?>> observeThingsMatchingType(String type, boolean populateValues) {
         Observable<? extends Thing<?>> obs = observeThingsMatchingTypeAndKey(type, "*", populateValues);

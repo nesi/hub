@@ -103,13 +103,13 @@ public class ThingControl extends ThingControlReactive {
         return Lists.newArrayList(observeAllThings(populated).toBlockingObservable().toIterable());
     }
 
-    public List<Thing> findParents(Thing<?> t) {
-        return findParents(Observable.just(t));
+    public List<Thing> findParents(Thing<?> t, Optional<String> type, Optional<String> key, boolean populate) {
+        return findParents(Observable.just(t), type, key, populate);
     }
 
-    public List<Thing> findParents(Observable<? extends Thing<?>> things) {
+    public List<Thing> findParents(Observable<? extends Thing<?>> things, Optional<String> type, Optional<String> key, boolean populate) {
 
-        return Lists.newArrayList(observeParents(things).toBlockingObservable().toIterable());
+        return Lists.newArrayList(observeParents(things, type, key, populate).toBlockingObservable().toIterable());
 
     }
 

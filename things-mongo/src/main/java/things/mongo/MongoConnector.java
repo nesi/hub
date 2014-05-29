@@ -42,6 +42,8 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
     private Timer find_all_timer;
     private Timer find_children_matching_timer;
     private Timer find_matching_timer;
+    private Timer find_exact_type_matching_key_timer;
+    private Timer find_exact_type_and_key_timer;
     @Autowired
     private MetricRegistry metrics;
     private MongoTemplate mongoTemplate;
@@ -182,6 +184,42 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         return things.flatMap(t -> getChildrenMatchingTypeAndKey(t, typeMatcher, keyMatcher));
     }
 
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
+
+        final Timer.Context context = find_exact_type_and_key_timer.time();
+        try {
+            Query q = new Query();
+
+            q.addCriteria(Criteria.where("thingType").is(type).and("key").is(key));
+
+            List<Thing> things = mongoTemplate.find(q, Thing.class);
+
+            return Observable.from(things).map(t -> (Thing<?>) t);
+        } finally {
+            context.stop();
+        }
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
+
+        final Timer.Context context = find_exact_type_matching_key_timer.time();
+        try {
+            Query q = new Query();
+            String regexKey = MatcherUtils.convertGlobToRegex(key);
+
+            q.addCriteria(Criteria.where("thingType").is(type).and("key").regex(regexKey));
+
+            List<Thing> things = mongoTemplate.find(q, Thing.class);
+
+            return Observable.from(things).map(t -> (Thing<?>) t);
+        } finally {
+            context.stop();
+        }
+
+    }
+
     private MongoPersistentProperty getIdField(Class valueClass) {
         MongoPersistentEntity<?> mongoPersistentEntity = mongoTemplate.getConverter()
                 .getMappingContext().getPersistentEntity(valueClass);
@@ -253,6 +291,8 @@ public class MongoConnector extends AbstractThingReader implements ThingReader, 
         this.metrics = reg;
         find_all_timer = metrics.timer(name(MongoConnector.class, "find-all"));
         find_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
+        find_exact_type_and_key_timer = metrics.timer(name(MongoConnector.class, "find-exact-type-matching-key"));
+        find_exact_type_matching_key_timer = metrics.timer(name(MongoConnector.class, "find-exact-type-and-key"));
         find_children_matching_timer = metrics.timer(name(MongoConnector.class, "find-matching"));
     }
 

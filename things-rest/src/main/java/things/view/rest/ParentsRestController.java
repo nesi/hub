@@ -12,6 +12,7 @@ import things.thing.ThingUtils;
 import things.types.TypeRegistry;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by markus on 19/05/14.
@@ -33,7 +34,7 @@ public class ParentsRestController {
 
         Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, keyMatcher, stringValue);
 
-        List<Thing> parents = thingControl.findParents(result);
+        List<Thing> parents = thingControl.findParents(result, Optional.empty(), Optional.empty(), true);
 
         return parents;
 
@@ -45,7 +46,7 @@ public class ParentsRestController {
 
         Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingTypeAndKey(type, keyMatcher, false);
 
-        List<Thing> parents = thingControl.findParents(result);
+        List<Thing> parents = thingControl.findParents(result, Optional.empty(), Optional.empty(), true);
         return parents;
 
     }
@@ -56,7 +57,7 @@ public class ParentsRestController {
 
         Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingType(type, false);
 
-        List<Thing> parents = thingControl.findParents(result);
+        List<Thing> parents = thingControl.findParents(result, Optional.empty(), Optional.empty(), true);
         return parents;
 
     }

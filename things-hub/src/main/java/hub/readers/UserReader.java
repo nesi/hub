@@ -4,17 +4,15 @@ import hub.actions.UserUtils;
 import hub.types.persistent.Person;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
-import things.thing.AbstractSimpleThingReader;
-import things.thing.Thing;
-import things.thing.ThingControl;
-import things.thing.ThingReader;
+import things.thing.*;
+import things.types.TypeRegistry;
 
 import javax.inject.Inject;
 
 /**
  * @author: Markus Binsteiner
  */
-public class UserReader extends AbstractSimpleThingReader implements ThingReader {
+public class UserReader extends AbstractThingReader  {
 
     private ThingControl tc;
     private UserUtils userUtils;
@@ -39,6 +37,21 @@ public class UserReader extends AbstractSimpleThingReader implements ThingReader
     @Override
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
         return Observable.empty();
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
+        return Observable.empty();
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
+        return tc.observeThingsForTypeAndKey(typeRegistry.getTypeClass(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>)p));
+    }
+
+    @Override
+    public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
+        return tc.observeThingsForTypeMatchingKey(typeRegistry.getTypeClass(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>)p));
     }
 
     @Override
