@@ -22,5 +22,10 @@ grisu-server.things.config
 **log
 **/build/
 build/
+rooms-web/node_modules/
+rooms-web/bower_components/
+*.log
+rooms-web/build/
+rooms-web/dist/
 
 
