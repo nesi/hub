@@ -6,7 +6,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -60,6 +59,19 @@ public class ThingControlMinimal {
         this.POPULATE_THINGS = new PopluateOperator(this);
     }
 
+    /**
+     * Add a child to a parent thing.
+     *
+     * Internally a reference to the parent is stored in the child object, which sounds counterintuitive.
+     * Doing it this way might slow done some types of queries, but it makes it easier to manage references between
+     * things in a de-coupled way. The writer of the child can decide how to store the relationship, and if the
+     * type/writer were to go away, the relationship disappears completely, along with the child. Whereas, otherwise
+     * there would be a reference in the parent object that could not be accessed anymore.
+     *
+     * @param parent the parent
+     * @param child the child
+     * @return the updated child thing
+     */
     public <V> Thing<V> addChildThing(Thing<?> parent, Thing<V> child) {
 
 //        if ( child.getParents().contains(parent.getId()) ) {
