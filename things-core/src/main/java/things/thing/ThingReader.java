@@ -38,22 +38,17 @@ public interface ThingReader {
 
     /**
      * Returns an {@link rx.Observable} of all Things what match the provided type and key.
-     * <p>
+     *
      * Both type and key can be globs, in which case the lookup might take
      * longer since there might be more than one
-     * {@link things.control.ThingReader} configured for a type glob.
-     * <p>
+     * {@link things.thing.ThingReader} configured for a type glob.
+     *
      * Another example, to find all Things of a certain type you can use "*" as
      * the key.
-     * <p>
-     * The return type {@link java.util.stream.Stream} is used to be able to do
-     * concurrent lookups for different types at the same time and
-     * consolidate/filter the results as they come in. This might change in the
-     * future if it turns out a bad idea...
      *
      * @param type the type (or type-glob)
      * @param key  the key (or key-glob)
-     * @return a stream of Things that match the provided type and key
+     * @return an observable of Things that match the provided type and key
      */
     abstract Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(final String type,
                                                                          final String key);

@@ -46,12 +46,12 @@ public class UserReader extends AbstractThingReader  {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return tc.observeThingsForTypeAndKey(typeRegistry.getTypeClass(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>)p));
+        return tc.observeThingsForTypeAndKey(typeRegistry.getType(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>)p));
     }
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
-        return tc.observeThingsForTypeMatchingKey(typeRegistry.getTypeClass(Person.class), key, true).map(p -> userUtils.createUser((Thing<Person>)p));
+        return tc.observeThingsForTypeMatchingKey(Person.class, key, true).map(p -> userUtils.createUser((Thing<Person>)p));
     }
 
     @Override

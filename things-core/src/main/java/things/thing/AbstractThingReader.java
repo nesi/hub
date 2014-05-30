@@ -1,11 +1,16 @@
 package things.thing;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.collect.Maps;
 import rx.Observable;
 import things.exceptions.ThingRuntimeException;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
 import javax.inject.Inject;
+import java.util.Map;
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Project: things
@@ -17,7 +22,6 @@ import javax.inject.Inject;
 abstract public class AbstractThingReader implements ThingReader {
 
     protected TypeRegistry typeRegistry = null;
-
 
     abstract public Observable<? extends Thing<?>> findThingForId(String id);
 
@@ -33,6 +37,7 @@ abstract public class AbstractThingReader implements ThingReader {
     abstract public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key);
 
     protected boolean equalsValue(Thing<?> t, Object value) {
+
         Object thingValue = null;
         if ( !t.getValueIsPopulated() ) {
             thingValue = readValue(t);
@@ -45,25 +50,28 @@ abstract public class AbstractThingReader implements ThingReader {
 
     public Observable<? extends Thing<?>> findThingsForKey(String key) {
 
-        return findThingsMatchingTypeAndKey("*", key);
+            return findThingsMatchingTypeAndKey("*", key);
+
     }
 
     public <V> Observable<Thing<V>> findThingsForKeyAndValue(String key, V value) {
-        Observable<? extends Thing<?>> obs = findThingsForTypeAndKey(typeRegistry.getType(value), key);
-        Observable<Thing<V>> result = findThingsForValue(obs, value);
-        return result;
+
+            Observable<? extends Thing<?>> obs = findThingsForTypeAndKey(typeRegistry.getType(value), key);
+            Observable<Thing<V>> result = findThingsForValue(obs, value);
+            return result;
     }
 
     public Observable<? extends Thing<?>> findThingsForType(String type) {
-        return findThingsMatchingTypeAndKey(type, "*");
+            return findThingsMatchingTypeAndKey(type, "*");
     }
 
 
 
     public <V> Observable<Thing<V>> findThingsForValue(V value) {
-        Observable<? extends Thing<?>> obs = findThingsForType(typeRegistry.getType(value));
-        Observable<Thing<V>> result = findThingsForValue(obs, value).map(t -> (Thing<V>) t);
-        return result;
+            Observable<? extends Thing<?>> obs = findThingsForType(typeRegistry.getType(value));
+            Observable<Thing<V>> result = findThingsForValue(obs, value).map(t -> (Thing<V>) t);
+            return result;
+
     }
 
     public <V> Observable<Thing<V>> findThingsForValue(Observable<? extends Thing<?>> things, V value) {

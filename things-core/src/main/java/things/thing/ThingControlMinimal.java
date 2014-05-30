@@ -359,7 +359,13 @@ public class ThingControlMinimal {
 
         ThingReader reader = thingReaders.getUnique(type, key);
 
-        return reader.findThingsForTypeAndKey(type, key);
+        Observable<? extends Thing<?>> obs = reader.findThingsForTypeAndKey(type, key);
+        if ( populate ) {
+            return obs.lift(POPULATE_THINGS);
+        } else {
+            return obs;
+        }
+
 
     }
 

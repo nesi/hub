@@ -17,5 +17,5 @@ public enum Cmd {
     NIGHTMODE,
     FULL,
     IGNORE,
-    SET_COLOUR;
+    SET_COLOUR
 }

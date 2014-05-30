@@ -92,7 +92,7 @@ public class ThingControl extends ThingControlReactive {
 
         Observable<Thing<V>> obs = Observable.from(things).filter(t -> value.equals(getValue(t))).map(t -> (Thing<V>) t);
 
-        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+        return obs.toSortedList().toBlockingObservable().single();
     }
 
     public List<Thing> findAllThings() {
@@ -118,7 +118,7 @@ public class ThingControl extends ThingControlReactive {
     }
 
     public <V> List<Thing<V>> findThingsForType(Class<V> typeClass, boolean populated) {
-        return Lists.newArrayList(observeThingsForType(typeClass, populated).toBlockingObservable().toIterable());
+        return observeThingsForType(typeClass, populated).toSortedList().toBlockingObservable().single();
     }
 
     public List<Thing> findThingsForType(String type) {
@@ -135,7 +135,7 @@ public class ThingControl extends ThingControlReactive {
 
     public <V> List<Thing<V>> findThingsForTypeAndKey(Class<V> typeClass, String key, boolean populated) {
         Observable<Thing<V>> obs = observeThingsForTypeAndKey(typeClass, key, populated);
-        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+        return obs.toSortedList().toBlockingObservable().single();
     }
 
     public List<Thing> findThingsForTypeAndKey(String type, String key) {
@@ -149,7 +149,7 @@ public class ThingControl extends ThingControlReactive {
 
     public <V> List<Thing<V>> findThingsMatchingKeyAndValue(String keyMatcher, V value) {
         Observable<Thing<V>> obs = observeThingsMatchingKeyAndValue(keyMatcher, value);
-        return Lists.newArrayList(obs.toBlockingObservable().toIterable());
+        return obs.toSortedList().toBlockingObservable().single();
     }
 
     public List<Thing> findThingsMatchingKeyAndValueConvertedFromString(String type, String keyMatcher, String stringValue) {
@@ -223,7 +223,7 @@ public class ThingControl extends ThingControlReactive {
     }
 
     public <V> List<Thing<V>> getChildrenForType(Observable<? extends Thing<?>> things, Class<V> typeClass, boolean populateValues) {
-        return Lists.newArrayList(observeChildrenForType(things, typeClass, populateValues).toBlockingObservable().toIterable());
+        return observeChildrenForType(things, typeClass, populateValues).toSortedList().toBlockingObservable().single();
     }
 
     public <V> List<Thing<V>> getChildrenForType(Thing<?> thing, Class<V> typeClass) {
@@ -231,7 +231,7 @@ public class ThingControl extends ThingControlReactive {
     }
 
     public <V> List<Thing<V>> getChildrenForType(Thing<?> thing, Class<V> typeClass, boolean populateValues) {
-        return Lists.newArrayList(observeChildrenForType(Observable.just(thing), typeClass, populateValues).toBlockingObservable().toIterable());
+        return observeChildrenForType(Observable.just(thing), typeClass, populateValues).toSortedList().toBlockingObservable().single();
     }
 
     public List<Thing> getChildrenMatchingType(Thing<?> thing, String type) {
