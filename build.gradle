@@ -17,6 +17,8 @@ defaultTasks 'clean', 'build'
 
 apply plugin: 'idea'
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 version = '0.1-SNAPSHOT'
 group = 'things'
@@ -74,21 +76,6 @@ subprojects {
 
     jar.dependsOn(generateRebel)
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId 'things'
-                version version
-                from components.java
-            }
-        }
-        repositories {
-            maven {
-                url "http://myrepo.com/repo" // change to point to your repo, e.g. http://my.org/repo
-            }
-        }
-    }
-
     javadoc {
 
         options.docletpath = configurations.markdownDoclet.files.asType(List)
@@ -141,3 +128,4 @@ task uml(type: JavaExec) {
     }
     args = plantUmlFiles
 }
+
