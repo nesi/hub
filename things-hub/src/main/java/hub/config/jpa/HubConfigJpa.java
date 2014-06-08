@@ -114,7 +114,7 @@ public class HubConfigJpa {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(false);
-//        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);

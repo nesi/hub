@@ -1,6 +1,7 @@
 package hub.config.connectors;
 
 import hub.queries.jobs.JobsQuery;
+import hub.queries.users.JobHistoryQuery;
 import hub.queries.users.PanAuditQuery;
 import hub.queries.users.UserQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ public class Queries {
     }
 
     @Bean
+    public JobHistoryQuery jobHistoryQuery() {
+        return new JobHistoryQuery();
+    }
+
+    @Bean
     public PanAuditQuery panAuditQuery() {
         return new PanAuditQuery();
     }
@@ -59,6 +65,7 @@ public class Queries {
         tq.addQuery(userQuery());
         tq.addQuery(jobsQuery());
         tq.addQuery(panAuditQuery());
+        tq.addQuery(jobHistoryQuery());
         return tq;
     }
 
