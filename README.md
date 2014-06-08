@@ -10,3 +10,5 @@ Meant to make it easy to manage a set of objects *(things)* that can have depend
 directly in *things*, or they can be dynamically retrieved from configurable connectors.
 This setup makes is designed to make the whole, well ...thing... comparatively flexible.
 
+# Getting started
+
