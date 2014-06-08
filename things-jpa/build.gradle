@@ -34,6 +34,12 @@ repositories {
     maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
 
+ext {
+    name = 'Things JPA'
+    description = 'Component enabling hibernate/jpa backends'
+}
+
+
 apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'

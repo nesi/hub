@@ -16,6 +16,13 @@ repositories {
 
 def springBootVersion = '1.0.2.RELEASE'
 
+
+ext {
+    name = 'Things test'
+    description = 'Tests for things'
+}
+
+
 /*
  * Things
  *

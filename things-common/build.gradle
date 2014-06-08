@@ -21,7 +21,8 @@ dependencies {
     compile("javax.inject:javax.inject:1")
 }
 
-task copyDeps(type: Copy) {
-    from configurations.runtime
-    into "${buildDir}/deps"
+ext {
+    name = 'The things common component'
+    description = 'Common code amongst thing backend/frontend'
 }
+

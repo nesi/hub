@@ -17,6 +17,7 @@
  * License along with this library.
  */
 
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -46,6 +47,11 @@ dependencies {
     compile("org.javassist:javassist:3.18.1-GA")
 
     compile("com.codahale.metrics:metrics-core:3.0.2")
-
-
 }
+
+ext {
+    name = 'The things core component'
+    description = 'Things core compoenent, includes xstream connector'
+}
+
+

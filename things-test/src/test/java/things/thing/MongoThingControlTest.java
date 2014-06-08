@@ -19,6 +19,7 @@
 
 package things.thing;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 /**
  * Created by markus on 21/05/14.
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class,
         classes = {MongoTestConfig.class})

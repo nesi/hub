@@ -42,6 +42,12 @@ springBoot {
     mainClass = "hub.HubServiceMongo"
 }
 
+ext {
+    name = 'Things Hub'
+    description = 'Hub, combining all sorts of auth/job/... backends'
+}
+
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -61,6 +67,7 @@ dependencies {
     compile project(':things-mongo')
     compile project(':things-jpa')
     compile project(':things-rest')
+
     compile('com.google.guava:guava:17.0')
 
     compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
@@ -92,10 +99,12 @@ dependencies {
     compile("org.apache.shiro:shiro-web:1.2.3")
     compile("org.apache.shiro:shiro-spring:1.2.3")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.boot:spring-boot-starter-test:"+springBootVersion)
     testCompile("org.hamcrest:hamcrest-core:1.3")
     testCompile("org.hamcrest:hamcrest-library:1.3")
 
     testCompile("org.mockito:mockito-core:1.9.5")
 
 }
+
+

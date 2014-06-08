@@ -19,6 +19,7 @@
 
 package things.thing;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 /**
  * Created by markus on 21/05/14.
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class,
         classes = {JpaTestConfig.class})

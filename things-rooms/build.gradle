@@ -21,6 +21,11 @@ springBoot {
     mainClass = "rooms.RoomService"
 }
 
+ext {
+    name = 'Rooms'
+    description = 'Control room lights and more via REST/web UI'
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

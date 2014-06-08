@@ -36,6 +36,11 @@ repositories {
 
 def springBootVersion = '1.0.2.RELEASE'
 
+ext {
+    name = 'Things REST'
+    description = 'Component enabling REST API, using spring boot'
+}
+
 dependencies {
 
     compile project(':things-core')
