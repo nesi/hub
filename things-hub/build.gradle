@@ -1,3 +1,22 @@
+/*
+ * Things
+ *
+ * Copyright (c) 2014, Markus Binsteiner. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3.0 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ */
+
 buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
@@ -23,6 +42,12 @@ springBoot {
     mainClass = "hub.HubServiceMongo"
 }
 
+ext {
+    name = 'Things Hub'
+    description = 'Hub, combining all sorts of auth/job/... backends'
+}
+
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -42,6 +67,7 @@ dependencies {
     compile project(':things-mongo')
     compile project(':things-jpa')
     compile project(':things-rest')
+
     compile('com.google.guava:guava:17.0')
 
     compile("org.springframework.boot:spring-boot-starter-parent:" + springBootVersion)
@@ -74,10 +100,12 @@ dependencies {
     compile("org.apache.shiro:shiro-web:1.2.3")
     compile("org.apache.shiro:shiro-spring:1.2.3")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.boot:spring-boot-starter-test:"+springBootVersion)
     testCompile("org.hamcrest:hamcrest-core:1.3")
     testCompile("org.hamcrest:hamcrest-library:1.3")
 
     testCompile("org.mockito:mockito-core:1.9.5")
 
 }
+
+

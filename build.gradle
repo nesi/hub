@@ -3,9 +3,11 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven { url "http://repos.zeroturnaround.com/nexus/content/groups/zt-public/" }
+        jcenter()
     }
     dependencies {
         classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.2'
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7'
     }
 }
 
@@ -17,6 +19,8 @@ defaultTasks 'clean', 'build'
 
 apply plugin: 'idea'
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 version = '0.1-SNAPSHOT'
 group = 'things'
@@ -44,14 +48,16 @@ ext {
 
 subprojects {
 
+
     repositories {
         mavenLocal()
         mavenCentral()
     }
     apply plugin: 'java'
     apply plugin: 'rebel'
-    apply plugin: 'maven-publish'
+    apply plugin: 'nexus'
 
+    group = 'us.ilmark.deta.things'
     version = '0.1-SNAPSHOT'
 
     configurations {
@@ -74,21 +80,6 @@ subprojects {
 
     jar.dependsOn(generateRebel)
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId 'things'
-                version version
-                from components.java
-            }
-        }
-        repositories {
-            maven {
-                url "http://myrepo.com/repo" // change to point to your repo, e.g. http://my.org/repo
-            }
-        }
-    }
-
     javadoc {
 
         options.docletpath = configurations.markdownDoclet.files.asType(List)
@@ -98,6 +89,37 @@ subprojects {
                 "http://docs.oracle.com/javase/8/docs/api/",
                 "http://docs.guava-libraries.googlecode.com/git-history/v15.0/javadoc/"
         ]
+    }
+
+    modifyPom {
+        project {
+            name ext.name
+            description ext.description
+            url 'http://things.deta.ilmark.us/'
+            inceptionYear '2014'
+
+            scm {
+                url 'https://github.com/makkus/things'
+                connection 'scm:https://github.com/makkus/things.git'
+                developerConnection 'scm:git://github.com/makkus/things.git'
+            }
+
+            licenses {
+                license {
+                    name 'GNU Lesser General Public License, version 3'
+                    url 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'makkus'
+                    name 'Markus Binsteiner'
+                    email 'makkus@gmail.com'
+                }
+            }
+        }
     }
 }
 
@@ -141,3 +163,4 @@ task uml(type: JavaExec) {
     }
     args = plantUmlFiles
 }
+
