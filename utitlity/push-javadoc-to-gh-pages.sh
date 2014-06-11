@@ -9,7 +9,7 @@ echo -e "Publishing javadoc...\n"
   cd $HOME
   git config --global user.email "travis@travis-ci.org"
   git config --global user.name "travis-ci"
-  git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/ReadyTalk/swt-bling gh-pages > /dev/null
+  git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/makkus/things gh-pages > /dev/null
 
   cd gh-pages
   git rm -rf ./javadoc
@@ -19,5 +19,5 @@ echo -e "Publishing javadoc...\n"
   git push -fq origin gh-pages > /dev/null
 
   echo -e "Published Javadoc to gh-pages.\n"
-  
+
 fi
