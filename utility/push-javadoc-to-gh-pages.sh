@@ -4,7 +4,8 @@ if [ "$TRAVIS_REPO_SLUG" == "makkus/things" ] && [ "$TRAVIS_PULL_REQUEST" == "fa
 
 echo -e "Publishing javadoc...\n"
 
-  cp -R build/docs/javadoc $HOME/javadoc-latest
+  mkdir -p $HOME/javadoc-latest
+  cp -R things-core/build/docs/javadoc $HOME/javadoc-latest/things-core
 
   cd $HOME
   git config --global user.email "travis@travis-ci.org"
