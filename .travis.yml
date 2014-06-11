@@ -1,4 +1,11 @@
 language: java
 jdk:
- - oraclejdk8
-
+- oraclejdk8
+env:
+  global:
+  - secure: FcVLW5Trs2SBbL8vWya8F3AC6WqwdUFQ22ArTMJtgmlhHcgAwpZbAnfCJASCAvMd0fO8LRQvZb1e2wgFJKB393B6SjEg4P8W7hyHHsuj9iDoY4BulRUeO/OeaUmC5b7Z9kGzHdIwPtweBOzyghQh960lloTDdTRPHF7xH8xDugQ=
+  - secure: R05HTQ/QyUOvrVUsgJhtbS36IBh+qyfdW09V5A+I05qOfS2Lrx0XXRLPzq44gny7p5GOAXpF37ccO1dn+XkbmG5TMXV/87yOSCtxdn7h4jHBWwPLmGcm6+qNvEkd/i6jKIAo5ND9ZcnSv7MzpgvOdB9a4kCG/HqLhh9HrR9k8sw=
+  - secure: GHfeD6iVFvs2RxvUTlzRZgcZ9HKliOwiGYtzKJenCtCbC7lG8ZyHEIMZRhvm3KU/+5czmDUVtIb+X6w3zLzL+whbseY5NdxFCdtzfWCKzN2GPMfsPI5euOMPmWV9foYQDwMt/15URZ3atTiZ02BhpYrcXGLD+mrbvu2YK6q04zw=
+after_success:
+- utility/initiate-publish.sh
+- utility/push-javadoc-to-gh-pages.sh
