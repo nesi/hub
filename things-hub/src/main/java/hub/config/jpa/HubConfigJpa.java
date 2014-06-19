@@ -21,11 +21,13 @@ package hub.config.jpa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
+import hub.actions.ProjectDbUtils;
+import hub.actions.UserManagement;
 import hub.actions.UserUtils;
 import hub.jpa.repositories.PersonRepository;
 import hub.readers.GroupReader;
-import hub.readers.UserReader;
-import hub.types.persistent.Person;
+import hub.readers.PersonReader;
+import hub.types.dynamic.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration;
@@ -36,10 +38,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoTemplateAutoConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
@@ -84,7 +83,7 @@ import javax.validation.ValidatorFactory;
 @PropertySource(value = "file:/etc/hub/hub.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
 @ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.metrics"})
-@EnableJpaRepositories(basePackages = {"hub.jpa.repositories", "things.jpa"})
+@EnableJpaRepositories(basePackages = {"things.jpa"})
 @EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, DataSourceAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
 public class HubConfigJpa {
 
@@ -177,11 +176,10 @@ public class HubConfigJpa {
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();
-        tr.addReader("person/*", jpaConnector());
-        tr.addReader("typeClass/*", jpaConnector());
-        tr.addReader("role/*", jpaConnector());
-        tr.addReader("username/*", jpaConnector());
-        tr.addReader("user/*", userReader());
+//        tr.addReader("person/*", jpaConnector());
+//        tr.addReader("typeClass/*", jpaConnector());
+//        tr.addReader("role/*", jpaConnector());
+        tr.addReader("person/*", personReader());
         tr.addReader("group/*", groupReader());
         return tr;
     }
@@ -190,14 +188,15 @@ public class HubConfigJpa {
     public ThingWriters thingWriters() throws Exception {
 
         ThingWriters tw = new ThingWriters();
-        tw.addWriter("person/*", jpaConnector());
-        tw.addWriter("typeClass/*", jpaConnector());
-        tw.addWriter("role/*", jpaConnector());
-        tw.addWriter("username/*", jpaConnector());
+        //tw.addWriter("person/*", jpaConnector());
+        //tw.addWriter("typeClass/*", jpaConnector());
+        //tw.addWriter("role/*", jpaConnector());
+        //tw.addWriter("username/*", jpaConnector());
         return tw;
     }
 
     @Bean
+    @Primary
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
@@ -214,11 +213,11 @@ public class HubConfigJpa {
         return tr;
     }
 
-    @Bean
-    public UserReader userReader() {
-        return new UserReader();
-    }
 
+    @Bean
+    public PersonReader personReader() {
+        return new PersonReader();
+    }
     @Bean
     public GroupReader groupReader() {
         return new GroupReader();
@@ -227,6 +226,16 @@ public class HubConfigJpa {
     @Bean
     public UserUtils userUtils() {
         return new UserUtils();
+    }
+
+    @Bean
+    public ProjectDbUtils projectUtils() {
+        return new ProjectDbUtils();
+    }
+
+    @Bean
+    public UserManagement userManagement() {
+        return new UserManagement();
     }
 
     @Bean(name = "valueValidator")
@@ -239,10 +248,10 @@ public class HubConfigJpa {
 
     @Bean
     @Inject
-    public ValueRepositories valueRepositories(TypeRegistry tr, PersonRepository pr) {
+    public ValueRepositories valueRepositories() {
 
         ValueRepositories vr = new ValueRepositories();
-        vr.addRepository(tr.getType(Person.class), pr);
+//        vr.addRepository(tr.getType(Person.class), pr);
         return vr;
     }
 }

@@ -26,7 +26,7 @@ import com.jcraft.jsch.Session;
 import hub.actions.UserUtils;
 import hub.types.dynamic.JobStatus;
 import hub.types.dynamic.Jobs;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Username;
 import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;

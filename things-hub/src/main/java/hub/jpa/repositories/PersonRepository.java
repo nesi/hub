@@ -19,7 +19,7 @@
 
 package hub.jpa.repositories;
 
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import things.jpa.ValueRepository;
 

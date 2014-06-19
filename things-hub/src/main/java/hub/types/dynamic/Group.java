@@ -25,6 +25,7 @@ import things.model.types.Value;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by markus on 28/05/14.
@@ -34,7 +35,7 @@ public class Group {
 
     private final String groupName;
 
-    private Multimap<String, User> members = LinkedHashMultimap.create();
+    private Multimap<String, String> members = LinkedHashMultimap.create();
 
 //    public Group() {
 //    }
@@ -51,16 +52,24 @@ public class Group {
 //        this.groupName = groupName;
 //    }
 
-    public Multimap<String, User> getMembers() {
+    public Multimap<String, String> getMembers() {
         return members;
     }
 
-    public void addMember(User member) {
-        Collection<String> roles = member.getRoles().get(groupName);
+    public void addMember(Set<String> roles, String member) {
+
         for ( String role : roles ) {
             members.put(role, member);
         }
 
+    }
+
+    public void addMember(String role, String member) {
+        members.put(role, member);
+    }
+
+    public void addMembers(Multimap<String, String> members) {
+        this.members.putAll(members);
     }
 
 
@@ -78,5 +87,13 @@ public class Group {
 
     public int hashCode() {
         return Objects.hashCode(getGroupName());
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "groupName='" + groupName + '\'' +
+                ", members=" + members +
+                '}';
     }
 }

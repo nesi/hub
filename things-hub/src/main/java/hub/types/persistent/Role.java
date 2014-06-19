@@ -19,6 +19,7 @@
 
 package hub.types.persistent;
 
+import hub.types.dynamic.Person;
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
 import things.model.types.attributes.*;

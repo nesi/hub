@@ -77,7 +77,6 @@ public class DimJobConfig {
         return new TransactionAwareDataSourceProxy(dimJobLazyConnectionDataSource());
     }
 
-    @Primary
     @Bean
     public DataSourceTransactionManager dimJobTransactionManager() {
         return new DataSourceTransactionManager(dimJobLazyConnectionDataSource());

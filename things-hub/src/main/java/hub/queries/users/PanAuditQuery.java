@@ -22,7 +22,7 @@ package hub.queries.users;
 import com.google.common.collect.ImmutableSet;
 import hub.actions.UserUtils;
 import hub.types.dynamic.AuditRecord;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Username;
 import org.jooq.Record2;
 import org.jooq.Result;

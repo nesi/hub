@@ -79,7 +79,8 @@ dependencies {
     // for auditdb connection
     compile("org.springframework:spring-jdbc:" + springVersion)
     compile("org.springframework:spring-tx:" + springVersion)
-    compile("org.jooq:jooq:3.3.1")
+    compile("org.jooq:jooq:3.3.2")
+    compile("org.jooq:jool:0.9.1")
     compile("com.jolbox:bonecp:0.8.0.RELEASE")
     compile("cglib:cglib:3.1")
     compile("mysql:mysql-connector-java:5.1.30")

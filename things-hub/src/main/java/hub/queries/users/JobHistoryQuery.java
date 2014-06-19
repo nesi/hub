@@ -3,7 +3,6 @@ package hub.queries.users;
 import com.google.common.collect.ImmutableSet;
 import nesi.jobs.Tables;
 import org.jooq.Record;
-import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectConditionStep;
 import org.jooq.impl.DefaultDSLContext;
@@ -15,7 +14,6 @@ import things.thing.ThingQuery;
 import things.types.TypeRegistry;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,15 +31,23 @@ public class JobHistoryQuery implements ThingQuery {
 
     public void getJobs() {
 
-        System.out.println("XXX");
+//        System.out.println("XXX");
+//
+//        SelectConditionStep<Record2<Timestamp, Timestamp>> query = jooq.select(Tables.DIM_JOB.START, Tables.DIM_JOB.FINISH).from(Tables.DIM_JOB).where(Tables.DIM_JOB.USERNAME.eq("mbin029"));
+//
+//        Result<Record2<Timestamp, Timestamp>> result = query.fetch();
+//
+//        for ( Record rec : result ) {
+//            System.out.println(rec);
+//        }
+        System.out.println("Start");
+        SelectConditionStep<Record> query = jooq.select().from(Tables.MONTHLY_RECORD).where(Tables.MONTHLY_RECORD.USERNAME.eq("mbin029"));
 
-        SelectConditionStep<Record2<Timestamp, Timestamp>> query = jooq.select(Tables.DIM_JOB.START, Tables.DIM_JOB.FINISH).from(Tables.DIM_JOB).where(Tables.DIM_JOB.USERNAME.eq("mbin029"));
-
-        Result<Record2<Timestamp, Timestamp>> result = query.fetch();
-
+        Result<Record> result = query.fetch();
         for ( Record rec : result ) {
             System.out.println(rec);
         }
+
 
     }
 

@@ -21,7 +21,6 @@ package hub.config.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hub.actions.UserUtils;
-import hub.readers.UserReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -108,7 +107,6 @@ public class HubConfigMongo extends MongoConfig {
         tr.addReader("typeClass/*", mongoConnector());
         tr.addReader("role/*", mongoConnector());
         tr.addReader("username/*", mongoConnector());
-        tr.addReader("user/*", userReader());
         return tr;
     }
 
@@ -130,11 +128,6 @@ public class HubConfigMongo extends MongoConfig {
             tr.addType(tt);
         }
         return tr;
-    }
-
-    @Bean
-    public UserReader userReader() {
-        return new UserReader();
     }
 
     @Bean

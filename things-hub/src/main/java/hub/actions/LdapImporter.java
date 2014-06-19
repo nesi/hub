@@ -23,7 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.unboundid.ldap.sdk.*;
 import hub.types.dynamic.User;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class LdapImporter implements ThingAction {
         String shell = entry.getAttributeValue("loginshell");
 
         Person p = new Person();
-        p.setEmail(mail);
+        p.addEmail(mail);
         String[] names = parseName(gecos);
         if ( names == null ) {
             return Optional.empty();

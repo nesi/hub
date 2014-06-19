@@ -21,7 +21,6 @@ package hub.types.dynamic;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import hub.types.persistent.Person;
 import things.model.types.Value;
 
 import java.io.Serializable;

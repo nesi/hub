@@ -19,6 +19,7 @@
 
 package hub.types.persistent;
 
+import hub.types.dynamic.Person;
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
 import things.model.types.attributes.StringConverter;
@@ -31,10 +32,10 @@ import java.util.Objects;
 /**
  * A username is the identifying token for a user on a system.
  * <p>
- * It is linked to the {@link Person} object. When adding a Username to a Person, the key that is used is
+ * It is linked to the {@link hub.types.dynamic.Person} object. When adding a Username to a Person, the key that is used is
  * the name of the system where the username is used.
  * <p>
- * A {@link Person}} object can have multiple Usernames with the same keys, since a user can have multiple
+ * A {@link hub.types.dynamic.Person}} object can have multiple Usernames with the same keys, since a user can have multiple
  * accounts on a system.
  */
 @UniqueKeyAsChild(unique = false)

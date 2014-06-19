@@ -20,7 +20,7 @@
 package hub.actions;
 
 import com.google.common.collect.ImmutableSet;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Role;
 import hub.types.persistent.Username;
 import org.springframework.beans.factory.annotation.Autowired;

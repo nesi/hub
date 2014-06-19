@@ -22,7 +22,7 @@ package hub.actions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import hub.types.dynamic.User;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Role;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
@@ -72,7 +72,6 @@ public class ImportRoleAndGroupAction implements ThingAction {
                     .and(Tables.ADVISER.FULLNAME.contains(p.getLast_name()));
             if ( !StringUtils.isEmpty(p.getMiddle_names()) ) {
                 condition = condition.and(Tables.ADVISER.FULLNAME.contains(p.getMiddle_names()));
-
             }
 
             Result<Record3<String, Integer, Byte>> result = condition.fetch();

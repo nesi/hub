@@ -96,7 +96,6 @@ public class PanAuditConfig {
         return new TransactionAwareDataSourceProxy(panAuditLazyConnectionDataSource());
     }
 
-    @Primary
     @Bean
     public DataSourceTransactionManager panAuditTransactionManager() {
         return new DataSourceTransactionManager(panAuditLazyConnectionDataSource());

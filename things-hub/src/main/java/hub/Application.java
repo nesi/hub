@@ -20,7 +20,7 @@
 package hub;
 
 import hub.config.jpa.HubConfigJpa;
-import hub.types.persistent.Person;
+import hub.types.dynamic.Person;
 import hub.types.persistent.Role;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;

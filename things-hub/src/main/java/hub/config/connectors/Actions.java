@@ -22,6 +22,7 @@ package hub.config.connectors;
 import hub.actions.ClearMongoDatabase;
 import hub.actions.ImportRoleAndGroupAction;
 import hub.actions.LdapImporter;
+import hub.actions.UserImporter;
 import hub.config.mongo.HubConfigMongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import things.config.ThingActions;
+import things.thing.ThingAction;
 
 /**
  * @author: Markus Binsteiner
@@ -61,7 +63,16 @@ public class Actions {
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();
         ta.addAction(ldapImporter());
+        ta.addAction(userImporter());
         return ta;
     }
+
+    @Bean
+    ThingAction userImporter() throws Exception {
+        UserImporter ui = new UserImporter();
+        return ui;
+    }
+
+
 
 }
