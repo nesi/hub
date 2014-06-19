@@ -58,7 +58,7 @@ subprojects {
     apply plugin: 'nexus'
 
     group = 'us.ilmark.deta.things'
-    version = '0.1-SNAPSHOT'
+    version = '0.1'
 
     configurations {
         markdownDoclet
