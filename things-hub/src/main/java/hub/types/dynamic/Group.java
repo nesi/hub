@@ -33,12 +33,25 @@ import java.util.Set;
 @Value(typeName = "group")
 public class Group {
 
+    public static final String DEFAULT_GROUP_TYPE = "general";
+
+    private String groupType = DEFAULT_GROUP_TYPE;
+
     private final String groupName;
 
     private Multimap<String, String> members = LinkedHashMultimap.create();
 
 //    public Group() {
 //    }
+
+
+    public String getGroupType() {
+        return groupType;
+    }
+
+    public void setGroupType(String groupType) {
+        this.groupType = groupType;
+    }
 
     public Group(String groupName) {
         this.groupName = groupName;

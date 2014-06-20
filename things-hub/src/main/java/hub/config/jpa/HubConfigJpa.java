@@ -26,6 +26,7 @@ import hub.actions.UserManagement;
 import hub.actions.UserUtils;
 import hub.jpa.repositories.PersonRepository;
 import hub.readers.GroupReader;
+import hub.readers.PersonPropertyReader;
 import hub.readers.PersonReader;
 import hub.types.dynamic.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,6 +182,7 @@ public class HubConfigJpa {
 //        tr.addReader("role/*", jpaConnector());
         tr.addReader("person/*", personReader());
         tr.addReader("group/*", groupReader());
+        tr.addReader("property/*", personPropertyReader());
         return tr;
     }
 
@@ -217,6 +219,10 @@ public class HubConfigJpa {
     @Bean
     public PersonReader personReader() {
         return new PersonReader();
+    }
+    @Bean
+    public PersonPropertyReader personPropertyReader() {
+        return new PersonPropertyReader();
     }
     @Bean
     public GroupReader groupReader() {

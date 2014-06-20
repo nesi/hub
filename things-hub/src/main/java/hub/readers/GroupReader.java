@@ -19,8 +19,10 @@
 
 package hub.readers;
 
+import com.google.common.collect.Multimap;
 import hub.actions.UserManagement;
 import hub.types.dynamic.Group;
+import hub.types.dynamic.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -30,6 +32,7 @@ import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class GroupReader extends AbstractThingReader {
 
@@ -79,12 +82,37 @@ public class GroupReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
-        return Observable.empty();
+
+        return Observable.just(um.getAllPersons().get(id))
+                .flatMap(p -> createGroups(p.getRoles(), Optional.empty()));
+
+
+    }
+
+    private Observable<Thing<Group>> createGroups(Multimap<String, String> groups, Optional<String> groupMatcher) {
+
+        if ( groupMatcher.isPresent() ) {
+            return Observable.from(groups.keySet())
+                    .filter(groupName -> MatcherUtils.wildCardMatch(groupName, groupMatcher.get()))
+                    .map(groupName -> um.getAllGroups().get(groupName))
+                            //TODO make that work for non-project groups too
+                    .filter(group -> group != null)
+                    .map(group -> wrapGroup(group));
+        } else {
+            return Observable.from(groups.keySet())
+                    .map(groupName -> um.getAllGroups().get(groupName))
+                            //TODO make that work for non-project groups too
+                    .filter(group -> group != null)
+                    .map(group -> wrapGroup(group));
+        }
+
     }
 
     @Override
     public Observable<? extends Thing<?>> getChildrenMatchingTypeAndKey(Observable<? extends Thing<?>> things, String typeMatcher, String keyMatcher) {
-        return Observable.empty();
+        return things.filter(t -> tr.equals(Person.class, t.getThingType()))
+                .map(tp -> (Person)tp.getValue())
+                .flatMap(p -> createGroups(p.getRoles(), Optional.of(keyMatcher)));
     }
 
     @Override
@@ -99,10 +127,11 @@ public class GroupReader extends AbstractThingReader {
 
     private Thing<Group> wrapGroup(Group g) {
         Thing t = new Thing();
-        Integer id = um.getProjectId(g.getGroupName());
-        if ( id != null ) {
-            t.setId("projectId:"+id.toString());
-        }
+//        Integer id = um.getProjectId(g.getGroupName());
+//        if ( id != null ) {
+//            t.setId("projectId:"+id.toString());
+//        }
+        t.setId(g.getGroupName());
         t.setKey(g.getGroupName());
         t.setValue(g);
         t.setValueIsPopulated(true);

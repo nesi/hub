@@ -3,10 +3,11 @@ package hub.types.dynamic;
 import com.google.common.collect.ComparisonChain;
 import things.model.types.Value;
 
+import javax.persistence.Id;
 import java.util.Comparator;
 import java.util.Objects;
 
-@Value(typeName = "person_property")
+@Value(typeName = "property")
 public class PersonProperty implements Comparable<PersonProperty> {
 
     private String service;

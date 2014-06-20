@@ -106,6 +106,7 @@ public class UserManagement {
     private Group createGroup(Project proj) {
         Group g = new Group(proj.getProjectCode());
         g.addMembers(proj.getMembers());
+        g.setGroupType("project");
         return g;
     }
 

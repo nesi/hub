@@ -36,30 +36,7 @@ public class PersonReader extends AbstractThingReader {
     @Override
     public Observable<? extends Thing<?>> findThingForId(String id) {
 
-        if ( ! id.startsWith("adviserId:") && ! id.startsWith("researcherId:") ) {
-            return Observable.empty();
-        }
-
-
-        String type = "n/a";
-        try {
-            type = id.split(":")[0];
-            String id_string = id.split(":")[1];
-            Integer id_int = Integer.parseInt(id_string);
-
-            String personName = null;
-
-            switch(type ){
-                case "adviserId":
-                    personName = um.getResearcher(id_int);
-                    break;
-                case "researcherId":
-                    personName = um.getAdviser(id_int);
-                    break;
-                default:
-                    return Observable.empty();
-            }
-            Person p = um.getAllPersons().get(personName);
+            Person p = um.getAllPersons().get(id);
             if ( p == null ) {
                 return Observable.empty();
             }
@@ -67,9 +44,6 @@ public class PersonReader extends AbstractThingReader {
 
             return Observable.just(personThing);
 
-        } catch (Exception e) {
-            throw new ThingRuntimeException("Can't parse "+type+" id "+id+": "+e.getLocalizedMessage());
-        }
     }
 
     @Override
@@ -105,17 +79,8 @@ public class PersonReader extends AbstractThingReader {
 
         Thing t = new Thing();
         String identifier = um.createIdentifier(p);
-        Optional<Integer> adviserId = um.getAdviserId(identifier);
-        Optional<Integer> researcherId = um.getResearcherId(identifier);
+        t.setId(identifier);
 
-        String id = null;
-        if ( adviserId.isPresent() ) {
-            id = "adviserId:"+adviserId.get();
-        } else if ( researcherId.isPresent() ) {
-            id = "researcherId:"+researcherId.get();
-        }
-
-        t.setId(id);
         t.setThingType(tr.getType(Person.class));
         t.setValue(p);
         t.setKey(identifier);
