@@ -2,11 +2,16 @@ package hub.types.dynamic;
 
 import com.google.common.collect.ComparisonChain;
 import things.model.types.Value;
+import things.model.types.attributes.StringConverter;
+import things.model.types.attributes.Subordinate;
+import things.model.types.attributes.UniqueKeyAsChild;
+import things.model.types.attributes.UniqueValueForKey;
 
 import javax.persistence.Id;
 import java.util.Comparator;
 import java.util.Objects;
 
+@Subordinate(parentClass = Person.class)
 @Value(typeName = "property")
 public class PersonProperty implements Comparable<PersonProperty> {
 
