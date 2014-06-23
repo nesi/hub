@@ -19,10 +19,7 @@
 
 package hub.config.connectors;
 
-import hub.actions.ClearMongoDatabase;
-import hub.actions.ImportRoleAndGroupAction;
-import hub.actions.LdapImporter;
-import hub.actions.UserImporter;
+import hub.backends.users.actions.ReimportProjectDB;
 import hub.config.mongo.HubConfigMongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,36 +40,16 @@ public class Actions {
     private MongoTemplate mongoTemplate;
 
     @Bean
-    public ClearMongoDatabase clearMongoDatabase() {
-        return new ClearMongoDatabase();
-    }
-
-    @Bean
-    public ImportRoleAndGroupAction importRoleAndGroupAction() throws Exception {
-        ImportRoleAndGroupAction i = new ImportRoleAndGroupAction();
-        return i;
-    }
-
-    @Bean
-    public LdapImporter ldapImporter() throws Exception {
-        LdapImporter ldapImporter = new LdapImporter();
-        return ldapImporter;
+    public ReimportProjectDB reimportProjectDB() {
+        return new ReimportProjectDB();
     }
 
     @Bean
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();
-        ta.addAction(ldapImporter());
-        ta.addAction(userImporter());
+        ta.addAction(reimportProjectDB());
         return ta;
     }
-
-    @Bean
-    ThingAction userImporter() throws Exception {
-        UserImporter ui = new UserImporter();
-        return ui;
-    }
-
 
 
 }

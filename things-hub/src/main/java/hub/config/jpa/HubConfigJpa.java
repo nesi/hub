@@ -21,14 +21,9 @@ package hub.config.jpa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
-import hub.actions.ProjectDbUtils;
-import hub.actions.UserManagement;
-import hub.actions.UserUtils;
-import hub.jpa.repositories.PersonRepository;
-import hub.readers.GroupReader;
-import hub.readers.PersonPropertyReader;
-import hub.readers.PersonReader;
-import hub.types.dynamic.Person;
+import hub.backends.users.*;
+import hub.backends.users.repositories.IdentityRepository;
+import hub.backends.users.types.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration;
@@ -83,28 +78,16 @@ import javax.validation.ValidatorFactory;
 @PropertySource("classpath:sshJobLister.properties")
 @PropertySource(value = "file:/etc/hub/hub.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${HOME}/.hub/hub.properties", ignoreResourceNotFound = true)
-@ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.metrics"})
-@EnableJpaRepositories(basePackages = {"things.jpa"})
-@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, DataSourceAutoConfiguration.class, MongoTemplateAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class})
+@ComponentScan({"hub.config.connectors", "things.thing", "things.view.rest", "things.config.metrics", "hub.backends.users.types"})
+@EnableJpaRepositories(
+        entityManagerFactoryRef = "entityManagerFactory",
+        transactionManagerRef = "transactionManager",
+        basePackages = {"things.jpa", "hub.backends.users.repositories"})
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class HubConfigJpa {
 
     @Autowired
     private Environment env;
-
-//    @Bean(name = "thingDataSource")
-//    public DataSource dataSource() {
-//
-//        MysqlDataSource ds = new MysqlDataSource();
-//        ds.setDatabaseName();
-//
-//        dataSource.setDriverClassName(env.getRequiredProperty("spring.datasource.driverClassName"));
-//        dataSource.setUrl(env.getRequiredProperty("spring.datasource.url"));
-//        dataSource.setUsername(env.getRequiredProperty("spring.datasource.username"));
-//        dataSource.setPassword(env.getRequiredProperty("spring.datasource.password"));
-//
-//        return dataSource;
-//
-//    }
 
     @Bean
     public ActionManager actionManager() {
@@ -137,7 +120,7 @@ public class HubConfigJpa {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("things.thing", "hub.jpa.repositories", "hub.types.persistent");
+        factory.setPackagesToScan("things.thing", "hub.backends.users.types");
         factory.setDataSource(dataSource());
         factory.setMappingResources("thing.hbm.xml");
         factory.afterPropertiesSet();
@@ -177,12 +160,11 @@ public class HubConfigJpa {
     public ThingReaders thingReaders() throws Exception {
 
         ThingReaders tr = new ThingReaders();
-//        tr.addReader("person/*", jpaConnector());
-//        tr.addReader("typeClass/*", jpaConnector());
-//        tr.addReader("role/*", jpaConnector());
+        tr.addReader("username/*", usernameReader());
         tr.addReader("person/*", personReader());
         tr.addReader("group/*", groupReader());
         tr.addReader("property/*", personPropertyReader());
+        tr.addReader("identity/*", jpaConnector());
         return tr;
     }
 
@@ -190,10 +172,7 @@ public class HubConfigJpa {
     public ThingWriters thingWriters() throws Exception {
 
         ThingWriters tw = new ThingWriters();
-        //tw.addWriter("person/*", jpaConnector());
-        //tw.addWriter("typeClass/*", jpaConnector());
-        //tw.addWriter("role/*", jpaConnector());
-        //tw.addWriter("username/*", jpaConnector());
+        tw.addWriter("identity/*", jpaConnector());
         return tw;
     }
 
@@ -215,6 +194,10 @@ public class HubConfigJpa {
         return tr;
     }
 
+    @Bean
+    public UsernameReader usernameReader() {
+        return new UsernameReader();
+    }
 
     @Bean
     public PersonReader personReader() {
@@ -229,9 +212,10 @@ public class HubConfigJpa {
         return new GroupReader();
     }
 
+
     @Bean
-    public UserUtils userUtils() {
-        return new UserUtils();
+    public IdentifierProvider identifierProvider() {
+        return new IdentifierProvider();
     }
 
     @Bean
@@ -254,10 +238,10 @@ public class HubConfigJpa {
 
     @Bean
     @Inject
-    public ValueRepositories valueRepositories() {
+    public ValueRepositories valueRepositories(IdentityRepository ir) {
 
         ValueRepositories vr = new ValueRepositories();
-//        vr.addRepository(tr.getType(Person.class), pr);
+        vr.addRepository(typeRegistry().getType(Identity.class), ir);
         return vr;
     }
 }

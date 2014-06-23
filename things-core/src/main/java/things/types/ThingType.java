@@ -107,7 +107,7 @@ public class ThingType<V> {
     }
 
     /**
-     * Returns a converter that can convert this type into/from a String,
+     * Returns a converters that can convert this type into/from a String,
      * or null.
      */
     private SingleStringConverter<V> getConverter() {
@@ -178,7 +178,7 @@ public class ThingType<V> {
     }
 
     /**
-     * Sets a converter from/to String for this type.
+     * Sets a converters from/to String for this type.
      */
     public void setConverter(SingleStringConverter<V> converter) {
         this.converter = converter;

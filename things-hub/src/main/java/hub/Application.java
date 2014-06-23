@@ -20,17 +20,12 @@
 package hub;
 
 import hub.config.jpa.HubConfigJpa;
-import hub.types.dynamic.Person;
-import hub.types.persistent.Role;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import things.exceptions.ThingException;
 import things.exceptions.ValueException;
-import things.thing.Thing;
 import things.thing.ThingControl;
-
-import java.util.List;
 
 /**
  * Project: hub
@@ -61,20 +56,20 @@ public class Application {
 //        Role r2 = new Role("role2");
 //        Thing<Role> tr2 = tc.createThing("group1", r2);
 
-        Thing<Person> tp = tc.findUniqueThingMatchingTypeAndKey(Person.class, "markus", true).get();
-
-        List<Thing<Role>> tr = tc.findThingsForTypeAndKey(Role.class, "group1");
-
-        Thing<Role> tr1 = tr.get(0);
-        Thing<Role> tr2 = tr.get(1);
-
-        tc.addChildThing(tp, tr1);
-        tc.addChildThing(tp, tr2);
-
-
-        List<Thing<Role>> t = tc.findThingsForType(Role.class);
-
-        t.stream().forEach(System.out::println);
+//        Thing<Person> tp = tc.findUniqueThingMatchingTypeAndKey(Person.class, "markus", true).get();
+//
+//        List<Thing<Role>> tr = tc.findThingsForTypeAndKey(Role.class, "group1");
+//
+//        Thing<Role> tr1 = tr.get(0);
+//        Thing<Role> tr2 = tr.get(1);
+//
+//        tc.addChildThing(tp, tr1);
+//        tc.addChildThing(tp, tr2);
+//
+//
+//        List<Thing<Role>> t = tc.findThingsForType(Role.class);
+//
+//        t.stream().forEach(System.out::println);
 
 
     }

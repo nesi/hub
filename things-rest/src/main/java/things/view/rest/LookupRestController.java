@@ -20,9 +20,15 @@
 package things.view.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import things.thing.Thing;
 import things.thing.ThingControl;
 import things.thing.ThingUtils;
+
+import java.util.List;
 
 /**
  * @author: Markus Binsteiner
@@ -37,14 +43,14 @@ public class LookupRestController {
     @Autowired
     private ThingUtils thingUtils;
 
-//    @Transactional(readOnly = true)
-//    @RequestMapping(value = "/every/{type}/matching/{value}", method = RequestMethod.GET)
-//    public List<Thing> lookupThing(@PathVariable("type")String type, @PathVariable("value") String value) throws ThingException {
-//
-//        List<Thing> things = thingControl.findThingsOfTypeMatchingString(type, value);
-//
-//        return things;
-//    }
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/every/{type}/matching/{value}", method = RequestMethod.GET)
+    public List<Thing> lookupThing(@PathVariable("type")String type, @PathVariable("value") String value) {
+
+        List<Thing> things = thingControl.findThingsMatchingKeyAndValueConvertedFromString(type, "*", value);
+
+        return things;
+    }
 //
 //    @Transactional(readOnly = true)
 //    @RequestMapping(value = "/every/{type}/{key}/matching/{value}", method = RequestMethod.GET)

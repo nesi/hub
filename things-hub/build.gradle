@@ -39,7 +39,7 @@ apply plugin: 'spring-boot'
 def springBootVersion = '1.0.2.RELEASE'
 
 springBoot {
-    mainClass = "hub.HubServiceMongo"
+    mainClass = "hub.HubServiceJpa"
 }
 
 ext {
@@ -93,13 +93,13 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jetty:" + springBootVersion)
     compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 
-    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
+//    compile("org.springframework.boot:spring-boot-starter-data-mongodb:" + springBootVersion)
 
     compile("org.codehaus.groovy:groovy-all:2.3.0")
 
-    compile("org.apache.shiro:shiro-core:1.2.3")
-    compile("org.apache.shiro:shiro-web:1.2.3")
-    compile("org.apache.shiro:shiro-spring:1.2.3")
+//    compile("org.apache.shiro:shiro-core:1.2.3")
+//    compile("org.apache.shiro:shiro-web:1.2.3")
+//    compile("org.apache.shiro:shiro-spring:1.2.3")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:"+springBootVersion)
     testCompile("org.hamcrest:hamcrest-core:1.3")

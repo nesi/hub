@@ -22,7 +22,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '0.1-SNAPSHOT'
+version = '0.2-SNAPSHOT'
 group = 'things'
 
 configurations {
@@ -58,7 +58,7 @@ subprojects {
     apply plugin: 'nexus'
 
     group = 'us.ilmark.deta.things'
-    version = '0.1'
+    version = '0.2-SNAPSHOT'
 
     configurations {
         markdownDoclet

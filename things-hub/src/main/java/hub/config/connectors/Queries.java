@@ -19,10 +19,9 @@
 
 package hub.config.connectors;
 
-import hub.queries.jobs.JobsQuery;
-import hub.queries.users.JobHistoryQuery;
-import hub.queries.users.PanAuditQuery;
-import hub.queries.users.UserQuery;
+import hub.backends.jobs.JobsQuery;
+import hub.backends.audit.JobHistoryQuery;
+import hub.backends.audit.PanAuditQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,15 +80,8 @@ public class Queries {
     @Bean
     public ThingQueries thingQueries() throws Exception {
         ThingQueries tq = new ThingQueries();
-        tq.addQuery(userQuery());
         tq.addQuery(jobsQuery());
-        tq.addQuery(panAuditQuery());
         tq.addQuery(jobHistoryQuery());
         return tq;
-    }
-
-    @Bean
-    public UserQuery userQuery() {
-        return new UserQuery();
     }
 }

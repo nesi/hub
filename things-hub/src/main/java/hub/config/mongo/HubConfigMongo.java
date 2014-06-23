@@ -20,7 +20,6 @@
 package hub.config.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hub.actions.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -130,10 +129,6 @@ public class HubConfigMongo extends MongoConfig {
         return tr;
     }
 
-    @Bean
-    public UserUtils userUtils() {
-        return new UserUtils();
-    }
 
     @Bean(name = "valueValidator")
     public Validator validator() {

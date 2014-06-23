@@ -14,3 +14,36 @@ person.
 Or, it can be used to query available filesystems and associated quotas. Or job history/accounting data.
  
  
+Overview
+========
+
+
+Types
+-----
+
+### person
+
+A person is the central user entity. It can be have the Adviser and/or Researcher-Role in the
+projectdb, but does not need to (although, most of the time that'll be the case).
+
+### identity
+
+Each person needs to be associated with an identity. At the moment, the identity class is a 
+helper class that stores a unique uuid, possible adviser and researcher ids from the projectdb
+and also an alias. The alias is used as a unique, user-friendly key. And the table is used to be
+able to always (re-)connect an alias with a person.
+
+### group
+
+'groups' are collections of people, who each can have one or multiple roles within this group.
+The main set of groups will be our projects from the projectdb, with the roles specified in there
+ (Primary adviser, Project owner, ...).
+But it's perfectly possible to have a group for other group of persons (i.e. "The University of Auckland"
+is one group, also all Advisers in the projectdb).
+
+
+Queries
+-------
+
+### Persons
+

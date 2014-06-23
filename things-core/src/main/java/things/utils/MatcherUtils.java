@@ -19,6 +19,8 @@
 
 package things.utils;
 
+import java.util.Optional;
+
 /**
  * Project: things
  * <p>
@@ -163,6 +165,18 @@ public class MatcherUtils {
         pattern = convertGlobToRegex(pattern);
 
         return text.matches(pattern);
+
+    }
+
+    public static boolean wildCardMatch(String text, Optional<String> pattern) {
+
+        if ( pattern.isPresent() ) {
+            String patternString = convertGlobToRegex(pattern.get());
+            return text.matches(patternString);
+        } else {
+            return true;
+        }
+
 
     }
 }

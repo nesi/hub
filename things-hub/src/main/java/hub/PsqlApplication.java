@@ -1,6 +1,6 @@
 package hub;
 
-import hub.actions.UserImporter;
+//import hub.actions.UserImporter;
 import hub.config.jpa.HubConfigJpa;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -27,9 +27,9 @@ public class PsqlApplication {
 //        query.getJobs();
 
 
-        UserImporter ui = (UserImporter) context.getBean("userImporter");
-
-        ui.execute(null, null, null);
+//        UserImporter ui = (UserImporter) context.getBean("userImporter");
+//
+//        ui.execute(null, null, null);
 
     }
 

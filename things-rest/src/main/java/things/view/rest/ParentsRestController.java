@@ -60,6 +60,18 @@ public class ParentsRestController {
     }
 
     @Transactional(readOnly = true)
+    @RequestMapping(value = "/parents/of/every/{type}/matching/{value}")
+    public List<Thing> getParentsOfThingsMatchingTypeAndValue(@PathVariable("type") String type, @PathVariable("value") String stringValue) {
+
+        Observable<? extends Thing<?>> result = thingControl.observeThingsMatchingKeyAndValueConvertedFromString(type, "*", stringValue);
+
+        List<Thing> parents = thingControl.findParents(result, Optional.empty(), Optional.empty(), true);
+
+        return parents;
+
+    }
+
+    @Transactional(readOnly = true)
     @RequestMapping(value = "/parents/of/every/{type}/{key}")
     public List<Thing> getParentsOfThingsMatchingTypeAndKey(@PathVariable("type") String type, @PathVariable("key") String keyMatcher) {
 
