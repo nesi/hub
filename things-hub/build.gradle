@@ -63,6 +63,7 @@ sourceSets {
 
 dependencies {
 
+    compile project(':things-hub-common')
     compile project(':things-core')
     compile project(':things-mongo')
     compile project(':things-jpa')

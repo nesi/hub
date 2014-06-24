@@ -30,7 +30,7 @@ import java.util.Set;
  * along with some properties like whether an object of this type needs to have a unique key across
  * all of it's sister-objects (of the same type).
  * <p>
- * ThingTypes are managed in the {@link things.types.TypeRegistry}, where new types can be added via {@link things.types.TypeRegistry#addType(ThingType)}.
+ * ThingTypes are managed in the {@link things.types.TypeRegistry}, where new types can be added via {@link things.types.TypeRegistry#addType(things.types.ThingType)}.
  * A default factory for gathering types is {@link things.types.AnnotationTypeFactory}, which uses annotations to find
  * all types. But you can implement that anyway you like.
  */

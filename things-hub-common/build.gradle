@@ -1,0 +1,17 @@
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile project(":things-common")
+}
+
+ext {
+    name = 'The hub common component'
+    description = 'Common code amongst hub backend/frontend'
+}

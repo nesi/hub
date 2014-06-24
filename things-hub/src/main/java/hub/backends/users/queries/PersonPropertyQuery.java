@@ -3,12 +3,14 @@ package hub.backends.users.queries;
 import com.google.common.collect.ImmutableSet;
 import hub.backends.users.PersonReader;
 import hub.backends.users.UserManagement;
+
 import hub.backends.users.types.Person;
 import hub.backends.users.types.PersonProperty;
 import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingQuery;
 import things.types.TypeRegistry;
+
 
 import javax.inject.Inject;
 import java.util.Map;

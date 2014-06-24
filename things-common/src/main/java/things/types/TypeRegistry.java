@@ -20,8 +20,8 @@
 package things.types;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import things.exceptions.NoSuchTypeException;
 import things.thing.Thing;
 
@@ -125,7 +125,7 @@ public class TypeRegistry {
     }
 
     public ThingType getThingType(String type) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(type), "Type can't be null or empty");
+        Preconditions.checkArgument(! Strings.isNullOrEmpty(type), "Type can't be null or empty");
         if ( types.get(type) != null ) {
             return types.get(type);
         } else {

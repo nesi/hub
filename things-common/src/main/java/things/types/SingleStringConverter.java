@@ -20,7 +20,7 @@
 package things.types;
 
 /**
- * A SingleStringConverter can convert a type ({@link things.types.ThingType}) into a String, and back.
+ * A SingleStringConverter can convert a type ({@link ThingType}) into a String, and back.
  */
 public interface SingleStringConverter<V> {
 

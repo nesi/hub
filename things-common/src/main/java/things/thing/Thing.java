@@ -65,7 +65,7 @@ import java.util.Set;
  *
  * Every storage backend ({@link things.thing.ThingWriter}) can implement it's own way of storing such a value.
  * Normally a value would be stored and retrieved via an 'id' field.
- * When looking up the value of Thing, always do via the {@link things.thing.ThingControl#getValue(Thing)} method,
+ * When looking up the value of Thing, always do via the {@link things.thing.ThingControl#getValue(things.thing.Thing)} method,
  * because it is not guaranteed that the value is populated (lazy loading), so the {@link #getValue()} method may return null.
  *
  * If the Value type is so that it only contains one String, it can be marked by the {@link things.model.types.attributes.StringConverter} attribute. If that is present,
@@ -162,7 +162,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
     /**
      * The value that is wrapped by this thing.
      *
-     * Try to avoid getting it directly, instead use {@link things.thing.ThingControl#getValue(Thing)} to make sure the value is populated by the associated {@link things.thing.ThingReader}.
+     * Try to avoid getting it directly, instead use {@link things.thing.ThingControl#getValue(things.thing.Thing)} to make sure the value is populated by the associated {@link things.thing.ThingReader}.
      * If you can't do that for some reason, make sure you check the {@link #getValueIsPopulated()} method before retrieving the value.
      */
     public V getValue() {
@@ -208,7 +208,7 @@ public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
      * Sets this Things parents.
      *
      * You should not need to use this method, if you want to add Things to Things to be stored
-     * on the storage backend use {@link ThingControl#addChildThing(Thing, Thing)}.
+     * on the storage backend use {@link ThingControl#addChildThing(things.thing.Thing, things.thing.Thing)}.
      *
      * When returning Things via the API, parents are not included in the serialization, so don't
      * waste cycles adding Things in the first place.
