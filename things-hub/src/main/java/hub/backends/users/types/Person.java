@@ -25,6 +25,7 @@ import com.google.common.collect.*;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import things.model.types.Value;
+import things.utils.MatcherUtils;
 
 import java.time.Instant;
 import java.util.*;
@@ -69,6 +70,20 @@ public class Person implements Comparable<Person> {
 
     public Person() {
 
+    }
+
+    public boolean matchesProperty(PersonProperty prop) {
+        Set<PersonProperty> value = getProperties(prop.getService(), prop.getKey());
+        if ( value.size() > 0 ) {
+            String propValue = prop.getValue();
+            if ( MatcherUtils.isGlob(propValue)) {
+                return value.stream().anyMatch(p -> MatcherUtils.wildCardMatch(p.getValue(), propValue));
+            } else {
+                return value.stream().anyMatch(p -> p.getValue().equals(prop.getValue()));
+            }
+        } else {
+            return false;
+        }
     }
 
     public synchronized void addEmail(String email) {

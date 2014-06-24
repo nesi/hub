@@ -117,7 +117,7 @@ public class GroupReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllGroups().get(key)).map(g -> wrapGroup(g));
+        return Observable.from(um.getAllGroups().get(key)).filter(g -> g != null).map(g -> wrapGroup(g));
     }
 
     @Override

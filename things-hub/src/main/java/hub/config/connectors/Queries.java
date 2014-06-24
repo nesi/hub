@@ -22,6 +22,7 @@ package hub.config.connectors;
 import hub.backends.jobs.JobsQuery;
 import hub.backends.audit.JobHistoryQuery;
 import hub.backends.audit.PanAuditQuery;
+import hub.backends.users.queries.PersonPropertyQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,6 +83,12 @@ public class Queries {
         ThingQueries tq = new ThingQueries();
         tq.addQuery(jobsQuery());
         tq.addQuery(jobHistoryQuery());
+        tq.addQuery(personPropertyQuery());
         return tq;
+    }
+
+    @Bean
+    public PersonPropertyQuery personPropertyQuery() {
+        return new PersonPropertyQuery();
     }
 }

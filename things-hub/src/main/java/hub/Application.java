@@ -37,7 +37,7 @@ import things.thing.ThingControl;
 public class Application {
 
 
-    public static void main(String[] args) throws ValueException, ThingException, InterruptedException {
+    public static void main2(String[] args) throws ValueException, ThingException, InterruptedException {
 
         AbstractApplicationContext context = new AnnotationConfigApplicationContext(HubConfigJpa.class);
 

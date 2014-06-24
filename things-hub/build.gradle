@@ -38,9 +38,9 @@ apply plugin: 'spring-boot'
 
 def springBootVersion = '1.0.2.RELEASE'
 
-springBoot {
-    mainClass = "hub.HubServiceJpa"
-}
+//springBoot {
+//    mainClass = "hub.HubServiceJpa"
+//}
 
 ext {
     name = 'Things Hub'

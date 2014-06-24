@@ -54,6 +54,7 @@ public class UserManagement  {
         this.allPersons = null;
     }
 
+
     public Optional<Integer> getResearcherId(String researcher) {
         Person p = getAllPersons().get(researcher);
         if ( p == null ) {

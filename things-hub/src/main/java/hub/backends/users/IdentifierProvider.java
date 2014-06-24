@@ -58,10 +58,10 @@ public class IdentifierProvider {
             if ( advId.isPresent() ) {
                 newId.setAdviserId(Integer.parseInt(advId.get()));
             }
-            newId.setEmails(p.getEmails());
-            newId.setFirstName(p.getFirst_name());
-            newId.setLastName(p.getLast_name());
-            newId.setMiddleNames(p.getMiddle_names());
+//            newId.setEmails(p.getEmails());
+//            newId.setFirstName(p.getFirst_name());
+//            newId.setLastName(p.getLast_name());
+//            newId.setMiddleNames(p.getMiddle_names());
 
             idRepository.saveAndFlush(newId);
 

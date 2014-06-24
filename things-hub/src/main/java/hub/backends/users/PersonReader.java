@@ -70,7 +70,7 @@ public class PersonReader extends AbstractThingReader {
         return findThingsMatchingTypeAndKey(type, key);
     }
 
-    public Thing<Person> wrapPerson(Person p) {
+    public static Thing<Person> wrapPerson(TypeRegistry tr, Person p) {
 
         Thing t = new Thing();
         String identifier = p.getUniqueUsername();
@@ -82,6 +82,10 @@ public class PersonReader extends AbstractThingReader {
         t.setValueIsPopulated(true);
 
         return t;
+    }
+
+    public Thing<Person> wrapPerson(Person p) {
+        return wrapPerson(tr, p);
     }
 
     @Override

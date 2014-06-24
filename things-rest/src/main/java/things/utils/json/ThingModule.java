@@ -21,7 +21,11 @@ package things.utils.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import things.thing.Thing;
 import things.thing.ThingControl;
+import things.thing.ThingDeserializer;
+import things.thing.ThingSerializer;
+import things.types.TypeRegistry;
 
 /**
  * Project: things
@@ -31,11 +35,13 @@ import things.thing.ThingControl;
 public class ThingModule extends SimpleModule {
 
     private final ThingControl tc;
+    private final TypeRegistry tr;
 
-    public ThingModule(ObjectMapper objectMapper, ThingControl tc) {
+    public ThingModule(ObjectMapper objectMapper, ThingControl tc, TypeRegistry tr) {
         this.tc = tc;
-//        addDeserializer(Thing.class, new ThingDeserializer(objectMapper));
-//        addSerializer(Thing.class, new ThingSerializer(tc));
+        this.tr = tr;
+        addDeserializer(Thing.class, new ThingDeserializer(objectMapper, tr));
+        addSerializer(Thing.class, new ThingSerializer(tc));
     }
 
 

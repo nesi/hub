@@ -32,7 +32,7 @@ import org.springframework.boot.SpringApplication;
 public class HubServiceMongo {
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main2(String[] args) throws Exception {
 
         SpringApplication.run(HubConfigMongo.class);
 

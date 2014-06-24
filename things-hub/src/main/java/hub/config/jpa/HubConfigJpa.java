@@ -140,8 +140,8 @@ public class HubConfigJpa {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ThingsObjectMapper tom = new ThingsObjectMapper();
+    public ObjectMapper objectMapper() throws Exception {
+        ThingsObjectMapper tom = new ThingsObjectMapper(thingControl(), typeRegistry());
         return tom;
     }
 

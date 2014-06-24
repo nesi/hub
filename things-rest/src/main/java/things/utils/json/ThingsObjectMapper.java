@@ -24,6 +24,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import things.thing.ThingControl;
+import things.types.TypeRegistry;
 
 import javax.inject.Inject;
 
@@ -35,10 +36,13 @@ import javax.inject.Inject;
 public class ThingsObjectMapper extends ObjectMapper {
 
     private ThingControl tc;
+    private TypeRegistry tr;
 
-    public ThingsObjectMapper() {
+    public ThingsObjectMapper(ThingControl tc, TypeRegistry tr) {
+        this.tc = tc;
+        this.tr = tr;
         registerModule(new GuavaModule());
-        registerModule(new ThingModule(this, tc));
+        registerModule(new ThingModule(this, tc, tr));
         registerModule(new JSR310Module());
         registerModule(new AfterburnerModule());
     }
@@ -47,8 +51,4 @@ public class ThingsObjectMapper extends ObjectMapper {
         return tc;
     }
 
-    @Inject
-    public void setThingControl(ThingControl tc) {
-        this.tc = tc;
-    }
 }

@@ -31,7 +31,8 @@ projectdb, but does not need to (although, most of the time that'll be the case)
 Each person needs to be associated with an identity. At the moment, the identity class is a 
 helper class that stores a unique uuid, possible adviser and researcher ids from the projectdb
 and also an alias. The alias is used as a unique, user-friendly key. And the table is used to be
-able to always (re-)connect an alias with a person.
+able to always (re-)connect an alias with a person. The __identity__ class is only used internally,
+and probably does not need to be exposed.
 
 ### group
 
@@ -42,8 +43,45 @@ But it's perfectly possible to have a group for other group of persons (i.e. "Th
 is one group, also all Advisers in the projectdb).
 
 
-Queries
--------
+Rest API Queries
+----------------
+
+The __hub__ exposes a Restful API ( base url on the saga host is: http://saga.exp.cer.auckland.ac.nz:8084/rest )
+
+Here is a list of useful queries:
 
 ### Persons
+
+#### get all persons
+
+    /get/every/person
+    
+#### get person with alias 'markus_binsteiner'
+
+    /get/person/markus_binsteiner
+    
+#### get all persons where the alias matches 'markus'
+
+    /get/every/person/*markus*
+    
+### Groups
+
+#### get all groups
+
+    /get/every/group
+    
+#### get group 'uoa00001'
+
+    /get/group/uoa00001
+    
+#### get every group where the groupname starts with 'uoa'
+
+    /get/every/group/uoa*
+    
+### Jobs
+
+#### get all currently running jobs for person with alias 'markus_binsteiner'
+
+    /query/jobs/for/person/markus_binsteiner
+    
 
