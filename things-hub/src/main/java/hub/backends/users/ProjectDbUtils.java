@@ -5,8 +5,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import hub.backends.users.types.Person;
-import hub.backends.users.types.PersonProperty;
+import hub.backends.users.types.Property;
 import hub.backends.users.types.Project;
+import hub.backends.users.types.Username;
 import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Record3;
@@ -91,8 +92,8 @@ public class ProjectDbUtils {
     private Map<Integer, Multimap<String, String>> projectsForResearchersMap = null;
     private Map<Integer, Multimap<String, String>> projectsForAdvisersMap = null;
 
-    private Multimap<Integer, PersonProperty> personPropertiesForAdvisers = null;
-    private Multimap<Integer, PersonProperty> personPropertiesForResearchers = null;
+    private Multimap<Integer, Property> personPropertiesForAdvisers = null;
+    private Multimap<Integer, Property> personPropertiesForResearchers = null;
 
     public void recreate() {
         institutionalRoleMap = null;
@@ -150,7 +151,7 @@ public class ProjectDbUtils {
         Instant lastModified = rec.getValue(Tables.ADVISER.LASTMODIFIED, Timestamp.class).toInstant();
 
         Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement);
-        PersonProperty prop = new PersonProperty();
+        Property prop = new Property();
         prop.setService(PROJECT_DB_SERVICENAME);
         prop.setKey(ADVISER_ID);
         prop.setValue(id.toString());
@@ -162,8 +163,11 @@ public class ProjectDbUtils {
         }
         p.addRole(PROJECT_DB_SERVICENAME, PROJECT_DB_ADVISER_ROLENAME);
 
-        Collection<PersonProperty> props = getPersonPropertiesForAdviser(id);
+        Collection<Property> props = getPersonPropertiesForAdviser(id);
         p.addProperties(props);
+
+        Multimap<String, String> usernames = extractUsernames(props);
+        p.addUsernames(usernames);
 
         Optional<Multimap<String, String>> roles = getProjectsForAdviser(id);
         if ( roles.isPresent() ) {
@@ -191,7 +195,7 @@ public class ProjectDbUtils {
         return siteMap;
     }
 
-    private Multimap<Integer, PersonProperty> getPersonPropertiesForResearcherMap() {
+    private Multimap<Integer, Property> getPersonPropertiesForResearcherMap() {
         if ( personPropertiesForResearchers == null ) {
             Result<Record> query = jooq.select().from(Tables.RESEARCHER_PROPERTIES).fetch();
             personPropertiesForResearchers = HashMultimap.create();
@@ -203,7 +207,7 @@ public class ProjectDbUtils {
                 String site = getSite(siteId);
 
 
-                PersonProperty p = new PersonProperty();
+                Property p = new Property();
                 p.setService(site);
                 p.setValue(value);
                 p.setKey(key);
@@ -215,7 +219,7 @@ public class ProjectDbUtils {
         return personPropertiesForResearchers;
     }
 
-    private Multimap<Integer, PersonProperty> getPersonPropertiesForAdvisersMap() {
+    private Multimap<Integer, Property> getPersonPropertiesForAdvisersMap() {
         if ( personPropertiesForAdvisers == null ) {
             Result<Record> query = jooq.select().from(Tables.ADVISER_PROPERTIES).fetch();
             personPropertiesForAdvisers = HashMultimap.create();
@@ -226,7 +230,7 @@ public class ProjectDbUtils {
                 Integer adviserId = rec.getValue(Tables.ADVISER_PROPERTIES.ADVISERID, Integer.class);
                 String site = getSite(siteId);
 
-                PersonProperty p = new PersonProperty();
+                Property p = new Property();
                 p.setService(site);
                 p.setValue(value);
                 p.setKey(key);
@@ -238,11 +242,11 @@ public class ProjectDbUtils {
         return personPropertiesForAdvisers;
     }
 
-    private Collection<PersonProperty> getPersonPropertiesForResearcher(int researcherId) {
+    private Collection<Property> getPersonPropertiesForResearcher(int researcherId) {
         return getPersonPropertiesForResearcherMap().get(researcherId);
     }
 
-    private Collection<PersonProperty> getPersonPropertiesForAdviser(int adviserId) {
+    private Collection<Property> getPersonPropertiesForAdviser(int adviserId) {
         return getPersonPropertiesForAdvisersMap().get(adviserId);
     }
 
@@ -283,14 +287,17 @@ public class ProjectDbUtils {
         Instant lastModified = rec.getValue(Tables.RESEARCHER.LASTMODIFIED, Timestamp.class).toInstant();
 
         Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement);
-        PersonProperty prop = new PersonProperty();
+        Property prop = new Property();
         prop.setService(PROJECT_DB_SERVICENAME);
         prop.setKey(RESEARCHER_ID);
         prop.setValue(id.toString());
         p.addProperty(prop);
 
-        Collection<PersonProperty> props = getPersonPropertiesForResearcher(id);
+        Collection<Property> props = getPersonPropertiesForResearcher(id);
         p.addProperties(props);
+
+        Multimap<String, String> usernames = extractUsernames(props);
+        p.addUsernames(usernames);
 
         p.addRole(PROJECT_DB_SERVICENAME, PROJECT_DB_RESEARCHER_ROLENAME);
 
@@ -300,6 +307,32 @@ public class ProjectDbUtils {
         }
 
         return p;
+
+    }
+
+    private Multimap<String, String> extractUsernames(Collection<Property> properties) {
+
+        Multimap<String, String> result = HashMultimap.create();
+
+        properties.stream()
+                .map(p -> generateUsername(p))
+                .filter(Optional::isPresent)
+                .forEach(p -> {
+                    result.put(p.get().getService(), p.get().getUsername());
+                });
+
+        return result;
+
+    }
+
+    private Optional<Username> generateUsername(Property pp) {
+
+        if ( pp.getKey().equals("linuxUsername") ) {
+            Username un = new Username(pp.getService(), pp.getValue());
+            return Optional.of(un);
+        } else {
+            return Optional.empty();
+        }
 
     }
 
@@ -439,10 +472,10 @@ public class ProjectDbUtils {
 
                 Person p = getAllResearchersMap().get(id);
                 if ( p != null ) {
-                    if ( Strings.isNullOrEmpty(p.getUniqueUsername() ))  {
+                    if ( Strings.isNullOrEmpty(p.getAlias() ))  {
                         p = idProvider.createIdentifier(p);
                     }
-                    temp.put(role, p.getUniqueUsername());
+                    temp.put(role, p.getAlias());
                 } else {
                     throw new RuntimeException("Can't find researcher with id: " + id);
                 }
@@ -480,10 +513,10 @@ public class ProjectDbUtils {
 
                 Person p = getAllAdvisersMap().get(id);
                 if ( p != null ) {
-                    if ( Strings.isNullOrEmpty(p.getUniqueUsername()) ) {
+                    if ( Strings.isNullOrEmpty(p.getAlias()) ) {
                         p = idProvider.createIdentifier(p);
                     }
-                    temp.put(role, p.getUniqueUsername());
+                    temp.put(role, p.getAlias());
                 } else {
                     throw new RuntimeException("Can't find researcher with id: " + id);
                 }

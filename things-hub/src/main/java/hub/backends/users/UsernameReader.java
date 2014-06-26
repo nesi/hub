@@ -2,7 +2,7 @@ package hub.backends.users;
 
 import com.google.common.collect.Sets;
 import hub.backends.users.types.Person;
-import hub.backends.users.types.PersonProperty;
+import hub.backends.users.types.Property;
 import hub.backends.users.types.Username;
 import rx.Observable;
 import things.thing.AbstractThingReader;
@@ -33,20 +33,20 @@ public class UsernameReader extends AbstractThingReader {
 
     private Observable<Thing<Username>> createUsernames(Person p, Optional<String> key) {
 
-        Set<PersonProperty> usernames = p.getPropertiesForKey("linuxUsername");
+        Set<Property> usernames = p.getPropertiesForKey("linuxUsername");
         if ( usernames.size() == 0  ) {
             return Observable.empty();
         }
 
         return Observable.from(usernames)
                 .filter(un -> MatcherUtils.wildCardMatch(un.getService(), key))
-                .flatMap(un -> wrapUsername(un.getService(), un.getValue(), p.getUniqueUsername()));
+                .flatMap(un -> wrapUsername(un.getService(), un.getValue(), p.getAlias()));
 
     }
 
     private Observable<Thing<Username>> wrapUsername(String service, String un, String personId) {
         Thing t = new Thing();
-        t.setValue(new Username(un));
+        t.setValue(new Username(service, un));
         t.setThingType(tr.getType(Username.class));
         t.setValueIsPopulated(true);
         t.setKey(service);

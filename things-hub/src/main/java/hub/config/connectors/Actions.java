@@ -20,24 +20,23 @@
 package hub.config.connectors;
 
 import hub.backends.users.actions.ReimportProjectDB;
-import hub.config.mongo.HubConfigMongo;
-import org.springframework.beans.factory.annotation.Autowired;
+import hub.backends.users.actions.SetPasswordAction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import things.config.ThingActions;
-import things.thing.ThingAction;
 
 /**
  * @author: Markus Binsteiner
  */
 @Configuration
-@Import(HubConfigMongo.class)
 public class Actions {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+
+
+    @Bean
+    public SetPasswordAction setPasswordAction() {
+        return new SetPasswordAction();
+    }
 
     @Bean
     public ReimportProjectDB reimportProjectDB() {
@@ -48,6 +47,7 @@ public class Actions {
     ThingActions thingActions() throws Exception {
         ThingActions ta = new ThingActions();
         ta.addAction(reimportProjectDB());
+        ta.addAction(setPasswordAction());
         return ta;
     }
 

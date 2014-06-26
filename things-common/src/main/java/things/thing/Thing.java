@@ -19,9 +19,12 @@
 
 package things.thing;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
+import things.types.TypeRegistry;
 
 import java.util.Objects;
 import java.util.Set;
@@ -79,6 +82,17 @@ import java.util.Set;
  * @author Markus Binsteiner
  */
 public class Thing<V> implements Comparable<Thing>, java.io.Serializable {
+
+    public static <T> Thing<T> createThingPoJo(TypeRegistry tr, String key, T value) {
+
+        Thing<T> t = new Thing();
+        t.setThingType(tr.getType(value.getClass()));
+        t.setValue(value);
+        t.setValueIsPopulated(true);
+        t.setKey(key);
+
+        return t;
+    }
 
     private String id;
 

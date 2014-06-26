@@ -78,9 +78,9 @@ public class ExecuteRestController {
     @Transactional(readOnly = false)
     @RequestMapping(value = "/{actionName}", method = RequestMethod.POST)
     @Timed
-    public List<Thing> executeGetAction(@PathVariable("actionName") String actionName, @RequestParam Map<String, String> allRequestParams) throws ActionException {
+    public List<Thing> executeGetAction(@PathVariable("actionName") String actionName, @RequestBody List<Thing<?>> things, @RequestParam Map<String, String> allRequestParams) throws ActionException {
 
-        Observable<? extends Thing<?>> handle = thingControl.executeAction(actionName, Observable.empty(), allRequestParams);
+        Observable<? extends Thing<?>> handle = thingControl.executeAction(actionName, Observable.from(things), allRequestParams);
 
         return Lists.newArrayList(handle.toBlockingObservable().toIterable());
     }

@@ -23,14 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
 import hub.backends.users.*;
 import hub.backends.users.repositories.IdentityRepository;
+import hub.backends.users.repositories.PasswordRepository;
 import hub.backends.users.types.Identity;
+import hub.backends.users.types.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -41,6 +40,7 @@ import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import things.config.ThingReaders;
@@ -54,7 +54,7 @@ import things.thing.ThingControl;
 import things.types.AnnotationTypeFactory;
 import things.types.ThingType;
 import things.types.TypeRegistry;
-import things.utils.json.ThingsObjectMapper;
+import things.thing.ThingsObjectMapper;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -141,7 +141,7 @@ public class HubConfigJpa {
 
     @Bean
     public ObjectMapper objectMapper() throws Exception {
-        ThingsObjectMapper tom = new ThingsObjectMapper(thingControl(), typeRegistry());
+        ThingsObjectMapper tom = new ThingsObjectMapper(typeRegistry());
         return tom;
     }
 
@@ -168,11 +168,17 @@ public class HubConfigJpa {
         return tr;
     }
 
+//    @Bean
+//    public PasswordWriter passwordWriter() {
+//        return new PasswordWriter();
+//    }
+
     @Bean
     public ThingWriters thingWriters() throws Exception {
 
         ThingWriters tw = new ThingWriters();
         tw.addWriter("identity/*", jpaConnector());
+//        tw.addWriter("password/*", passwordWriter());
         return tw;
     }
 
@@ -237,11 +243,17 @@ public class HubConfigJpa {
     }
 
     @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     @Inject
-    public ValueRepositories valueRepositories(IdentityRepository ir) {
+    public ValueRepositories valueRepositories(IdentityRepository ir, PasswordRepository pwr) {
 
         ValueRepositories vr = new ValueRepositories();
         vr.addRepository(typeRegistry().getType(Identity.class), ir);
+        vr.addRepository(typeRegistry().getType(Password.class), pwr);
         return vr;
     }
 }

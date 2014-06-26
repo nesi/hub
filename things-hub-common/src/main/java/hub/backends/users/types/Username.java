@@ -1,8 +1,6 @@
 package hub.backends.users.types;
 
-import hub.backends.users.converters.UsernameStringConverter;
 import things.model.types.Value;
-import things.model.types.attributes.StringConverter;
 
 import java.util.Objects;
 
@@ -10,13 +8,22 @@ import java.util.Objects;
  * Created by markus on 23/06/14.
  */
 @Value(typeName = "username")
-@StringConverter(value = UsernameStringConverter.class)
 public class Username {
 
+    private String service;
     private String username;
 
-    public Username(String username) {
+    public Username(String service, String username) {
+        this.service = service;
         this.username = username;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
     }
 
     public String getUsername() {
@@ -34,7 +41,8 @@ public class Username {
 
         if ( getClass().equals(obj.getClass()) ) {
             final Username other = (Username) obj;
-            return Objects.equals(getUsername(), other.getUsername());
+            return Objects.equals(getUsername(), other.getUsername())
+                    && Objects.equals(getService(), other.getService());
         } else {
             return false;
         }
@@ -42,6 +50,6 @@ public class Username {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getUsername());
+        return Objects.hash(getService(), getUsername());
     }
 }

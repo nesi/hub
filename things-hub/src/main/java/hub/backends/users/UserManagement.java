@@ -1,19 +1,14 @@
 package hub.backends.users;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import hub.backends.users.repositories.IdentityRepository;
 import hub.backends.users.types.Group;
 import hub.backends.users.types.Person;
-import hub.backends.users.types.PersonProperty;
+import hub.backends.users.types.Property;
 import hub.backends.users.types.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -60,7 +55,7 @@ public class UserManagement  {
         if ( p == null ) {
             return Optional.empty();
         } else {
-            Set<PersonProperty> prop = p.getProperties(ProjectDbUtils.PROJECT_DB_SERVICENAME, ProjectDbUtils.RESEARCHER_ID);
+            Set<Property> prop = p.getProperties(ProjectDbUtils.PROJECT_DB_SERVICENAME, ProjectDbUtils.RESEARCHER_ID);
             if ( prop.size() == 0 ) {
                 return Optional.empty();
             } else if ( prop.size() > 1 ) {
@@ -75,7 +70,7 @@ public class UserManagement  {
         if ( p == null ) {
             return Optional.empty();
         } else {
-            Set<PersonProperty> prop = p.getProperties(ProjectDbUtils.PROJECT_DB_SERVICENAME, ProjectDbUtils.ADVISER_ID);
+            Set<Property> prop = p.getProperties(ProjectDbUtils.PROJECT_DB_SERVICENAME, ProjectDbUtils.ADVISER_ID);
             if ( prop.size() == 0 ) {
                 return Optional.empty();
             } else if ( prop.size() > 1 ) {
@@ -136,19 +131,19 @@ public class UserManagement  {
 
             allPersons = Maps.newHashMap();
             for ( Person p : researchers ) {
-                if ( Strings.isNullOrEmpty(p.getUniqueUsername()) ) {
+                if ( Strings.isNullOrEmpty(p.getAlias()) ) {
                     p = idProvider.createIdentifier(p);
                 }
-                allPersons.put(p.getUniqueUsername(), p);
+                allPersons.put(p.getAlias(), p);
             }
 
             for ( Person adv : advisers ) {
-                if ( Strings.isNullOrEmpty(adv.getUniqueUsername()) ) {
+                if ( Strings.isNullOrEmpty(adv.getAlias()) ) {
                     adv = idProvider.createIdentifier(adv);
                 }
-                Person match = allPersons.get(adv.getUniqueUsername());
+                Person match = allPersons.get(adv.getAlias());
                 if ( match == null ) {
-                    allPersons.put(adv.getUniqueUsername(), adv);
+                    allPersons.put(adv.getAlias(), adv);
                 } else {
                     match.addProperties(adv.getProperties());
                     match.addRoles(adv.getRoles());

@@ -50,18 +50,19 @@ public class Person implements Comparable<Person> {
     private String middle_names = "";
     private String preferred_name;
 
-    private String uniqueUsername;
+    private String alias;
 
-    public String getUniqueUsername() {
-        return uniqueUsername;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setUniqueUsername(String uniqueUsername) {
-        this.uniqueUsername = uniqueUsername;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
-    private Set<PersonProperty> properties = Sets.newTreeSet();
+    private Set<Property> properties = Sets.newTreeSet();
     private SetMultimap<String, String> roles = TreeMultimap.create();
+    private SetMultimap<String, String> usernames = TreeMultimap.create();
 
     public Person(String first_name, String last_name) {
         this.first_name = first_name;
@@ -72,18 +73,54 @@ public class Person implements Comparable<Person> {
 
     }
 
-    public boolean matchesProperty(PersonProperty prop) {
-        Set<PersonProperty> value = getProperties(prop.getService(), prop.getKey());
+    public boolean matchesProperty(Property prop) {
+        Set<Property> value = getProperties(prop.getService(), prop.getKey());
         if ( value.size() > 0 ) {
             String propValue = prop.getValue();
             if ( MatcherUtils.isGlob(propValue)) {
-                return value.stream().anyMatch(p -> MatcherUtils.wildCardMatch(p.getValue(), propValue));
+
+                for ( Property p : value ) {
+                    if ( MatcherUtils.wildCardMatch(p.getValue(), propValue)) {
+                        return true;
+                    }
+                }
+
+                return false;
+
             } else {
-                return value.stream().anyMatch(p -> p.getValue().equals(prop.getValue()));
+
+                for ( Property p : value ) {
+                    if ( p.getValue().equals(prop.getValue())) {
+                        return true;
+                    }
+                }
+
+                return false;
+
             }
         } else {
             return false;
         }
+    }
+
+    public boolean hasUsername(Username username) {
+        Set<String> actualUsernames = this.usernames.get(username.getService());
+
+        return actualUsernames.contains(username.getUsername());
+
+    }
+
+    public void setRoles(Multimap<String, String> roles) {
+        this.roles = TreeMultimap.create(roles);
+    }
+
+    public void setUsernames(Multimap<String, String> usernames) {
+        this.usernames = TreeMultimap.create(usernames);
+
+    }
+
+    public void addUsernames(Multimap<String, String> usernames) {
+        this.usernames.putAll(usernames);
     }
 
     public synchronized void addEmail(String email) {
@@ -94,7 +131,7 @@ public class Person implements Comparable<Person> {
         getEmails().addAll(emails);
     }
 
-    public void addProperties(Collection<PersonProperty> props) {
+    public void addProperties(Collection<Property> props) {
         properties.addAll(props);
     }
 
@@ -102,12 +139,20 @@ public class Person implements Comparable<Person> {
         this.roles.putAll(roles);
     }
 
-    public void addProperty(PersonProperty value) {
+    public void addProperty(Property value) {
         properties.add(value);
     }
 
     public void addRole(String group, String role) {
         roles.put(group, role);
+    }
+
+    public void addUsername(String service, String username) {
+        usernames.put(service, username);
+    }
+
+    public SetMultimap<String, String> getUsernames() {
+        return usernames;
     }
 
     @Override
@@ -160,16 +205,26 @@ public class Person implements Comparable<Person> {
         return preferred_name;
     }
 
-    public Set<PersonProperty> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
-    public Set<PersonProperty> getPropertiesForKey(String key) {
-        return properties.stream().filter(p -> p.getKey().equals(key)).collect(Collectors.toSet());
+    public Set<Property> getPropertiesForKey(String key) {
+
+        Set<Property> result = Sets.newTreeSet();
+
+        for ( Property p : properties ) {
+            if ( p.getKey().equals(key)) {
+                result.add(p);
+            }
+        }
+
+        return result;
+
     }
 
-    public Optional<PersonProperty> getProperty(String servicename, String key) {
-        Set<PersonProperty> props = getProperties(servicename, key);
+    public Optional<Property> getProperty(String servicename, String key) {
+        Set<Property> props = getProperties(servicename, key);
         if ( props.size() == 0 ) {
             return Optional.empty();
         } else if ( props.size() > 1 ) {
@@ -180,7 +235,7 @@ public class Person implements Comparable<Person> {
     }
 
     public Optional<String> getPropertyValue(String service, String key) {
-        Optional<PersonProperty> p = getProperty(service, key);
+        Optional<Property> p = getProperty(service, key);
 
         if ( p.isPresent() ) {
             return Optional.of(p.get().getValue());
@@ -190,15 +245,42 @@ public class Person implements Comparable<Person> {
     }
 
     public Set<String> getPropertyValues(String service, String key) {
-        return properties.stream().filter(p -> p.getService().equals(service) && p.getKey().equals(key) ).map(p -> p.getValue()).collect(Collectors.toSet());
+
+        Set<String> results = Sets.newTreeSet();
+
+        for ( Property p : properties ) {
+            if ( p.getService().equals(service)
+                && p.getKey().equals(key)) {
+                results.add(p.getValue());
+            }
+        }
+
+        return results;
     }
 
-    public Set<PersonProperty> getProperties(String service) {
-        return properties.stream().filter(p -> p.getService().equals(service)).collect(Collectors.toSet());
+    public Set<Property> getProperties(String service) {
+
+        Set<Property> results = Sets.newTreeSet();
+        for ( Property p : properties ) {
+            if ( p.getService().equals(service) ) {
+                results.add(p);
+            }
+        }
+
+        return results;
     }
 
-    public Set<PersonProperty> getProperties(String service, String key) {
-        return properties.stream().filter(p -> p.getService().equals(service) && p.getKey().equals(key) ).collect(Collectors.toSet());
+    public Set<Property> getProperties(String service, String key) {
+
+        Set<Property> results = Sets.newTreeSet();
+
+        for ( Property p : properties ) {
+            if ( p.getService().equals(service) && p.getKey().equals(key) ) {
+                results.add(p);
+            }
+        }
+
+        return results;
     }
 
     public Multimap<String, String> getRoles() {
@@ -252,7 +334,7 @@ public class Person implements Comparable<Person> {
         this.preferred_name = preferred_name;
     }
 
-    public void setProperties(Set<PersonProperty> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
     }
 

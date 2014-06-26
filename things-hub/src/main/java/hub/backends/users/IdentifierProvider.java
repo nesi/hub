@@ -29,7 +29,7 @@ public class IdentifierProvider {
             if ( resIds.size() > 1 ) {
                 throw new RuntimeException("Multiple persons found for researcher id: "+resId.get());
             } else if ( resIds.size() == 1 ) {
-                p.setUniqueUsername(resIds.get(0).getAlias());
+                p.setAlias(resIds.get(0).getAlias());
                 return p;
             }
         }
@@ -40,7 +40,7 @@ public class IdentifierProvider {
             if ( advIds.size() > 1 ) {
                 throw new RuntimeException("Multiple persons found for adviser id: "+advId.get());
             } else if ( advIds.size() == 1 ) {
-                p.setUniqueUsername(advIds.get(0).getAlias());
+                p.setAlias(advIds.get(0).getAlias());
                 return p;
             }
         }
@@ -50,7 +50,7 @@ public class IdentifierProvider {
 
         if ( ids.size() == 0 ) {
             // not stored yet
-            p.setUniqueUsername(id);
+            p.setAlias(id);
             Identity newId = new Identity(id);
             if ( resId.isPresent() ) {
                 newId.setResearcherId(Integer.parseInt(resId.get()));
@@ -66,7 +66,7 @@ public class IdentifierProvider {
             idRepository.saveAndFlush(newId);
 
         } else if ( ids.size() == 1 ) {
-            p.setUniqueUsername(id);
+            p.setAlias(id);
         } else {
             throw new RuntimeException("More than one Identities found for: "+id);
         }

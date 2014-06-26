@@ -30,6 +30,9 @@ import things.exceptions.ErrorInfo;
 import things.exceptions.NoSuchThingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.function.Consumer;
 
 /**
  * Project: things-to-build
@@ -53,6 +56,26 @@ public class ThingRestExceptionHandler {
 
         return new ErrorInfo(req.getRequestURL().toString(), ex);
     }
+
+    @ExceptionHandler( ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseBody
+    public ErrorInfo validationException(final HttpServletRequest req, final ConstraintViolationException cve) {
+
+        StringBuffer msg = new StringBuffer("Invalid input:");
+
+        cve.getConstraintViolations().forEach(cv -> {
+           msg.append("  "+cv.getPropertyPath()+" -> "+cv.getMessage());
+        });
+
+        myLogger.debug(msg.toString());
+
+        ErrorInfo ei = new ErrorInfo(req.getRequestURL().toString(), cve);
+        ei.setMessage(msg.toString());
+
+        return ei;
+    }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -9,6 +9,16 @@ targetCompatibility = 1.8
 
 dependencies {
     compile project(":things-common")
+    compile ("org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final")
+    compile ("org.springframework.security:spring-security-crypto:3.2.4.RELEASE") {
+        exclude module: "spring-core"
+    }
+
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = "1.7"
+    targetCompatibility = "1.7"
 }
 
 ext {

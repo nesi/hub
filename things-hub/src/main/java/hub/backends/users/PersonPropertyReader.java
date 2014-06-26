@@ -1,7 +1,7 @@
 package hub.backends.users;
 
 import hub.backends.users.types.Person;
-import hub.backends.users.types.PersonProperty;
+import hub.backends.users.types.Property;
 import rx.Observable;
 import things.thing.AbstractThingReader;
 import things.thing.Thing;
@@ -73,9 +73,9 @@ public class PersonPropertyReader extends AbstractThingReader {
                 .map(prop -> wrapPersonProperty(prop));
     }
 
-    private Thing<PersonProperty> wrapPersonProperty(PersonProperty p) {
+    private Thing<Property> wrapPersonProperty(Property p) {
         Thing t = new Thing();
-        t.setThingType(tr.getType(PersonProperty.class));
+        t.setThingType(tr.getType(Property.class));
         t.setValue(p);
         t.setKey(p.getKey());
         t.setValueIsPopulated(true);

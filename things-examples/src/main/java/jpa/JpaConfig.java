@@ -138,10 +138,9 @@ public class JpaConfig {
 
     @Bean
     public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
-        for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
-            tr.addType(tt);
-        }
+
+        TypeRegistry tr = AnnotationTypeFactory.createTypeRegistry();
+
         return tr;
     }
 

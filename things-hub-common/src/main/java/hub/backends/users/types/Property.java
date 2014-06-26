@@ -8,14 +8,14 @@ import java.util.Objects;
 
 @Subordinate(parentClass = Person.class)
 @Value(typeName = "property")
-public class PersonProperty implements Comparable<PersonProperty> {
+public class Property implements Comparable<Property> {
 
     private String service;
     private String key;
     private String value;
 
     @Override
-    public int compareTo(PersonProperty o2) {
+    public int compareTo(Property o2) {
         return ComparisonChain.start()
                 .compare(getService(), o2.getService())
                 .compare(getKey(), o2.getKey())
@@ -29,7 +29,7 @@ public class PersonProperty implements Comparable<PersonProperty> {
         if ( obj == null ) return false;
 
         if ( getClass().equals(obj.getClass()) ) {
-            final PersonProperty other = (PersonProperty) obj;
+            final Property other = (Property) obj;
             return Objects.equals(getService(), other.getService()) && Objects.equals(getKey(), other.getKey()) && Objects.equals(getValue(), other.getValue());
         } else {
             return false;

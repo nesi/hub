@@ -17,14 +17,10 @@
  * License along with this library.
  */
 
-package things.utils.json;
+package things.thing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import things.thing.Thing;
-import things.thing.ThingControl;
-import things.thing.ThingDeserializer;
-import things.thing.ThingSerializer;
 import things.types.TypeRegistry;
 
 /**
@@ -34,14 +30,13 @@ import things.types.TypeRegistry;
  */
 public class ThingModule extends SimpleModule {
 
-    private final ThingControl tc;
     private final TypeRegistry tr;
 
-    public ThingModule(ObjectMapper objectMapper, ThingControl tc, TypeRegistry tr) {
-        this.tc = tc;
+    public ThingModule(ObjectMapper objectMapper, TypeRegistry tr) {
         this.tr = tr;
         addDeserializer(Thing.class, new ThingDeserializer(objectMapper, tr));
-        addSerializer(Thing.class, new ThingSerializer(tc));
+        addSerializer(Thing.class, new ThingSerializer());
+        addDeserializer(ThingList.class, new ThingListDeserializer(objectMapper, tr));
     }
 
 

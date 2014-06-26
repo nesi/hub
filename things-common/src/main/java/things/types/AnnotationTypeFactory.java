@@ -51,6 +51,14 @@ public class AnnotationTypeFactory {
     private static ImmutableBiMap<String, Class> typeMap;
     private static Set<Class<?>> types;
 
+    public static TypeRegistry createTypeRegistry() {
+        TypeRegistry tr = new TypeRegistry();
+        for ( ThingType tt : getAllTypes() ) {
+            tr.addType(tt);
+        }
+        return tr;
+    }
+
     /**
      * Returns all types that are found in the classpath.
      */

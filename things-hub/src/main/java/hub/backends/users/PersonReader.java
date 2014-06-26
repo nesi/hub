@@ -73,7 +73,7 @@ public class PersonReader extends AbstractThingReader {
     public static Thing<Person> wrapPerson(TypeRegistry tr, Person p) {
 
         Thing t = new Thing();
-        String identifier = p.getUniqueUsername();
+        String identifier = p.getAlias();
         t.setId(identifier);
 
         t.setThingType(tr.getType(Person.class));

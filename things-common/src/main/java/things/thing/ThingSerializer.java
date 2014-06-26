@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.base.Strings;
+import things.exceptions.ThingRuntimeException;
 
 import java.io.IOException;
 
@@ -34,10 +35,9 @@ import java.io.IOException;
  */
 public class ThingSerializer extends JsonSerializer<Thing> {
 
-    private final ThingControl tc;
 
-    public ThingSerializer(ThingControl tc) {
-        this.tc = tc;
+    public ThingSerializer() {
+
     }
 
     @Override
@@ -49,10 +49,12 @@ public class ThingSerializer extends JsonSerializer<Thing> {
         jgen.writeStringField("key", thing.getKey());
         jgen.writeStringField("type", thing.getThingType());
 
-        Object value = tc.getValue(thing);
+        if (!  thing.getValueIsPopulated() ) {
+            throw new ThingRuntimeException("Thing "+ thing.getId()+" not populated");
+        }
 
 
-        jgen.writeObjectField("value", value);
+        jgen.writeObjectField("value", thing.getValue());
 
 
 //        List<String> ids = thing.getOtherThings();

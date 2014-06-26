@@ -26,7 +26,7 @@ import com.jcraft.jsch.Session;
 import hub.backends.jobs.types.JobStatus;
 import hub.backends.jobs.types.Jobs;
 import hub.backends.users.types.Person;
-import hub.backends.users.types.PersonProperty;
+import hub.backends.users.types.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import rx.Observable;
 import things.exceptions.QueryRuntimeException;
@@ -119,7 +119,7 @@ public class JobsQuery implements ThingQuery {
 
     private Observable<Thing<Jobs>> getJobsForPerson(Thing<Person> person) {
 
-        Observable<PersonProperty> usernames = Observable.from(person.getValue().getProperties("University of Auckland", "linuxUsername"));
+        Observable<Property> usernames = Observable.from(person.getValue().getProperties("University of Auckland", "linuxUsername"));
 
         return usernames.map(u -> getJobs(u.getValue())).map(j -> wrapJobs(person, j));
 

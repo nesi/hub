@@ -41,7 +41,7 @@ import things.thing.ThingControl;
 import things.types.AnnotationTypeFactory;
 import things.types.ThingType;
 import things.types.TypeRegistry;
-import things.utils.json.ThingsObjectMapper;
+import things.thing.ThingsObjectMapper;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -83,7 +83,7 @@ public class HubConfigMongo extends MongoConfig {
 
     @Bean
     public ObjectMapper objectMapper() throws Exception {
-        ThingsObjectMapper tom = new ThingsObjectMapper(thingControl(), typeRegistry());
+        ThingsObjectMapper tom = new ThingsObjectMapper(typeRegistry());
         return tom;
     }
 

@@ -204,17 +204,19 @@ public class ThingControl extends ThingControlReactive {
         }
     }
 
-    public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key) {
+    public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key) throws ThingException {
         return findUniqueThingMatchingTypeAndKey(type, key, POPULATED_BY_DEFAULT);
     }
 
-    public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key, boolean popluateValue) {
+    public Optional<Thing> findUniqueThingMatchingTypeAndKey(String type, String key, boolean popluateValue) throws ThingException {
         Observable<? extends Thing<?>> obs = observeUniqueThingMatchingTypeAndKey(type, key, popluateValue);
         try {
             Thing<?> t = obs.toBlockingObservable().single();
             return Optional.of(t);
         } catch (NoSuchElementException nsee) {
             return Optional.empty();
+        } catch (IllegalArgumentException iae) {
+            throw new ThingException("Found more than one item for type '"+type+"' and key '"+key+"'");
         }
     }
 

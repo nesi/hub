@@ -22,7 +22,9 @@ package hub.config.connectors;
 import hub.backends.jobs.JobsQuery;
 import hub.backends.audit.JobHistoryQuery;
 import hub.backends.audit.PanAuditQuery;
+import hub.backends.users.actions.CheckPasswordQuery;
 import hub.backends.users.queries.PersonPropertyQuery;
+import hub.backends.users.queries.UsernameQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,11 @@ public class Queries {
 
     @Autowired
     private Environment env;
+
+    @Bean
+    public CheckPasswordQuery checkPasswordQuery() {
+        return new CheckPasswordQuery();
+    }
 
     @Bean
     public JobsQuery jobsQuery() throws Exception {
@@ -84,7 +91,14 @@ public class Queries {
         tq.addQuery(jobsQuery());
         tq.addQuery(jobHistoryQuery());
         tq.addQuery(personPropertyQuery());
+        tq.addQuery(checkPasswordQuery());
+        tq.addQuery(usernameQuery());
         return tq;
+    }
+
+    @Bean
+    public UsernameQuery usernameQuery() {
+        return new UsernameQuery();
     }
 
     @Bean

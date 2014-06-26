@@ -17,16 +17,13 @@
  * License along with this library.
  */
 
-package things.utils.json;
+package things.thing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
-import things.thing.ThingControl;
 import things.types.TypeRegistry;
-
-import javax.inject.Inject;
 
 /**
  * Project: things
@@ -35,20 +32,15 @@ import javax.inject.Inject;
  */
 public class ThingsObjectMapper extends ObjectMapper {
 
-    private ThingControl tc;
-    private TypeRegistry tr;
+        private TypeRegistry tr;
 
-    public ThingsObjectMapper(ThingControl tc, TypeRegistry tr) {
-        this.tc = tc;
+    public ThingsObjectMapper(TypeRegistry tr) {
         this.tr = tr;
         registerModule(new GuavaModule());
-        registerModule(new ThingModule(this, tc, tr));
+        registerModule(new ThingModule(this, tr));
         registerModule(new JSR310Module());
         registerModule(new AfterburnerModule());
     }
 
-    public ThingControl getThingControl() {
-        return tc;
-    }
 
 }

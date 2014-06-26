@@ -30,7 +30,7 @@ import com.google.common.base.Throwables;
  */
 public class ErrorInfo {
 
-    public final String message;
+    public String message;
     public final String[] stackTrace;
     public final String url;
 
@@ -38,5 +38,9 @@ public class ErrorInfo {
         this.url = url;
         message = ex.getLocalizedMessage();
         stackTrace = Throwables.getStackTraceAsString(ex).split("\n");
+    }
+
+    public void setMessage(String msg) {
+        this.message = msg;
     }
 }
