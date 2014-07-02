@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Things
+  ~
+  ~ Copyright (c) 2014, Markus Binsteiner. All rights reserved.
+  ~
+  ~ This library is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU Lesser General Public
+  ~ License as published by the Free Software Foundation; either
+  ~ version 3.0 of the License, or (at your option) any later version.
+  ~
+  ~ This library is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this library.
+  -->
+
+<configuration> <!-- Configure the database connection here -->
+    <jdbc>
+        <driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://mysql-bg.ceres.auckland.ac.nz:3306</url>
+        <user>markus</user>
+        <password>fAajdGKwVnJ.Y</password>
+    </jdbc>
+
+    <generator> <!-- The default code generator. You can override this one, to generate your own code style Defaults to org.jooq.util.DefaultGenerator -->
+        <name>org.jooq.util.DefaultGenerator</name>
+
+        <database> <!-- The database type. The format here is: org.util.[database].[database]Database -->
+            <name>org.jooq.util.mysql.MySQLDatabase</name>
+
+            <!-- The database schema (or in the absence of schema support, in your RDBMS this can be the owner, user, database name) to be generated -->
+            <inputSchema>pandora_audit</inputSchema>
+
+            <!-- All elements that are generated from your schema (several Java regular expressions, separated by comma) Watch out for case-sensitivity. Depending on your database, this might be important! -->
+            <includes>.*</includes>
+
+            <!-- All elements that are excluded from your schema (several Java regular expressions, separated by comma). Excludes match before includes -->
+            <excludes></excludes>
+        </database>
+
+        <generate> <!-- Primary key / foreign key relations should be generated and used. This will be a prerequisite for various advanced features Defaults to false -->
+            <relations>true</relations>
+
+            <pojos>true</pojos>
+            <daos>true</daos>
+
+        </generate>
+
+        <target> <!-- The destination package of your generated classes (within the destination directory) -->
+            <packageName>pan.auditdb</packageName>
+
+            <!-- The destination directory of your generated classes -->
+            <directory>../src/main/generated/</directory>
+        </target>
+    </generator>
+
+</configuration>
