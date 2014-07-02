@@ -124,7 +124,7 @@ subprojects {
 }
 
 
-def exportedProjects = [":things-hub-common", "things-hub"]
+def exportedProjects = [":hub-common", "hub-core"]
 
 task alldocs(type: Javadoc) {
 

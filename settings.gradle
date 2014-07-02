@@ -17,8 +17,8 @@ include 'services:webservice'
 */
 
 rootProject.name = 'hub'
-include 'things-hub-common'
-include 'things-hub'
+include 'hub-common'
+include 'hub-core'
 
 
 
