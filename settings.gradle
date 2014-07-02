@@ -16,17 +16,9 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'things'
-include 'things-common'
-include 'things-core'
-include 'things-test'
-include 'things-rest'
-include 'things-mongo'
-include 'things-jpa'
+rootProject.name = 'hub'
 include 'things-hub-common'
 include 'things-hub'
-//include 'things-rooms'
-include 'things-examples'
-include 'things-jpa'
+
 
 
