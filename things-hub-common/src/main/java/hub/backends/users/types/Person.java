@@ -52,6 +52,10 @@ public class Person implements Comparable<Person> {
 
     private String alias;
 
+    public void addUsername(Username un) {
+        addUsername(un.getService(), un.getUsername());
+    }
+
     public String getAlias() {
         return alias;
     }

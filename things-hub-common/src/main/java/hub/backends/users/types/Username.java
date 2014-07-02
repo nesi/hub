@@ -18,6 +18,10 @@ public class Username {
         this.username = username;
     }
 
+    public Username() {
+
+    }
+
     public String getService() {
         return service;
     }

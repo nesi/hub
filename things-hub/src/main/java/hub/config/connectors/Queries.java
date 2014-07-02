@@ -19,6 +19,7 @@
 
 package hub.config.connectors;
 
+import hub.Constants;
 import hub.backends.jobs.JobsQuery;
 import hub.backends.audit.JobHistoryQuery;
 import hub.backends.audit.PanAuditQuery;
@@ -71,7 +72,7 @@ public class Queries {
             throw new Exception("known_hosts file is not readable: " + known_hosts);
         }
 
-        return new JobsQuery("uoa", ssh_username, host_name, host_port, ssh_key, known_hosts);
+        return new JobsQuery(Constants.PAN_FACILITY_NAME, ssh_username, host_name, host_port, ssh_key, known_hosts);
 
     }
 

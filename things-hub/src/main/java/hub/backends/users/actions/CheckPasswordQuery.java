@@ -38,6 +38,12 @@ public class CheckPasswordQuery implements ThingQuery {
         String service = pw.getService();
         String username = pw.getUsername();
 
+        return findPerson(service, username, pw.getPassword());
+
+    }
+
+    public Observable<? extends Thing<?>> findPerson(String service, String username, String password) {
+
         List<Password> existing = passwordRepository.findByServiceAndUsername(service, username);
 
         if ( existing.size() > 1 ) {
@@ -48,7 +54,7 @@ public class CheckPasswordQuery implements ThingQuery {
 
         Password dbPassword = existing.get(0);
 
-        boolean match = encoder.matches(pw.getPassword(), dbPassword.getPassword());
+        boolean match = encoder.matches(password, dbPassword.getPassword());
 
         if ( ! match ) {
             return Observable.empty();
@@ -57,7 +63,6 @@ public class CheckPasswordQuery implements ThingQuery {
 
             return usernameQuery.findPersonForUsername(un);
         }
-
     }
 
     @Override

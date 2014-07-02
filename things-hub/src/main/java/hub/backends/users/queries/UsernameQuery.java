@@ -9,6 +9,7 @@ import rx.Observable;
 import things.thing.Thing;
 import things.thing.ThingQuery;
 import things.types.TypeRegistry;
+import things.utils.MatcherUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -37,10 +38,19 @@ public class UsernameQuery implements ThingQuery {
 
 
     public Observable<Thing<Person>> findPersonForUsername(Username un) {
-        return Observable.from(um.getAllPersons().values())
-                .filter(p -> p.hasUsername(un))
-                .single()
-                .map(p -> PersonReader.wrapPerson(tr, p));
+
+        if ( MatcherUtils.isGlob(un.getUsername()) ) {
+            return Observable.from(um.getAllPersons().values())
+                    .filter(p -> p.getUsernames().get(un.getService())
+                            .stream()
+                            .anyMatch(username -> MatcherUtils.wildCardMatch(username, un.getUsername())))
+                    .map(p -> PersonReader.wrapPerson(tr, p));
+        } else {
+            return Observable.from(um.getAllPersons().values())
+                    .filter(p -> p.hasUsername(un))
+                    .single()
+                    .map(p -> PersonReader.wrapPerson(tr, p));
+        }
 
     }
 

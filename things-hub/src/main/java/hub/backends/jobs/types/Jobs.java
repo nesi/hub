@@ -36,23 +36,23 @@ public class Jobs {
 
 
     private List<JobStatus> jobs;
-    private String site;
+    private String facility;
     private Instant timestamp;
     private String username;
 
-    public Jobs(List<JobStatus> jobs, String username, String site) {
+    public Jobs(List<JobStatus> jobs, String username, String facility) {
         this.jobs = jobs;
         timestamp = Instant.now();
         this.username = username;
-        this.site = site;
+        this.facility = facility;
     }
 
     public List<JobStatus> getJobs() {
         return jobs;
     }
 
-    public String getSite() {
-        return site;
+    public String getFacility() {
+        return facility;
     }
 
     public Instant getTimestamp() {
@@ -71,8 +71,8 @@ public class Jobs {
         this.jobs = jobs;
     }
 
-    public void setSite(String site) {
-        this.site = site;
+    public void setFacility(String facility) {
+        this.facility = facility;
     }
 
     public void setUsername(String username) {

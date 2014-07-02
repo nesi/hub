@@ -21,11 +21,13 @@ package hub.config.jpa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
+import hub.auth.NeSIAuthenticationProvider;
 import hub.backends.users.*;
 import hub.backends.users.repositories.IdentityRepository;
 import hub.backends.users.repositories.PasswordRepository;
 import hub.backends.users.types.Identity;
 import hub.backends.users.types.Password;
+import hub.config.AuthConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -40,6 +42,8 @@ import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -198,6 +202,17 @@ public class HubConfigJpa {
             tr.addType(tt);
         }
         return tr;
+    }
+
+    @Bean
+    public NeSIAuthenticationProvider neSIAuthenticationProvider() {
+        return new NeSIAuthenticationProvider();
+    }
+
+
+    @Bean
+    public WebSecurityConfigurer webSecurityConfigurer() {
+        return new AuthConfig();
     }
 
     @Bean

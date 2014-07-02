@@ -37,6 +37,7 @@ import things.thing.ThingQuery;
 import things.types.TypeRegistry;
 import things.utils.MatcherUtils;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,19 +51,19 @@ public class JobsQuery implements ThingQuery {
     private final String host_name;
     private final int host_port;
     private JSch jsch = new JSch();
-    private final String site;
+    private final String facility;
     private final String ssh_username;
     @Autowired
     private ThingControl tc;
     @Autowired
     private TypeRegistry typeRegistry;
 
-    public JobsQuery(String sitename, String ssh_username, String host, int port, String ssh_key_file, String known_hosts_file) {
+    public JobsQuery(String facility, String ssh_username, String host, int port, String ssh_key_file, String known_hosts_file) {
 
-        this.site = sitename;
+        this.facility = facility;
 
-        if ( MatcherUtils.isGlob(site) ) {
-            throw new TypeRuntimeException("Specified site '" + site
+        if ( MatcherUtils.isGlob(this.facility) ) {
+            throw new TypeRuntimeException("Specified facility '" + this.facility
                     + "' can't be glob");
         }
 
@@ -113,7 +114,7 @@ public class JobsQuery implements ThingQuery {
             e.printStackTrace();
         }
 
-        Jobs jobs = new Jobs(result, username, site);
+        Jobs jobs = new Jobs(result, username, facility);
         return jobs;
     }
 
@@ -140,7 +141,9 @@ public class JobsQuery implements ThingQuery {
 
     private Thing<Jobs> wrapJobs(Thing<Person> person, Jobs jobs) {
         Thing<Jobs> t = new Thing();
-        t.setId("jobs:"+person.getId());
+        t.setThingType(typeRegistry.getType(Jobs.class));
+        Instant instant = Instant.now();
+        t.setId(person.getKey()+"::"+instant.toString());
         t.setKey(person.getKey());
         t.setValue(jobs);
         return t;

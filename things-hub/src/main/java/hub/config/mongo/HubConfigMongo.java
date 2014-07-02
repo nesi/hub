@@ -20,6 +20,7 @@
 package hub.config.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hub.config.AuthConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import things.config.ThingReaders;
 import things.config.ThingWriters;
@@ -108,6 +110,7 @@ public class HubConfigMongo extends MongoConfig {
         tr.addReader("username/*", mongoConnector());
         return tr;
     }
+
 
     @Bean
     public ThingWriters thingWriters() throws Exception {

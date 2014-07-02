@@ -77,6 +77,8 @@ dependencies {
         exclude module: "spring-boot-starter-tomcat"
     }
 
+    compile("org.springframework.boot:spring-boot-starter-security:"+springBootVersion)
+
     // for auditdb connection
     compile("org.springframework:spring-jdbc:" + springVersion)
     compile("org.springframework:spring-tx:" + springVersion)

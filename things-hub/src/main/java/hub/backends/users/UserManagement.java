@@ -2,12 +2,15 @@ package hub.backends.users;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import hub.backends.users.types.Group;
-import hub.backends.users.types.Person;
-import hub.backends.users.types.Property;
-import hub.backends.users.types.Project;
+import hub.Constants;
+import hub.backends.users.types.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
@@ -17,15 +20,54 @@ import static java.util.stream.Collectors.toMap;
  */
 public class UserManagement  {
 
+    public static final Logger myLogger = LoggerFactory.getLogger(UserManagement.class);
+
+    private final Map<String, String> admins = Maps.newHashMap();
+
+    public UserManagement() {
+        Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream("/etc/hub/admins.conf");
+			prop.load(input);
+
+			for (final String name : prop.stringPropertyNames())
+				admins.put(name, prop.getProperty(name));
+
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Can't load users config file: " + e.getLocalizedMessage(),
+					e);
+		}
+
+    }
+
+
     @Autowired
     private ProjectDbUtils projectDbUtils;
 
     @Autowired
     private IdentifierProvider idProvider;
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     private Map<String, Person> allPersons;
 
     private Map<String, Group> allGroups;
+
+    public Optional<Person> getAdmin(String username, String password) {
+        if ( admins.get(username) == null ) {
+            return Optional.empty();
+        }
+
+        if ( password.equals(admins.get(username)) ) {
+            return Optional.of(getAllPersons().get(username));
+        } else {
+            return Optional.empty();
+        }
+    }
 
     public String getGroup(Integer projectId) {
         return projectDbUtils.getProjectIdMap().get(projectId);
@@ -113,7 +155,7 @@ public class UserManagement  {
         return g;
     }
 
-    public Map<String, Group> getAllGroups() {
+    public synchronized Map<String, Group> getAllGroups() {
 
         if (allGroups == null) {
             Collection<Project> projects = projectDbUtils.getAllProjects().values();
@@ -122,7 +164,7 @@ public class UserManagement  {
         return allGroups;
     }
 
-    public Map<String, Person> getAllPersons() {
+    public synchronized Map<String, Person> getAllPersons() {
 
         if ( allPersons == null ) {
 
@@ -150,6 +192,32 @@ public class UserManagement  {
 
                     match.addEmails(adv.getEmails());
                 }
+            }
+
+            // adding 'nesi' usernames
+            for ( Person p : allPersons.values() ) {
+                Username un = new Username();
+                un.setService(Constants.NESI_SERVICE_NAME);
+                un.setUsername(p.getAlias());
+                p.addUsername(un);
+
+                // check whether this user is an admin
+                if ( admins.keySet().contains(p.getAlias()) ) {
+                    myLogger.debug("Creating hub admin user: "+p.getAlias());
+
+                    p.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
+
+                    un = new Username();
+                    un.setService(Constants.HUB_SERVICE_NAME);
+                    un.setUsername(p.getAlias());
+                    p.addUsername(un);
+
+                    Password pw = new Password();
+                    pw.setService(Constants.HUB_SERVICE_NAME);
+                    pw.setPerson(p.getAlias());
+                    pw.setPassword(admins.get(p.getAlias()));
+                }
+
             }
         }
 
