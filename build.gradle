@@ -167,3 +167,19 @@ task uml(type: JavaExec) {
     args = plantUmlFiles
 }
 
+task dist(type:Zip){
+
+    from ('dist')
+    from project(":hub-core").jar.outputs.files
+    rename ({
+        if ( it.endsWith('.jar') && it.startsWith('hub') ) {
+            return "hub/lib/hub.jar"
+        } else {
+            return null;
+        }
+
+    })
+
+//    from war.outputs.files
+}
+

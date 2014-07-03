@@ -61,7 +61,7 @@ public class ProjectDbUtils {
             result[1] = Joiner.on(" ").join(Arrays.copyOfRange(tokens, 1, tokens.length - 1));
             result[2] = tokens[tokens.length - 1];
         } else {
-            System.out.println("Could not parse: " + fullName);
+            myLogger.error("Could not parse: " + fullName);
             return null;
         }
 
@@ -338,7 +338,7 @@ public class ProjectDbUtils {
 
     private Person generatePerson(String firstName, String middleNames, String lastName, String preferredName, String email, Instant lastModified, String institution, String instiationRole, String departement) {
 
-        System.out.println("Generating person: "+firstName+" "+lastName);
+        myLogger.debug("Generating person: "+firstName+" "+lastName);
 
         Person p = new Person();
         p.setFirst_name(firstName);

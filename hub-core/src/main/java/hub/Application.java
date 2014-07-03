@@ -20,6 +20,7 @@
 package hub;
 
 import hub.config.jpa.HubConfigJpa;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import things.exceptions.ThingException;
@@ -33,7 +34,7 @@ import things.thing.ThingControl;
  * Date: 12/03/14
  * Time: 10:56 AM
  */
-public class Application {
+public class Application  {
 
 
     public static void main2(String[] args) throws ValueException, ThingException, InterruptedException {
