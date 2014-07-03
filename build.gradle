@@ -23,7 +23,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 version = '0.2-SNAPSHOT'
-group = 'things'
+group = 'nz.org.nesi.hub'
 
 configurations {
     markdownDoclet
@@ -52,12 +52,15 @@ subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
     }
     apply plugin: 'java'
     apply plugin: 'rebel'
     apply plugin: 'nexus'
 
-    group = 'us.ilmark.deta.things'
+    group = 'nz.org.nesi.hub'
     version = '0.2-SNAPSHOT'
 
     configurations {

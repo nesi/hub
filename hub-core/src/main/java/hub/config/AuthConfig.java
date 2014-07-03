@@ -39,6 +39,8 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                     .and()
                     .rememberMe();
+        } else {
+            http.csrf().disable();
         }
 
 	}

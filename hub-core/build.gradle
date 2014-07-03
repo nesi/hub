@@ -89,6 +89,8 @@ dependencies {
     compile("mysql:mysql-connector-java:5.1.30")
     compile("org.postgresql:postgresql:9.3-1100-jdbc41")
 
+    compile("org.javassist:javassist:3.18.2-GA")
+
     compile("com.unboundid:unboundid-ldapsdk:2.3.6")
 
     compile("com.jcraft:jsch:0.1.51")
