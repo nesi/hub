@@ -1,6 +1,3 @@
-Hub
-======
-
 # Overview
 
 Hub is a lean and mean little service, designed to consolidate, process and publish different sources of models, data 
