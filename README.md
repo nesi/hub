@@ -179,6 +179,14 @@ The person key/alias is also a username for the 'nesi' service.
 
 ### Queries
 
+#### Invalidate person/group data
+
+    POST /reimport_projects
+    
+Every now and then when data is changed in the projectdb (esp. roles/projects), we will 
+need to re-build the internal person/group tree. Calling 'reimport_projects' promts that 
+to happen on the next request.
+
 #### Get a list of all person objects
 
     GET /get/every/person
