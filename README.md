@@ -252,6 +252,11 @@ Query body example (application/json):
     },
     "type": "password"
     }]
+    
+The return value is a Person object that has a username for the service specified, and also
+a password that matches the provided one.
+
+If no such person can be found, the return value is an empty list.
 
 #### Set password
 
