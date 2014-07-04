@@ -77,6 +77,8 @@ Example:
 markus_binsteiner=password
 nick_young=password2
 
+If auth is enabled, one of those usernames needs to be used in basic auth when connecting to the service.
+
 # Miscellaneous
 
 ## 'Things'
@@ -214,5 +216,22 @@ Queries all users and returns the ones that have a property that matches the one
 the query body. The 'value' field can also be a glob.
 
     
+## Passwords
+
+### Queries
+
+#### Check password
+
+    /query/password
     
+Query body example (application/json):
+ 
+    [{
+    "value": {
+    "service": "University of Auckland",
+      "person":"markus_binsteiner",
+      "password":"password"
+    },
+    "type": "password"
+    }]
 
