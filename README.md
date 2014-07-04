@@ -81,11 +81,29 @@ If auth is enabled, one of those usernames needs to be used in basic auth when c
 
 # Miscellaneous
 
+## Auth
+
+If auth is enabled (see hub.properties), only users who have a password set for the 'nesi' service
+or administrators (see admins.conf) can access this service (at the moment there is no fine-grained permission check).
+If a user is admin and the password for the 'nesi' service and the one in the admins.conf file
+are different, both can be used.
+
+All auth is done via basic auth at the moment.
+
+Hashed passwords are stored in the 'hub' database, in the 'passwords' table. The 'admins.conf' file
+is necessary for bootstrapping, in order to be able to put passwords for other users into the db
+(see 'passwords' section below).
+
 ## 'Things'
 
 TODO
 
 ## Globs
+
+Types and keys can be queried via 'globs', which more or less follow the bash-glob format.
+This feature is not very advanced yet, but putting one of more '*' somewhere in a key or value string should work.
+
+## Rest url schema
 
 TODO
 
@@ -222,7 +240,7 @@ the query body. The 'value' field can also be a glob.
 
 #### Check password
 
-    /query/password
+    GET /query/password
     
 Query body example (application/json):
  
@@ -235,3 +253,34 @@ Query body example (application/json):
     "type": "password"
     }]
 
+#### Set password
+
+    POST /set_password
+    
+Query body example (application/json)
+
+    [{
+    "value": {
+    "service": "nesi",
+      "username":"markus_binsteiner",
+      "password":"pw"
+    },
+    "type": "password"
+    }]
+
+## Jobs
+
+### Queries
+
+#### Get jobs for alias
+
+    GET /query/jobs/for/person/[alias]
+    
+Gets every job (currently only from LoadLeveler) for the person with that alias. If that 
+person has multiple usernames on Pan, jobs for all of those will be returned.
+
+#### Get jobs for all aliases matching a glob
+
+    GET /query/jobs/for/every/person/[glob]
+    
+Similar to the above, but returns all jobs for every person that has an alias matching that glob.
