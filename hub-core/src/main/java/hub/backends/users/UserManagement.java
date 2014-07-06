@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Created by markus on 18/06/14.
  */
-public class UserManagement  {
+public class UserManagement {
 
     public static final Logger myLogger = LoggerFactory.getLogger(UserManagement.class);
 
@@ -26,20 +26,20 @@ public class UserManagement  {
 
     public UserManagement() {
         Properties prop = new Properties();
-		InputStream input = null;
+        InputStream input = null;
 
-		try {
-			input = new FileInputStream("/etc/hub/admins.conf");
-			prop.load(input);
+        try {
+            input = new FileInputStream("/etc/hub/admins.conf");
+            prop.load(input);
 
-			for (final String name : prop.stringPropertyNames())
-				admins.put(name, prop.getProperty(name));
+            for ( final String name : prop.stringPropertyNames() )
+                admins.put(name, prop.getProperty(name));
 
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Can't load users config file: " + e.getLocalizedMessage(),
-					e);
-		}
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Can't load users config file: " + e.getLocalizedMessage(),
+                    e);
+        }
 
     }
 
@@ -101,7 +101,7 @@ public class UserManagement  {
             if ( prop.size() == 0 ) {
                 return Optional.empty();
             } else if ( prop.size() > 1 ) {
-                throw new RuntimeException("More than one researcher ids found for person: "+p);
+                throw new RuntimeException("More than one researcher ids found for person: " + p);
             }
             return Optional.of(Integer.parseInt(prop.iterator().next().getValue()));
         }
@@ -116,7 +116,7 @@ public class UserManagement  {
             if ( prop.size() == 0 ) {
                 return Optional.empty();
             } else if ( prop.size() > 1 ) {
-                throw new RuntimeException("More than one researcher ids found for person: "+p);
+                throw new RuntimeException("More than one researcher ids found for person: " + p);
             }
             return Optional.of(Integer.parseInt(prop.iterator().next().getValue()));
         }
@@ -157,11 +157,49 @@ public class UserManagement  {
 
     public synchronized Map<String, Group> getAllGroups() {
 
-        if (allGroups == null) {
+        if ( allGroups == null ) {
             Collection<Project> projects = projectDbUtils.getAllProjects().values();
             allGroups = projects.stream().map(proj -> createGroup(proj)).collect(toMap(Group::getGroupName, g -> g));
         }
         return allGroups;
+    }
+
+    public synchronized void addAdmins(Map<String, Person> allPersons) {
+
+        for ( String admin : admins.keySet() ) {
+
+            Person possiblePerson = allPersons.get(admin);
+            if ( possiblePerson != null ) {
+                myLogger.debug("Creating hub admin user: " + possiblePerson.getAlias());
+
+                possiblePerson.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
+
+                Username un = new Username();
+                un.setService(Constants.HUB_SERVICE_NAME);
+                un.setUsername(possiblePerson.getAlias());
+                possiblePerson.addUsername(un);
+                continue;
+            }
+
+            Person adminPerson = new Person("Admin", admin);
+            adminPerson.setAlias(admin);
+            adminPerson.addEmail(Constants.DEFAULT_ADMIN_EMAIL);
+            adminPerson.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
+
+            Username un = new Username();
+            un.setService(Constants.HUB_SERVICE_NAME);
+            un.setUsername(admin);
+            adminPerson.addUsername(un);
+
+            allPersons.put(admin, adminPerson);
+
+//            Password pw = new Password();
+//            pw.setService(Constants.HUB_SERVICE_NAME);
+//            pw.setPerson(admin);
+//            pw.setPassword(admins.get(admin));
+
+        }
+
     }
 
     public synchronized Map<String, Person> getAllPersons() {
@@ -201,24 +239,28 @@ public class UserManagement  {
                 un.setUsername(p.getAlias());
                 p.addUsername(un);
 
-                // check whether this user is an admin
-                if ( admins.keySet().contains(p.getAlias()) ) {
-                    myLogger.debug("Creating hub admin user: "+p.getAlias());
-
-                    p.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
-
-                    un = new Username();
-                    un.setService(Constants.HUB_SERVICE_NAME);
-                    un.setUsername(p.getAlias());
-                    p.addUsername(un);
-
-                    Password pw = new Password();
-                    pw.setService(Constants.HUB_SERVICE_NAME);
-                    pw.setPerson(p.getAlias());
-                    pw.setPassword(admins.get(p.getAlias()));
-                }
+//                // check whether this user is an admin
+//                if ( admins.keySet().contains(p.getAlias()) ) {
+//                    myLogger.debug("Creating hub admin user: " + p.getAlias());
+//
+//                    p.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
+//
+//                    un = new Username();
+//                    un.setService(Constants.HUB_SERVICE_NAME);
+//                    un.setUsername(p.getAlias());
+//                    p.addUsername(un);
+//
+////                    Password pw = new Password();
+////                    pw.setService(Constants.HUB_SERVICE_NAME);
+////                    pw.setPerson(p.getAlias());
+////                    pw.setPassword(admins.get(p.getAlias()));
+//                }
 
             }
+
+            addAdmins(allPersons);
+
+
         }
 
         return allPersons;
