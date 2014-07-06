@@ -181,6 +181,8 @@ public class UserManagement {
                 continue;
             }
 
+            myLogger.debug("Creating hub admin user without associated person from projectdb: " + admin);
+
             Person adminPerson = new Person("Admin", admin);
             adminPerson.setAlias(admin);
             adminPerson.addEmail(Constants.DEFAULT_ADMIN_EMAIL);
