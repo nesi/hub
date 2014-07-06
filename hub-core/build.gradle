@@ -20,11 +20,13 @@
 buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
         classpath("com.github.ben-manes:gradle-jooq-plugin:+")
         classpath("mysql:mysql-connector-java:5.1.30")
+        classpath("org.gradle.api.plugins:gradle-nexus-plugin:0.7.1")
     }
 }
 

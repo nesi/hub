@@ -98,13 +98,13 @@ subprojects {
         project {
             name ext.name
             description ext.description
-            url 'http://things.deta.ilmark.us/'
+            url 'https://github.com/nesi/hub'
             inceptionYear '2014'
 
             scm {
-                url 'https://github.com/makkus/things'
-                connection 'scm:https://github.com/makkus/things.git'
-                developerConnection 'scm:git://github.com/makkus/things.git'
+                url 'https://github.com/nesi/hub'
+                connection 'scm:https://github.com/nesi/hub.git'
+                developerConnection 'scm:git://github.com:nesi/hub.git'
             }
 
             licenses {
@@ -123,6 +123,15 @@ subprojects {
                 }
             }
         }
+    }
+
+    nexus {
+        attachSources = false
+        attachTests = true
+        attachJavadoc = false
+        sign = false
+        repositoryUrl = 'http://code.nesi.org.nz/nexus/content/repositories/releases/'
+        snapshotRepositoryUrl = 'http://code.nesi.org.nz/nexus/content/repositories/snapshots/'
     }
 }
 
@@ -167,12 +176,12 @@ task uml(type: JavaExec) {
     args = plantUmlFiles
 }
 
-task dist(type:Zip){
+task dist(type: Zip) {
 
-    from ('dist')
+    from('dist')
     from project(":hub-core").jar.outputs.files
-    rename ({
-        if ( it.endsWith('.jar') && it.startsWith('hub') ) {
+    rename({
+        if (it.endsWith('.jar') && it.startsWith('hub')) {
             return "hub/lib/hub.jar"
         } else {
             return null;
