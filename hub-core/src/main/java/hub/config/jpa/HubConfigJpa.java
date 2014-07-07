@@ -59,6 +59,7 @@ import things.types.AnnotationTypeFactory;
 import things.types.ThingType;
 import things.types.TypeRegistry;
 import things.thing.ThingsObjectMapper;
+import things.types.TypeRegistryImpl;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -196,8 +197,8 @@ public class HubConfigJpa {
     }
 
     @Bean
-    public TypeRegistry typeRegistry() {
-        TypeRegistry tr = new TypeRegistry();
+    public TypeRegistryImpl typeRegistry() {
+        TypeRegistryImpl tr = new TypeRegistryImpl();
         for ( ThingType tt : AnnotationTypeFactory.getAllTypes() ) {
             tr.addType(tt);
         }

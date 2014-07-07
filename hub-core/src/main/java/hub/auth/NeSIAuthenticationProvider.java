@@ -69,7 +69,7 @@ public class NeSIAuthenticationProvider implements
 		Password pw = new Password();
 		pw.setPassword(password);
 		pw.setPerson(username);
-		pw.setService(Constants.NESI_SERVICE_NAME);
+		pw.setService(Constants.HUB_SERVICE_NAME);
 
         Person person = null;
 		try {
@@ -78,7 +78,7 @@ public class NeSIAuthenticationProvider implements
 
 			List<Thing<Password>> queryParam = Lists.newArrayList(t);
 
-            Observable<? extends Thing<?>> p = checkPasswordQuery.findPerson(Constants.NESI_SERVICE_NAME, username, password);
+            Observable<? extends Thing<?>> p = checkPasswordQuery.findPerson(Constants.HUB_SERVICE_NAME, username, password);
 
             try {
                 person = (Person) p.toBlockingObservable().single().getValue();
@@ -92,15 +92,7 @@ public class NeSIAuthenticationProvider implements
 			return token;
 
 		} catch (Exception e) {
-                // check whether user is admin
-                Optional<Person> admin = userManagement.getAdmin(username, password);
-                if ( admin.isPresent() ) {
-                    UsernamePasswordAuthenticationToken token = generateToken(
-                            admin.get(), password);
-                    return token;
-                } else {
-                    throw new AuthenticationServiceException("Authentication failed.", e);
-                }
+            throw new AuthenticationServiceException("Authentication failed.", e);
 		}
 	}
 

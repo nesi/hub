@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import hub.Constants;
 import hub.backends.users.types.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,15 +58,15 @@ public class UserManagement {
 
     private Map<String, Group> allGroups;
 
-    public Optional<Person> getAdmin(String username, String password) {
+    public boolean isAdmin(String username, String password) {
         if ( admins.get(username) == null ) {
-            return Optional.empty();
+            return false;
         }
 
         if ( password.equals(admins.get(username)) ) {
-            return Optional.of(getAllPersons().get(username));
+            return true;
         } else {
-            return Optional.empty();
+            return false;
         }
     }
 
@@ -166,9 +167,16 @@ public class UserManagement {
 
     public synchronized void addAdmins(Map<String, Person> allPersons) {
 
+        Person adminPerson = new Person("Hub", StringUtils.capitalize(Constants.DEFAULT_ADMIN_USERNAME));
+        adminPerson.setAlias(Constants.DEFAULT_ADMIN_USERNAME);
+        adminPerson.addEmail(Constants.DEFAULT_ADMIN_EMAIL);
+        adminPerson.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
+        allPersons.put(Constants.DEFAULT_ADMIN_USERNAME, adminPerson);
+
         for ( String admin : admins.keySet() ) {
 
             Person possiblePerson = allPersons.get(admin);
+            // if username is a person from the projectdb
             if ( possiblePerson != null ) {
                 myLogger.debug("Creating hub admin user: " + possiblePerson.getAlias());
 
@@ -179,26 +187,16 @@ public class UserManagement {
                 un.setUsername(possiblePerson.getAlias());
                 possiblePerson.addUsername(un);
                 continue;
+            } else {
+                // assuming this is a 'hostuser'
+                myLogger.debug("Adding hub admin username: " + admin);
+
+                Username un = new Username();
+                un.setService(Constants.HUB_SERVICE_NAME);
+                un.setUsername(admin);
+                adminPerson.addUsername(un);
+
             }
-
-            myLogger.debug("Creating hub admin user without associated person from projectdb: " + admin);
-
-            Person adminPerson = new Person("Admin", admin);
-            adminPerson.setAlias(admin);
-            adminPerson.addEmail(Constants.DEFAULT_ADMIN_EMAIL);
-            adminPerson.addRole(Constants.HUB_SERVICE_NAME, Constants.HUB_SERVICE_ADMIN_ROLENAME);
-
-            Username un = new Username();
-            un.setService(Constants.HUB_SERVICE_NAME);
-            un.setUsername(admin);
-            adminPerson.addUsername(un);
-
-            allPersons.put(admin, adminPerson);
-
-//            Password pw = new Password();
-//            pw.setService(Constants.HUB_SERVICE_NAME);
-//            pw.setPerson(admin);
-//            pw.setPassword(admins.get(admin));
 
         }
 
