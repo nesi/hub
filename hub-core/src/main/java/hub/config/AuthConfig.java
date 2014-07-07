@@ -1,5 +1,6 @@
 package hub.config;
 
+import hub.auth.HubUserDetailsAuthenticationProvider;
 import hub.auth.NeSIAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
     private Environment env;
 
     @Autowired
-    private NeSIAuthenticationProvider neSIAuthenticationProvider;
+    private HubUserDetailsAuthenticationProvider hubAuthenticationProvider;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -51,7 +52,7 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
 
-		auth.authenticationProvider(neSIAuthenticationProvider);
+		auth.authenticationProvider(hubAuthenticationProvider);
 
 	}
 }

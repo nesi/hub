@@ -25,6 +25,7 @@ import hub.backends.audit.JobHistoryQuery;
 import hub.backends.audit.PanAuditQuery;
 import hub.backends.users.actions.CheckPasswordQuery;
 import hub.backends.users.queries.PersonPropertyQuery;
+import hub.backends.users.queries.SessionQuery;
 import hub.backends.users.queries.UsernameQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,11 @@ public class Queries {
     @Bean
     public CheckPasswordQuery checkPasswordQuery() {
         return new CheckPasswordQuery();
+    }
+
+    @Bean
+    public SessionQuery sessionQuery() {
+        return new SessionQuery();
     }
 
     @Bean
@@ -94,6 +100,7 @@ public class Queries {
         tq.addQuery(personPropertyQuery());
         tq.addQuery(checkPasswordQuery());
         tq.addQuery(usernameQuery());
+        tq.addQuery(sessionQuery());
         return tq;
     }
 

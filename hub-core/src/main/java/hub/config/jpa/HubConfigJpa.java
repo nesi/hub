@@ -21,6 +21,7 @@ package hub.config.jpa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
+import hub.auth.HubUserDetailsAuthenticationProvider;
 import hub.auth.NeSIAuthenticationProvider;
 import hub.backends.users.*;
 import hub.backends.users.repositories.IdentityRepository;
@@ -205,9 +206,14 @@ public class HubConfigJpa {
         return tr;
     }
 
+//    @Bean
+//    public NeSIAuthenticationProvider neSIAuthenticationProvider() {
+//        return new NeSIAuthenticationProvider();
+//    }
+
     @Bean
-    public NeSIAuthenticationProvider neSIAuthenticationProvider() {
-        return new NeSIAuthenticationProvider();
+    public HubUserDetailsAuthenticationProvider hubAuthenticationProvider() {
+        return new HubUserDetailsAuthenticationProvider();
     }
 
 

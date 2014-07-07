@@ -83,9 +83,9 @@ If auth is enabled, one of those usernames needs to be used in basic auth when c
 
 ## Auth
 
-If auth is enabled (see hub.properties), only users who have a password set for the 'nesi' service
+If auth is enabled (see hub.properties), only users who have a password set for the 'hub' service
 or administrators (see admins.conf) can access this service (at the moment there is no fine-grained permission check).
-If a user is admin and the password for the 'nesi' service and the one in the admins.conf file
+If a user is admin and the password for the 'hub' service and the one in the admins.conf file
 are different, both can be used.
 
 All auth is done via basic auth at the moment.
@@ -254,7 +254,7 @@ Query body example (application/json):
  
     [{
     "value": {
-    "service": "University of Auckland",
+    "service": "hub",
       "person":"markus_binsteiner",
       "password":"password"
     },
