@@ -1,5 +1,6 @@
 package hub.backends.users;
 
+import com.google.common.base.Optional;
 import hub.backends.users.repositories.IdentityRepository;
 import hub.backends.users.types.Identity;
 import hub.backends.users.types.Person;
@@ -7,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by markus on 23/06/14.

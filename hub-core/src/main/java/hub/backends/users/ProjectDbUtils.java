@@ -1,6 +1,7 @@
 package hub.backends.users;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
@@ -27,7 +28,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Created by markus on 13/06/14.
@@ -331,7 +336,7 @@ public class ProjectDbUtils {
             Username un = new Username(pp.getService(), pp.getValue());
             return Optional.of(un);
         } else {
-            return Optional.empty();
+            return Optional.absent();
         }
 
     }
@@ -393,11 +398,11 @@ public class ProjectDbUtils {
     }
 
     private Optional<Multimap<String, String>> getProjectsForAdviser(Integer adviserId) {
-        return Optional.ofNullable(getProjectsForAdviserMap().get(adviserId));
+        return Optional.fromNullable(getProjectsForAdviserMap().get(adviserId));
     }
 
     private Optional<Multimap<String, String>> getProjectsForResearcher(Integer researcherId) {
-        return Optional.ofNullable(getProjectsForResearchersMap().get(researcherId));
+        return Optional.fromNullable(getProjectsForResearchersMap().get(researcherId));
     }
 
     private synchronized Map<Integer, Multimap<String, String>> getProjectsForAdviserMap() {
@@ -531,11 +536,11 @@ public class ProjectDbUtils {
 
     private Optional<Multimap<String, String>> getResearchersForProject(Integer pId) {
 
-        return Optional.ofNullable(getResearchersForProjectMap().get(pId));
+        return Optional.fromNullable(getResearchersForProjectMap().get(pId));
     }
 
     private Optional<Multimap<String, String>> getAdvisersForProject(Integer pId) {
-        return Optional.ofNullable(getAdvisersForProjectMap().get(pId));
+        return Optional.fromNullable(getAdvisersForProjectMap().get(pId));
     }
 
     public synchronized BiMap<Integer, String> getProjectIdMap() {

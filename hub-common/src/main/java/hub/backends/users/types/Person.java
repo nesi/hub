@@ -20,6 +20,7 @@
 package hub.backends.users.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import org.hibernate.validator.constraints.Email;
@@ -28,7 +29,9 @@ import things.model.types.Value;
 import things.utils.MatcherUtils;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -230,7 +233,7 @@ public class Person implements Comparable<Person> {
     public Optional<Property> getProperty(String servicename, String key) {
         Set<Property> props = getProperties(servicename, key);
         if ( props.size() == 0 ) {
-            return Optional.empty();
+            return Optional.absent();
         } else if ( props.size() > 1 ) {
             throw new RuntimeException("More than one property found for service "+servicename+" and key "+key);
         } else {
@@ -244,7 +247,7 @@ public class Person implements Comparable<Person> {
         if ( p.isPresent() ) {
             return Optional.of(p.get().getValue());
         } else {
-            return Optional.empty();
+            return Optional.absent();
         }
     }
 
