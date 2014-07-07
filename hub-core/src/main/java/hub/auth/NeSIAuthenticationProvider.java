@@ -8,6 +8,8 @@ import hub.backends.users.UserManagement;
 import hub.backends.users.actions.CheckPasswordQuery;
 import hub.backends.users.types.Password;
 import hub.backends.users.types.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -34,6 +36,8 @@ import java.util.*;
  */
 public class NeSIAuthenticationProvider implements
 		AuthenticationProvider {
+
+    private static Logger myLogger = LoggerFactory.getLogger(NeSIAuthenticationProvider.class);
 
 	private final Map<String, String> users = Maps.newHashMap();
 	private final RestTemplate restTemplate = new RestTemplate();
@@ -64,6 +68,9 @@ public class NeSIAuthenticationProvider implements
 			throws AuthenticationException {
 
 		String username = (String) authentication.getPrincipal();
+
+        myLogger.debug("Authenticating: "+username);
+
 		String password = (String) authentication.getCredentials();
 
 		Password pw = new Password();
