@@ -15,6 +15,7 @@ import things.exceptions.ThingRuntimeException;
 import things.thing.Thing;
 import things.thing.ThingQuery;
 import things.types.TypeRegistry;
+import things.types.TypeRegistryImpl;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -39,7 +40,7 @@ public class CheckPasswordQuery implements ThingQuery {
     private UserManagement userManagement;
 
     @Inject
-    private TypeRegistry typeRegistry;
+    private TypeRegistryImpl typeRegistry;
 
     @Override
     public Observable<? extends Thing<?>> execute(String actionName, Observable<? extends Thing<?>> things, Map<String, String> parameters) {
