@@ -346,7 +346,7 @@ public class ProjectDbUtils {
         p.setLast_name(lastName);
         p.addEmail(email);
         p.setPreferred_name(preferredName);
-        p.setLastModified(lastModified);
+        p.setLastModified(lastModified.toEpochMilli());
         if ( !Strings.isNullOrEmpty(institution) ) {
             if ( Strings.isNullOrEmpty(instiationRole) ) {
                 p.addRole(institution, DEFAULT_ROLE_NAME);

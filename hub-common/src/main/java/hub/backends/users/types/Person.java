@@ -44,7 +44,7 @@ public class Person implements Comparable<Person> {
     private String first_name;
     @JsonIgnore
     String id;
-    private Instant lastModified;
+    private Long lastModified;
     @NotEmpty
     private String last_name;
     private String middle_names = "";
@@ -193,7 +193,7 @@ public class Person implements Comparable<Person> {
         return id;
     }
 
-    public Instant getLastModified() {
+    public Long getLastModified() {
         return lastModified;
     }
 
@@ -322,7 +322,7 @@ public class Person implements Comparable<Person> {
         this.id = id;
     }
 
-    public void setLastModified(Instant lastModified) {
+    public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
     }
 
