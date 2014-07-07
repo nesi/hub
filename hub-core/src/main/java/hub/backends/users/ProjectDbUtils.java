@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
+import hub.Constants;
 import hub.backends.users.types.Person;
 import hub.backends.users.types.Property;
 import hub.backends.users.types.Project;
@@ -42,7 +43,6 @@ public class ProjectDbUtils {
     public static final String PROJECT_DB_ADVISER_ROLENAME = "adviser";
     public static final String PROJECT_DB_RESEARCHER_ROLENAME = "researcher";
 
-    public static final String DEFAULT_ROLE_NAME = "Member";
     public static final String PROJECT_ID = "project_id";
     public static final String TUAKIRI_SERVICE_NAME = "tuakiri";
     private static Logger myLogger = LoggerFactory.getLogger(ProjectDbUtils.class);
@@ -147,10 +147,11 @@ public class ProjectDbUtils {
         }
         String status = null;
 //        String tuakiriToken = rec.getValue(Tables.ADVISER.TUAKIRITOKEN);
+        String tuakiriUniqueId = rec.getValue(Tables.ADVISER.TUAKIRIUNIQUEID);
 
         Instant lastModified = rec.getValue(Tables.ADVISER.LASTMODIFIED, Timestamp.class).toInstant();
 
-        Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement);
+        Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement, tuakiriUniqueId);
         Property prop = new Property();
         prop.setService(PROJECT_DB_SERVICENAME);
         prop.setKey(ADVISER_ID);
@@ -282,11 +283,10 @@ public class ProjectDbUtils {
             }
         }
         String status = getStatusName(rec.getValue(Tables.RESEARCHER.STATUSID));
-//        String tuakiriToken = rec.getValue(Tables.RESEARCHER.TUAKIRITOKEN);
 
         Instant lastModified = rec.getValue(Tables.RESEARCHER.LASTMODIFIED, Timestamp.class).toInstant();
 
-        Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement);
+        Person p = generatePerson(nameTokens[0], nameTokens[1], nameTokens[2], preferredName, email, lastModified, institution, instiationRole, departement, null);
         Property prop = new Property();
         prop.setService(PROJECT_DB_SERVICENAME);
         prop.setKey(RESEARCHER_ID);
@@ -336,7 +336,7 @@ public class ProjectDbUtils {
 
     }
 
-    private Person generatePerson(String firstName, String middleNames, String lastName, String preferredName, String email, Instant lastModified, String institution, String instiationRole, String departement) {
+    private Person generatePerson(String firstName, String middleNames, String lastName, String preferredName, String email, Instant lastModified, String institution, String instiationRole, String departement, String tuakiriUniqueId) {
 
         myLogger.debug("Generating person: "+firstName+" "+lastName);
 
@@ -349,15 +349,18 @@ public class ProjectDbUtils {
         p.setLastModified(lastModified.toEpochMilli());
         if ( !Strings.isNullOrEmpty(institution) ) {
             if ( Strings.isNullOrEmpty(instiationRole) ) {
-                p.addRole(institution, DEFAULT_ROLE_NAME);
+                p.addRole(institution, Constants.DEFAULT_ROLE_NAME);
             } else {
                 p.addRole(institution, instiationRole);
             }
         }
         if ( !Strings.isNullOrEmpty(departement) ) {
-            p.addRole(departement, DEFAULT_ROLE_NAME);
+            p.addRole(departement, Constants.DEFAULT_ROLE_NAME);
         }
-
+        if ( !Strings.isNullOrEmpty(tuakiriUniqueId) ) {
+            p.addUsername(Constants.TUAKIRI_UNIQUE_ID_SERVICE, tuakiriUniqueId);
+            p.addRole(Constants.TUAKIRI_SERVICE_NAME, Constants.DEFAULT_ROLE_NAME);
+        }
 
         return p;
     }

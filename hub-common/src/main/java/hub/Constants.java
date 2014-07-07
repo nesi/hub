@@ -9,6 +9,11 @@ public class Constants {
     public static final String HUB_SERVICE_NAME = "hub";
     public static final String HUB_SERVICE_ADMIN_ROLENAME = "admin";
     public static final String NESI_SERVICE_NAME = "nesi";
+    public static final String TUAKIRI_SERVICE_NAME = "tuakiri";
+
+    public static final String TUAKIRI_UNIQUE_ID_SERVICE = "tuakiriUniqueId";
+
+    public static final String DEFAULT_ROLE_NAME = "Member";
 
     public static final String DEFAULT_ADMIN_USERNAME = "admin";
     public static final String DEFAULT_ADMIN_EMAIL = "hub-admin@nesi.org.nz";
