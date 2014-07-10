@@ -46,7 +46,7 @@ public class PersonPropertyQuery implements ThingQuery {
     }
 
     public Observable<Thing<Person>> findPersonsForProperty(Collection<Property> pp) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .filter(p -> hasProperties(p, pp))
                 .map(p -> PersonReader.wrapPerson(tr, p));
     }

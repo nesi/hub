@@ -22,7 +22,7 @@ public class PersonPropertyReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> Observable.from(p.getProperties()))
                 .map(p -> wrapPersonProperty(p));
     }
@@ -34,7 +34,7 @@ public class PersonPropertyReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> Observable.from(p.getProperties()))
                 .filter(prop -> MatcherUtils.wildCardMatch(prop.getKey(), key))
                 .map(prop -> wrapPersonProperty(prop));
@@ -42,7 +42,7 @@ public class PersonPropertyReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
-        return Observable.from(um.getAllPersons().get(id).getProperties())
+        return Observable.from(um.getPerson(id).getProperties())
                 .map(prop -> wrapPersonProperty(prop));
     }
 
@@ -58,7 +58,7 @@ public class PersonPropertyReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> Observable.from(p.getProperties()))
                 .filter(prop -> MatcherUtils.wildCardMatch(prop.getKey(), key))
                 .map(prop -> wrapPersonProperty(prop));
@@ -67,7 +67,7 @@ public class PersonPropertyReader extends AbstractThingReader {
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
 
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> Observable.from(p.getProperties()))
                 .filter(prop -> prop.getKey().equals(key))
                 .map(prop -> wrapPersonProperty(prop));

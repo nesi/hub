@@ -48,7 +48,7 @@ public class GroupReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        return Observable.from(um.getAllGroups().values()).map(g -> wrapGroup(g));
+        return Observable.from(um.getAllGroups()).map(g -> wrapGroup(g));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class GroupReader extends AbstractThingReader {
             Integer id_int = Integer.parseInt(id_string);
 
             String projectName = um.getGroup(id_int);
-            Group g = um.getAllGroups().get(projectName);
+            Group g = um.getGroup(projectName);
 
             Thing<Group> groupThing = wrapGroup(g);
 
@@ -75,7 +75,7 @@ public class GroupReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllGroups().values())
+        return Observable.from(um.getAllGroups())
                 .filter(g -> MatcherUtils.wildCardMatch(g.getGroupName(), key))
                 .map(g -> wrapGroup(g));
     }
@@ -83,7 +83,7 @@ public class GroupReader extends AbstractThingReader {
     @Override
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
 
-        return Observable.just(um.getAllPersons().get(id))
+        return Observable.just(um.getPerson(id))
                 .flatMap(p -> createGroups(p.getRoles(), Optional.empty()));
 
 
@@ -94,13 +94,13 @@ public class GroupReader extends AbstractThingReader {
         if ( groupMatcher.isPresent() ) {
             return Observable.from(groups.keySet())
                     .filter(groupName -> MatcherUtils.wildCardMatch(groupName, groupMatcher.get()))
-                    .map(groupName -> um.getAllGroups().get(groupName))
+                    .map(groupName -> um.getGroup(groupName))
                             //TODO make that work for non-project groups too
                     .filter(group -> group != null)
                     .map(group -> wrapGroup(group));
         } else {
             return Observable.from(groups.keySet())
-                    .map(groupName -> um.getAllGroups().get(groupName))
+                    .map(groupName -> um.getGroup(groupName))
                             //TODO make that work for non-project groups too
                     .filter(group -> group != null)
                     .map(group -> wrapGroup(group));
@@ -117,7 +117,7 @@ public class GroupReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllGroups().get(key)).filter(g -> g != null).map(g -> wrapGroup(g));
+        return Observable.from(um.getGroup(key)).filter(g -> g != null).map(g -> wrapGroup(g));
     }
 
     @Override

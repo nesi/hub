@@ -61,7 +61,7 @@ public class JobHistoryQuery implements ThingQuery {
             }
 
             Group group = (Group) group_or_person.getValue();
-            Stream<Person> persons = group.getMembers().values().stream().map(alias -> usermanagement.getAllPersons().get(alias));
+            Stream<Person> persons = group.getMembers().values().stream().map(alias -> usermanagement.getPerson(alias));
 
             final Set<String> tempFilters = Sets.newHashSet();
             tempFilters.add(group.getGroupName());

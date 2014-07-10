@@ -25,13 +25,13 @@ public class PersonReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        return Observable.from(um.getAllPersons().values()).map(p -> wrapPerson(p));
+        return Observable.from(um.getAllPersons()).map(p -> wrapPerson(p));
     }
 
     @Override
     public Observable<? extends Thing<?>> findThingForId(String id) {
 
-            Person p = um.getAllPersons().get(id);
+            Person p = um.getPerson(id);
             if ( p == null ) {
                 return Observable.empty();
             }
@@ -44,9 +44,9 @@ public class PersonReader extends AbstractThingReader {
     @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(String type, String key) {
 
-        return Observable.from(um.getAllPersons().keySet())
+        return Observable.from(um.getAllPersonAliases())
                 .filter(n -> MatcherUtils.wildCardMatch(n, key))
-                .map(n -> um.getAllPersons().get(n))
+                .map(n -> um.getPerson(n))
                 .map(p -> wrapPerson(p));
     }
 
@@ -62,7 +62,7 @@ public class PersonReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return Observable.just(um.getAllPersons().get(key)).filter(alias -> alias != null ).map(p -> wrapPerson(p));
+        return Observable.just(um.getPerson(key)).filter(alias -> alias != null ).map(p -> wrapPerson(p));
     }
 
     @Override

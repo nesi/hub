@@ -22,7 +22,6 @@ package hub.config.jpa;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
 import hub.auth.HubUserDetailsAuthenticationProvider;
-import hub.auth.NeSIAuthenticationProvider;
 import hub.backends.users.*;
 import hub.backends.users.repositories.IdentityRepository;
 import hub.backends.users.repositories.PasswordRepository;
@@ -44,7 +43,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -58,7 +56,6 @@ import things.thing.DefaultActionManager;
 import things.thing.ThingControl;
 import things.types.AnnotationTypeFactory;
 import things.types.ThingType;
-import things.types.TypeRegistry;
 import things.thing.ThingsObjectMapper;
 import things.types.TypeRegistryImpl;
 
@@ -253,7 +250,7 @@ public class HubConfigJpa {
 
     @Bean
     public UserManagement userManagement() {
-        return new UserManagement();
+        return new UserManagementImpl();
     }
 
     @Bean(name = "valueValidator")

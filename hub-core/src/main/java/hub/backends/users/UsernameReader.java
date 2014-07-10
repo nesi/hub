@@ -27,7 +27,7 @@ public class UsernameReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findAllThings() {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> createUsernames(p, Optional.empty()));
     }
 
@@ -61,13 +61,13 @@ public class UsernameReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsMatchingTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> createUsernames(p, Optional.of(key)));
     }
 
     @Override
     public Observable<? extends Thing<?>> getChildrenForId(String id) {
-        return Observable.just(um.getAllPersons().get(id))
+        return Observable.just(um.getPerson(id))
                 .flatMap(p -> createUsernames(p, Optional.empty()));
     }
 
@@ -85,13 +85,13 @@ public class UsernameReader extends AbstractThingReader {
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeAndKey(String type, String key) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> createUsernames(p, Optional.of(key)));
     }
 
     @Override
     public Observable<? extends Thing<?>> findThingsForTypeMatchingKey(String type, String key) {
-        return Observable.from(um.getAllPersons().values())
+        return Observable.from(um.getAllPersons())
                 .flatMap(p -> createUsernames(p, Optional.of(key)));
     }
 }

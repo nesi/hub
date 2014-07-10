@@ -40,13 +40,13 @@ public class UsernameQuery implements ThingQuery {
     public Observable<Thing<Person>> findPersonForUsername(Username un) {
 
         if ( MatcherUtils.isGlob(un.getUsername()) ) {
-            return Observable.from(um.getAllPersons().values())
+            return Observable.from(um.getAllPersons())
                     .filter(p -> p.getUsernames().get(un.getService())
                             .stream()
                             .anyMatch(username -> MatcherUtils.wildCardMatch(username, un.getUsername())))
                     .map(p -> PersonReader.wrapPerson(tr, p));
         } else {
-            return Observable.from(um.getAllPersons().values())
+            return Observable.from(um.getAllPersons())
                     .filter(p -> p.hasUsername(un))
                     .single()
                     .map(p -> PersonReader.wrapPerson(tr, p));

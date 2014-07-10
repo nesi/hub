@@ -66,7 +66,7 @@ public class CheckPasswordQuery implements ThingQuery {
 
             // check whether an admin for the 'hub' service
             if ( Constants.HUB_SERVICE_NAME.equals(service) ) {
-                Person admin = userManagement.getAllPersons().get(Constants.DEFAULT_ADMIN_USERNAME);
+                Person admin = userManagement.getPerson(Constants.DEFAULT_ADMIN_USERNAME);
                 //TODO store admin password encrypted?
                 boolean usernameFound = false;
                 for ( String un : admin.getUsernames().get(Constants.HUB_SERVICE_NAME) ) {
