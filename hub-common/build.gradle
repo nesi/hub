@@ -18,7 +18,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile ("us.ilmark.deta.things:things-common:0.2-SNAPSHOT")
+    compile group: "us.ilmark.deta.things", name: "things-common", version: "0.2-SNAPSHOT", changing: true
     compile ("org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final")
     compile ("org.springframework.security:spring-security-crypto:3.2.4.RELEASE") {
         exclude module: "spring-core"

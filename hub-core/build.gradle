@@ -68,8 +68,8 @@ dependencies {
     compile project(':hub-common')
 
 //    compile project('us.ilmark.deta.things:things-mongo:0.2-SNAPSHOT')
-    compile ('us.ilmark.deta.things:things-jpa:0.2-SNAPSHOT')
-    compile ('us.ilmark.deta.things:things-rest:0.2-SNAPSHOT')
+    compile group: "us.ilmark.deta.things", name:"things-jpa", version:"0.2-SNAPSHOT", changing: true
+    compile group: "us.ilmark.deta.things", name:"things-rest", version:"0.2-SNAPSHOT", changing: true
 
     compile('com.google.guava:guava:17.0')
 
