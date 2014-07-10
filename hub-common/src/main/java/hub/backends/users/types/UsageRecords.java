@@ -3,9 +3,6 @@ package hub.backends.users.types;
 import com.google.common.collect.Sets;
 import things.model.types.Value;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -14,16 +11,16 @@ import java.util.SortedSet;
 @Value(typeName = "usagerecords")
 public class UsageRecords {
 
-    private SortedSet<Usage> usageRecords = Sets.newTreeSet();
+    private SortedSet<UsageRecord> usageRecordRecords = Sets.newTreeSet();
 
     private String username;
 
-    public UsageRecords(SortedSet<Usage> records) {
-        this.usageRecords = records;
+    public UsageRecords(SortedSet<UsageRecord> records) {
+        this.usageRecordRecords = records;
     }
 
     public void addUsageRecords(UsageRecords jobHistoryForUsernameMonthly) {
-        this.usageRecords.addAll(jobHistoryForUsernameMonthly.getUsageRecords());
+        this.usageRecordRecords.addAll(jobHistoryForUsernameMonthly.getUsageRecordRecords());
     }
 
     public String getUsername() {
@@ -37,16 +34,16 @@ public class UsageRecords {
     public UsageRecords() {
     }
 
-    public SortedSet<Usage> getUsageRecords() {
-        return usageRecords;
+    public SortedSet<UsageRecord> getUsageRecordRecords() {
+        return usageRecordRecords;
     }
 
-    public void setUsageRecords(SortedSet<Usage> usageRecords) {
-        this.usageRecords = usageRecords;
+    public void setUsageRecordRecords(SortedSet<UsageRecord> usageRecordRecords) {
+        this.usageRecordRecords = usageRecordRecords;
     }
 
 
-    public void addRecord(Usage rec) {
-        getUsageRecords().add(rec);
+    public void addRecord(UsageRecord rec) {
+        getUsageRecordRecords().add(rec);
     }
 }

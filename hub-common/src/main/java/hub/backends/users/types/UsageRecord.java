@@ -5,13 +5,12 @@ import things.model.types.Value;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by markus on 10/07/14.
  */
 @Value(typeName = "usage")
-public class Usage implements Comparable<Usage> {
+public class UsageRecord implements Comparable<UsageRecord> {
 
     private String username;
     private String projectCode;
@@ -25,11 +24,11 @@ public class Usage implements Comparable<Usage> {
     private Long usageRunning;
     private Long usageWaiting;
 
-    public Usage() {
+    public UsageRecord() {
     }
 
     @Override
-    public int compareTo(Usage o) {
+    public int compareTo(UsageRecord o) {
         return ComparisonChain.start()
                 .compare(getUsername(), o.getUsername())
                 .compare(getProjectCode(), o.getProjectCode())
@@ -43,7 +42,7 @@ public class Usage implements Comparable<Usage> {
         if ( obj == null ) return false;
 
         if ( getClass().equals(obj.getClass()) ) {
-            final Usage other = (Usage) obj;
+            final UsageRecord other = (UsageRecord) obj;
             return Objects.equals(getTimeUnit(), other.getTimeUnit())
                     && Objects.equals(getUsername(), other.getUsername())
                     && Objects.equals(getProjectCode(), other.getProjectCode())

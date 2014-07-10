@@ -7,7 +7,7 @@ import hub.Constants;
 import hub.backends.users.UserManagement;
 import hub.backends.users.types.Group;
 import hub.backends.users.types.Person;
-import hub.backends.users.types.Usage;
+import hub.backends.users.types.UsageRecord;
 import hub.backends.users.types.UsageRecords;
 import nesi.jobs.Tables;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Spliterator;
 import java.util.stream.Stream;
 
 /**
@@ -203,7 +202,7 @@ public class JobHistoryQuery implements ThingQuery {
                     // already checked for that
             }
 
-            Usage stat = new Usage();
+            UsageRecord stat = new UsageRecord();
             stat.setUsername(username);
             stat.setProjectCode(projectCode);
             stat.setTimeUnit(timeUnit);
